@@ -1,0 +1,109 @@
+name: afrocards_mobile
+description: Application mobile de quiz culturel africain
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # 🎨 UI & Design
+  cupertino_icons: ^1.0.6
+  google_fonts: ^6.1.0
+  flutter_svg: ^2.0.9
+  cached_network_image: ^3.3.0
+  shimmer: ^3.0.0
+  lottie: ^3.0.0
+  flutter_animate: ^4.3.0
+
+  # 🔐 State Management
+  provider: ^6.1.1
+  # Alternative: flutter_riverpod: ^2.4.9
+
+  # 🌐 Networking
+  dio: ^5.4.0
+  retrofit: ^4.0.3
+  json_annotation: ^4.8.1
+  pretty_dio_logger: ^1.3.1
+
+  # 💾 Local Storage
+  shared_preferences: ^2.2.2
+  flutter_secure_storage: ^9.0.0
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
+  # 🧭 Navigation
+  go_router: ^12.1.3
+
+  # 🔧 Utilities
+  intl: ^0.19.0
+  equatable: ^2.0.5
+  dartz: ^0.10.1
+  get_it: ^7.6.4
+  injectable: ^2.3.2
+  freezed_annotation: ^2.4.1
+
+  # 📸 Image Handling
+  image_picker: ^1.0.7
+#  image_cropper: ^5.0.1
+
+  # 🔔 Notifications
+  firebase_messaging: ^14.7.9
+#  flutter_local_notifications: ^16.3.0
+
+  # 📊 Analytics & Crash Reporting
+  firebase_core: ^2.24.2
+  firebase_analytics: ^10.8.0
+  firebase_crashlytics: ^3.4.9
+
+  # 🎮 Game Features
+  confetti: ^0.7.0
+  audioplayers: ^5.2.1
+
+  # 🛠️ Others
+  url_launcher: ^6.2.2
+  share_plus: ^7.2.1
+  permission_handler: ^11.1.0
+  connectivity_plus: ^5.0.2
+  package_info_plus: ^5.0.1
+  flutter_dotenv: ^5.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # 🧪 Testing
+  mockito: ^5.4.4
+  build_runner: ^2.4.7
+  flutter_lints: ^3.0.1
+
+  # 🏗️ Code Generation
+  json_serializable: ^6.7.1
+  retrofit_generator: ^8.0.6
+  injectable_generator: ^2.4.1
+  freezed: ^2.4.6
+  hive_generator: ^2.0.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/images/logos/
+    - assets/images/icons/
+    - assets/images/backgrounds/
+    - assets/images/avatars/
+    - assets/animations/
+    - .env
+
+#  fonts:
+#    - family: Poppins
+#      fonts:
+#        - asset: assets/fonts/Poppins-Regular.ttf
+#        - asset: assets/fonts/Poppins-Bold.ttf
+#          weight: 700
+#        - asset: assets/fonts/Poppins-SemiBold.ttf
+#          weight: 600
