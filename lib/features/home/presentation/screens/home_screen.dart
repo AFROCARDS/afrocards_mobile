@@ -7,6 +7,7 @@ import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
 import '../../../stage/presentation/screens/stage_mode_screen.dart';
 import '../../../fiesta/presentation/screens/fiesta_mode_screen.dart';
+import '../../../challenge/presentation/screens/challenge_question_count_screen.dart';
 import '../../../quiz/presentation/screens/game_screen.dart';
 import '../../../classement/presentation/screens/classement_screen.dart';
 
@@ -154,6 +155,14 @@ class _HomeScreenState extends State<HomeScreen> {
             avatarUrl: widget.avatarUrl,
             token: widget.token,
           ),
+        ),
+      );
+    } else if (modeName == 'challenge' || modeName == 'challenges') {
+      // Naviguer vers le mode Challenge (PvP)
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const ChallengeQuestionCountScreen(),
         ),
       );
     } else {

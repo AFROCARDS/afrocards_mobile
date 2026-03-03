@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
+import '../../../challenge/presentation/screens/challenge_result_screen.dart';
 import 'result_screen.dart';
 
 /// Modèle pour une réponse
@@ -104,7 +105,12 @@ class GameScreen extends StatefulWidget {
   final int? levelNumber;
   final String? difficute;
   final int nombreQuestions;
-  final String mode; // 'stage', 'fiesta', 'random'
+  final String mode; // 'stage', 'fiesta', 'challenge', 'random'
+
+  // Paramètres challenge
+  final String? challengeId;
+  final String? opponentName;
+  final int? opponentId;
 
   const GameScreen({
     super.key,
@@ -119,6 +125,9 @@ class GameScreen extends StatefulWidget {
     this.difficute,
     this.nombreQuestions = 10,
     this.mode = 'random',
+    this.challengeId,
+    this.opponentName,
+    this.opponentId,
   });
 
   @override
@@ -523,7 +532,31 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   }
 
   void _showResults() {
-    // Naviguer vers l'écran de résultat
+    // Mode challenge : naviguer vers ChallengeResultScreen
+    if (widget.mode == 'challenge') {
+      final opponentScore = _generateOpponentScore();
+      final isWinner = _score > opponentScore;
+      
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ChallengeResultScreen(
+            userName: widget.userName,
+            token: widget.token,
+            playerScore: _score,
+            opponentScore: opponentScore,
+            opponentName: widget.opponentName ?? 'Adversaire',
+            totalQuestions: _questions.length,
+            xpGained: _totalPoints,
+            coinsGained: _score * 5,
+            isWinner: isWinner,
+          ),
+        ),
+      );
+      return;
+    }
+    
+    // Mode normal : naviguer vers ResultScreen
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -543,6 +576,24 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+  
+  /// Génère un score aléatoire pour l'adversaire (simulation)
+  int _generateOpponentScore() {
+    // Simuler un score d'adversaire basé sur la difficulté
+    final random = DateTime.now().millisecondsSinceEpoch % 100;
+    final maxScore = _questions.length;
+    
+    if (random < 30) {
+      // 30% chance: adversaire fait moins bien
+      return (_score * 0.5).round().clamp(0, maxScore);
+    } else if (random < 70) {
+      // 40% chance: scores proches
+      return (_score + (random % 3) - 1).clamp(0, maxScore);
+    } else {
+      // 30% chance: adversaire fait mieux
+      return ((_score + 1) + (random % 2)).clamp(0, maxScore);
+    }
   }
   
   void _showGameOverDialog() {

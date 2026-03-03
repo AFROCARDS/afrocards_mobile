@@ -136,6 +136,22 @@ class ApiEndpoints {
   static const String createBadge = '/gamification/badges';
 
   // ========================================
+  // 🎮 CHALLENGE (PvP)
+  // ========================================
+
+  /// POST - Trouver un adversaire pour un challenge
+  static const String challengeFindOpponent = '/challenges/find-opponent';
+
+  /// POST - Créer un nouveau challenge
+  static const String challengeCreate = '/challenges/create';
+
+  /// POST - Soumettre le résultat d'un challenge
+  static const String challengeSubmitResult = '/challenges/submit-result';
+
+  /// GET - Historique des challenges
+  static const String challengeHistory = '/challenges/history';
+
+  // ========================================
   // 💬 SOCIAL
   // ========================================
 
