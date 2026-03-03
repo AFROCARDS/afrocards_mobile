@@ -116,7 +116,7 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
     return [
       FiestaSubMode(
         idSousMode: 1,
-        nom: 'Challenges',
+        nom: 'Challenge',
         description: 'Relevez des défis quotidiens et hebdomadaires pour gagner des récompenses spéciales !',
         icone: 'trophy',
         ordre: 1,
