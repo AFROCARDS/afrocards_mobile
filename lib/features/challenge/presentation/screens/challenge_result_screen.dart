@@ -1,8 +1,9 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/providers/user_state_provider.dart';
+import '../../../../shared/widgets/app_header.dart';
+import '../../../../shared/widgets/bottom_nav_bar.dart';
 import '../../../classement/presentation/screens/classement_screen.dart';
 import '../../../home/presentation/screens/home_screen.dart';
 
@@ -37,20 +38,13 @@ class ChallengeResultScreen extends StatefulWidget {
 }
 
 class _ChallengeResultScreenState extends State<ChallengeResultScreen>
-    with TickerProviderStateMixin {
-  late AnimationController _confettiController;
+    with SingleTickerProviderStateMixin {
   late AnimationController _scaleController;
   late Animation<double> _scaleAnimation;
-  final List<_ConfettiParticle> _particles = [];
 
   @override
   void initState() {
     super.initState();
-    
-    _confettiController = AnimationController(
-      duration: const Duration(seconds: 3),
-      vsync: this,
-    );
 
     _scaleController = AnimationController(
       duration: const Duration(milliseconds: 800),
@@ -61,37 +55,10 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen>
       CurvedAnimation(parent: _scaleController, curve: Curves.elasticOut),
     );
 
-    // Générer les particules de confetti si victoire
-    if (widget.isWinner) {
-      _generateConfetti();
-      _confettiController.repeat();
-    }
-    
     _scaleController.forward();
 
     // Mettre à jour les stats utilisateur
     _updateUserStats();
-  }
-
-  void _generateConfetti() {
-    final random = Random();
-    for (int i = 0; i < 50; i++) {
-      _particles.add(_ConfettiParticle(
-        x: random.nextDouble(),
-        y: random.nextDouble() * -1,
-        color: [
-          Colors.red,
-          Colors.blue,
-          Colors.green,
-          Colors.yellow,
-          Colors.purple,
-          Colors.orange,
-          Colors.pink,
-        ][random.nextInt(7)],
-        size: random.nextDouble() * 8 + 4,
-        speed: random.nextDouble() * 2 + 1,
-      ));
-    }
   }
 
   void _updateUserStats() {
@@ -102,7 +69,6 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen>
 
   @override
   void dispose() {
-    _confettiController.dispose();
     _scaleController.dispose();
     super.dispose();
   }
@@ -145,163 +111,34 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Contenu principal
+          // Background
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/backgrounds/img.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
           SafeArea(
             child: Column(
               children: [
-                _buildHeader(),
+                const AppHeader(),
                 Expanded(
                   child: _buildContent(),
                 ),
               ],
             ),
           ),
-          
-          // Confetti animation (si victoire)
-          if (widget.isWinner)
-            AnimatedBuilder(
-              animation: _confettiController,
-              builder: (context, child) {
-                return CustomPaint(
-                  size: MediaQuery.of(context).size,
-                  painter: _ConfettiPainter(
-                    particles: _particles,
-                    progress: _confettiController.value,
-                  ),
-                );
-              },
-            ),
         ],
       ),
-      bottomNavigationBar: _buildBottomNavBar(),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Consumer<UserStateProvider>(
-      builder: (context, userState, child) {
-        return Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  // Avatar utilisateur
-                  CircleAvatar(
-                    radius: 22,
-                    backgroundColor: Colors.grey.shade300,
-                    backgroundImage: userState.avatarUrl != null
-                        ? NetworkImage(userState.avatarUrl!)
-                        : null,
-                    child: userState.avatarUrl == null
-                        ? const Icon(Icons.person, color: Colors.white, size: 24)
-                        : null,
-                  ),
-                  const SizedBox(width: 10),
-
-                  // Nom et niveau
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          userState.userName.isNotEmpty ? userState.userName : 'Joueur',
-                          style: const TextStyle(
-                            color: Colors.black87,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          userState.userLevel,
-                          style: TextStyle(
-                            color: Colors.orange.shade700,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Stats: Vies
-                  _buildStatBadge(
-                    icon: Icons.favorite,
-                    value: '${userState.lives.toString().padLeft(2, '0')}/${userState.maxLives.toString().padLeft(2, '0')}',
-                    color: Colors.red,
-                    bgColor: Colors.red.shade50,
-                  ),
-                  const SizedBox(width: 8),
-
-                  // Stats: Coins
-                  _buildStatBadge(
-                    icon: Icons.monetization_on,
-                    value: userState.coins.toString(),
-                    color: Colors.orange,
-                    bgColor: Colors.orange.shade50,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              // Titre
-              Row(
-                children: [
-                  const Text(
-                    'Résultat du Challenge',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildStatBadge({
-    required IconData icon,
-    required String value,
-    required Color color,
-    required Color bgColor,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            '+',
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-            ),
-          ),
-          const SizedBox(width: 2),
-          Text(
-            value,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-              color: color,
-            ),
-          ),
-          const SizedBox(width: 4),
-          Icon(icon, color: color, size: 14),
-        ],
+      bottomNavigationBar: AppBottomNavBar(
+        currentIndex: 0,
+        onTap: (index) {
+          // Navigation handled by nav bar
+        },
       ),
     );
   }
@@ -321,26 +158,14 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen>
                 // Décorations autour du cercle
                 ..._buildDecorations(),
                 
-                // Cercle principal
+                // Cercle principal (gris simple comme dans la maquette)
                 Container(
-                  width: 180,
-                  height: 180,
+                  width: 160,
+                  height: 160,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.grey[200],
-                    boxShadow: [
-                      BoxShadow(
-                        color: widget.isWinner 
-                            ? Colors.amber.withOpacity(0.3)
-                            : Colors.grey.withOpacity(0.2),
-                        blurRadius: 30,
-                        spreadRadius: 10,
-                      ),
-                    ],
+                    color: Colors.grey[300],
                   ),
-                  child: widget.isWinner
-                      ? const Icon(Icons.emoji_events, size: 80, color: Colors.amber)
-                      : const Icon(Icons.sentiment_dissatisfied, size: 80, color: Colors.grey),
                 ),
               ],
             ),
@@ -351,38 +176,28 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen>
           Text(
             widget.isWinner ? 'Felicitation!!!' : 'Dommage...',
             style: TextStyle(
-              fontSize: 28,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: widget.isWinner ? Colors.black87 : Colors.grey[600],
+              color: Colors.black87,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
 
           // Message de résultat
-          Text(
-            widget.isWinner
-                ? 'Tu as battu ${widget.opponentName ?? 'ton adversaire'} avec un score de ${widget.playerScore}/${widget.totalQuestions} contre ${widget.opponentScore}/${widget.totalQuestions}. Continue comme ça, tu es sur la bonne voie!'
-                : '${widget.opponentName ?? 'Ton adversaire'} a gagné avec ${widget.opponentScore}/${widget.totalQuestions} contre ${widget.playerScore}/${widget.totalQuestions}. Ne te décourage pas, retente ta chance!',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 15,
-              color: Colors.grey[600],
-              height: 1.5,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              widget.isWinner
+                  ? 'Tu as brillamment remporté ce challenge contre ${widget.opponentName ?? 'ton adversaire'} avec un score de ${widget.playerScore}/${widget.totalQuestions}. Continue sur cette lancée, tu es sur la bonne voie pour devenir un champion !'
+                  : '${widget.opponentName ?? 'Ton adversaire'} l\'a emporté cette fois avec ${widget.opponentScore}/${widget.totalQuestions}. Ne te décourage pas, chaque défi est une occasion d\'apprendre. Retente ta chance !',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.grey[600],
+                height: 1.5,
+              ),
             ),
           ),
-
-          if (widget.isWinner) ...[
-            const SizedBox(height: 16),
-            // Gains
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildGainBadge('+${widget.xpGained} XP', Colors.purple),
-                const SizedBox(width: 16),
-                _buildGainBadge('+${widget.coinsGained} 🪙', Colors.orange),
-              ],
-            ),
-          ],
           
           const SizedBox(height: 40),
 
@@ -428,32 +243,59 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen>
   }
 
   List<Widget> _buildDecorations() {
-    // Petites décorations autour du cercle (points, x, +)
-    final decorations = <Widget>[];
-    final symbols = ['•', '×', '+', '•', '×', '+'];
-    final colors = [Colors.blue, Colors.grey, Colors.grey, Colors.pink, Colors.grey, Colors.grey];
-    final angles = [0.0, 0.6, 1.2, 3.14, 3.8, 4.4];
-    final distances = [110.0, 115.0, 105.0, 110.0, 115.0, 105.0];
-
-    for (int i = 0; i < symbols.length; i++) {
-      final x = cos(angles[i]) * distances[i];
-      final y = sin(angles[i]) * distances[i];
-      decorations.add(
-        Positioned(
-          left: 90 + x - 10,
-          top: 90 + y - 10,
-          child: Text(
-            symbols[i],
-            style: TextStyle(
-              fontSize: symbols[i] == '•' ? 16 : 20,
-              color: colors[i],
-              fontWeight: FontWeight.bold,
-            ),
+    // Petites décorations autour du cercle (points, x, +) selon la maquette
+    return [
+      // Point bleu en haut
+      Positioned(
+        top: 0,
+        left: 80,
+        child: Container(
+          width: 8,
+          height: 8,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.blue,
           ),
         ),
-      );
-    }
-    return decorations;
+      ),
+      // + en haut gauche
+      const Positioned(
+        top: 30,
+        left: 15,
+        child: Text('+', style: TextStyle(fontSize: 18, color: Colors.grey, fontWeight: FontWeight.w300)),
+      ),
+      // x en haut droite
+      const Positioned(
+        top: 20,
+        right: 20,
+        child: Text('×', style: TextStyle(fontSize: 18, color: Colors.grey, fontWeight: FontWeight.w300)),
+      ),
+      // x à gauche
+      const Positioned(
+        top: 90,
+        left: 10,
+        child: Text('×', style: TextStyle(fontSize: 18, color: Colors.grey, fontWeight: FontWeight.w300)),
+      ),
+      // + à droite
+      const Positioned(
+        top: 100,
+        right: 15,
+        child: Text('+', style: TextStyle(fontSize: 18, color: Colors.grey, fontWeight: FontWeight.w300)),
+      ),
+      // Point rose en bas
+      Positioned(
+        bottom: 10,
+        left: 85,
+        child: Container(
+          width: 8,
+          height: 8,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.pink,
+          ),
+        ),
+      ),
+    ];
   }
 
   Widget _buildGainBadge(String text, Color color) {
@@ -473,85 +315,4 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen>
       ),
     );
   }
-
-  Widget _buildBottomNavBar() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      currentIndex: 0,
-      selectedItemColor: const Color(0xFF6B4EAA),
-      unselectedItemColor: Colors.grey,
-      showUnselectedLabels: true,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home_outlined),
-          activeIcon: Icon(Icons.home),
-          label: 'Accueil',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.style_outlined),
-          activeIcon: Icon(Icons.style),
-          label: 'Mes Cartes',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_bag_outlined),
-          activeIcon: Icon(Icons.shopping_bag),
-          label: 'Boutiques',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person_outline),
-          activeIcon: Icon(Icons.person),
-          label: 'Profil',
-        ),
-      ],
-    );
-  }
-}
-
-/// Particule de confetti
-class _ConfettiParticle {
-  double x;
-  double y;
-  final Color color;
-  final double size;
-  final double speed;
-
-  _ConfettiParticle({
-    required this.x,
-    required this.y,
-    required this.color,
-    required this.size,
-    required this.speed,
-  });
-}
-
-/// Painter pour les confettis
-class _ConfettiPainter extends CustomPainter {
-  final List<_ConfettiParticle> particles;
-  final double progress;
-
-  _ConfettiPainter({required this.particles, required this.progress});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    for (var particle in particles) {
-      final y = (particle.y + progress * particle.speed * 2) % 1.5 - 0.5;
-      final x = particle.x + sin(progress * 10 + particle.x * 10) * 0.02;
-      
-      final paint = Paint()
-        ..color = particle.color.withOpacity(0.8)
-        ..style = PaintingStyle.fill;
-
-      canvas.drawRect(
-        Rect.fromCenter(
-          center: Offset(x * size.width, y * size.height),
-          width: particle.size,
-          height: particle.size * 1.5,
-        ),
-        paint,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _ConfettiPainter oldDelegate) => true;
 }

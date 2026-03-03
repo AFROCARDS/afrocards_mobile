@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
+import '../../../../shared/widgets/bottom_nav_bar.dart';
 import '../../../quiz/presentation/screens/game_screen.dart';
 
 /// Modèle pour un adversaire de challenge
@@ -171,12 +172,22 @@ class _ChallengeMatchingScreenState extends State<ChallengeMatchingScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Logo en haut
-            Padding(
+      body: Stack(
+        children: [
+          // Background
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/backgrounds/img.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Column(
+              children: [
+                // Logo en haut
+                Padding(
               padding: const EdgeInsets.only(top: 20),
               child: Image.asset(
                 'assets/images/logos/logo_afc.png',
@@ -194,13 +205,20 @@ class _ChallengeMatchingScreenState extends State<ChallengeMatchingScreen>
               ),
             ),
             
-            Expanded(
-              child: _isSearching ? _buildSearchingView() : _buildMatchedView(),
+                Expanded(
+                  child: _isSearching ? _buildSearchingView() : _buildMatchedView(),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-      bottomNavigationBar: _buildBottomNavBar(),
+      bottomNavigationBar: AppBottomNavBar(
+        currentIndex: 0,
+        onTap: (index) {
+          // Navigation handled by nav bar
+        },
+      ),
     );
   }
 
@@ -371,38 +389,6 @@ class _ChallengeMatchingScreenState extends State<ChallengeMatchingScreen>
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildBottomNavBar() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      currentIndex: 0,
-      selectedItemColor: const Color(0xFF6B4EAA),
-      unselectedItemColor: Colors.grey,
-      showUnselectedLabels: true,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home_outlined),
-          activeIcon: Icon(Icons.home),
-          label: 'Accueil',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.style_outlined),
-          activeIcon: Icon(Icons.style),
-          label: 'Mes Cartes',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_bag_outlined),
-          activeIcon: Icon(Icons.shopping_bag),
-          label: 'Boutiques',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person_outline),
-          activeIcon: Icon(Icons.person),
-          label: 'Profil',
-        ),
-      ],
     );
   }
 }

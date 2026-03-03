@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
+import '../../../../shared/widgets/app_header.dart';
 import '../../../classement/presentation/screens/classement_screen.dart';
 
 /// Écran de résultat après un quiz
@@ -223,7 +224,10 @@ class _ResultScreenState extends State<ResultScreen>
           // Background
           Container(
             decoration: const BoxDecoration(
-              color: Colors.white,
+              image: DecorationImage(
+                image: AssetImage('assets/images/backgrounds/img.png'),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
 
@@ -232,7 +236,7 @@ class _ResultScreenState extends State<ResultScreen>
             child: Column(
               children: [
                 // Header with user info
-                _buildHeader(),
+                const AppHeader(),
 
                 // Main content
                 Expanded(
@@ -352,105 +356,6 @@ class _ResultScreenState extends State<ResultScreen>
                 ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        children: [
-          // Avatar and user info
-          Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFF6B4EAA), width: 2),
-            ),
-            child: CircleAvatar(
-              radius: 22,
-              backgroundColor: Colors.grey[200],
-              backgroundImage: widget.avatarUrl != null
-                  ? NetworkImage(widget.avatarUrl!)
-                  : null,
-              child: widget.avatarUrl == null
-                  ? const Icon(Icons.person, color: Colors.grey)
-                  : null,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.userName ?? 'Joueur',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                Text(
-                  widget.userLevel ?? 'Stage 1',
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Stats
-          Row(
-            children: [
-              // Hearts
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.favorite, color: Colors.red, size: 16),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${widget.userLives ?? 5}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              // Coins
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.amber.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.monetization_on,
-                        color: Colors.amber, size: 16),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${(widget.userCoins ?? 0) + _coinsGained}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
           ),
         ],
       ),

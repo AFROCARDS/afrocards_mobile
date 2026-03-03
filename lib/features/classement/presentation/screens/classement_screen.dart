@@ -168,9 +168,9 @@ class _ClassementScreenState extends State<ClassementScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
@@ -195,29 +195,39 @@ class _ClassementScreenState extends State<ClassementScreen>
           ],
         ),
       ),
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: Color(0xFF6B4EAA)),
-            )
-          : Column(
-              children: [
-                // Ma position
-                if (_currentUserRank != null) _buildMyRankCard(),
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/backgrounds/img.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: SafeArea(
+          child: _isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(color: Color(0xFF6B4EAA)),
+                )
+              : Column(
+                  children: [
+                    // Ma position
+                    if (_currentUserRank != null) _buildMyRankCard(),
 
-                // Liste des joueurs
-                Expanded(
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: [
-                      _buildPlayersList(_globalPlayers),
-                      _buildPlayersList(_weeklyPlayers.isEmpty
-                          ? _globalPlayers
-                          : _weeklyPlayers),
-                    ],
-                  ),
+                    // Liste des joueurs
+                    Expanded(
+                      child: TabBarView(
+                        controller: _tabController,
+                        children: [
+                          _buildPlayersList(_globalPlayers),
+                          _buildPlayersList(_weeklyPlayers.isEmpty
+                              ? _globalPlayers
+                              : _weeklyPlayers),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+        ),
+      ),
     );
   }
 

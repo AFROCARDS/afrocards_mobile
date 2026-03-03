@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
+import '../../../../shared/widgets/app_header.dart';
 import '../../../challenge/presentation/screens/challenge_result_screen.dart';
 import 'result_screen.dart';
 
@@ -745,153 +746,56 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     final currentQuestion = _questions[_currentQuestionIndex];
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header avec infos utilisateur
-            _buildHeader(),
-
-            // Question counter et timer
-            _buildQuestionHeader(currentQuestion),
-
-            // Contenu de la question
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [
-                    // Image de la question
-                    if (currentQuestion.mediaURL != null) _buildQuestionImage(currentQuestion),
-
-                    const SizedBox(height: 20),
-
-                    // Texte de la question
-                    _buildQuestionText(currentQuestion),
-
-                    const SizedBox(height: 24),
-
-                    // Options de réponse
-                    _buildAnswerOptions(currentQuestion),
-
-                    const SizedBox(height: 20),
-                  ],
-                ),
-              ),
-            ),
-
-            // Boutons d'action
-            _buildActionButtons(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Consumer<UserStateProvider>(
-      builder: (context, userState, child) {
-        return Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              // Avatar utilisateur
-              CircleAvatar(
-                radius: 20,
-                backgroundColor: Colors.grey.shade300,
-                backgroundImage: userState.avatarUrl != null
-                    ? NetworkImage(userState.avatarUrl!)
-                    : widget.avatarUrl != null
-                        ? NetworkImage(widget.avatarUrl!)
-                        : null,
-                child: (userState.avatarUrl == null && widget.avatarUrl == null)
-                    ? const Icon(Icons.person, color: Colors.white, size: 22)
-                    : null,
-              ),
-              const SizedBox(width: 10),
-
-              // Nom et niveau
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      userState.userName.isNotEmpty ? userState.userName : (widget.userName ?? 'Joueur'),
-                      style: const TextStyle(
-                        color: Colors.black87,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      userState.userLevel,
-                      style: TextStyle(
-                        color: Colors.orange.shade700,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Vies
-              _buildStatBadge(
-                icon: Icons.favorite,
-                value: '${userState.lives.toString().padLeft(2, '0')}/${userState.maxLives.toString().padLeft(2, '0')}',
-                color: Colors.red,
-                bgColor: Colors.red.shade50,
-              ),
-              const SizedBox(width: 8),
-
-              // Coins
-              _buildStatBadge(
-                icon: Icons.monetization_on,
-                value: userState.coins.toString(),
-                color: Colors.orange,
-                bgColor: Colors.orange.shade50,
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildStatBadge({
-    required IconData icon,
-    required String value,
-    required Color color,
-    required Color bgColor,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      body: Stack(
         children: [
-          Text(
-            '+',
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.bold,
-              fontSize: 11,
+          // Background
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/backgrounds/img.png'),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-          const SizedBox(width: 2),
-          Text(
-            value,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 11,
-              color: color,
+          SafeArea(
+            child: Column(
+              children: [
+                // Header avec infos utilisateur
+                const AppHeader(),
+
+                // Question counter et timer
+                _buildQuestionHeader(currentQuestion),
+
+                // Contenu de la question
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: [
+                        // Image de la question
+                        if (currentQuestion.mediaURL != null) _buildQuestionImage(currentQuestion),
+
+                        const SizedBox(height: 20),
+
+                        // Texte de la question
+                        _buildQuestionText(currentQuestion),
+
+                        const SizedBox(height: 24),
+
+                        // Options de réponse
+                        _buildAnswerOptions(currentQuestion),
+
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Boutons d'action
+                _buildActionButtons(),
+              ],
             ),
           ),
-          const SizedBox(width: 4),
-          Icon(icon, color: color, size: 14),
         ],
       ),
     );
@@ -1283,15 +1187,25 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     final currentQuestion = _questions[_currentQuestionIndex];
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            _buildHeader(),
+      body: Stack(
+        children: [
+          // Background
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/backgrounds/img.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Column(
+              children: [
+                // Header
+                const AppHeader(),
 
-            // Question number
-            Padding(
+                // Question number
+                Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
@@ -1458,8 +1372,10 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                 ),
               ),
             ),
-          ],
-        ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

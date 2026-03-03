@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
+import '../../../../shared/widgets/app_header.dart';
 import '../../../challenge/presentation/screens/challenge_question_count_screen.dart';
 import '../../../quiz/presentation/screens/game_screen.dart';
 
@@ -249,7 +250,10 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
           SafeArea(
             child: Column(
               children: [
-                _buildHeader(),
+                AppHeader(
+                  title: 'Bienvenu(e) au mode Fiesta',
+                  onBackTap: () => Navigator.of(context).pop(),
+                ),
                 Expanded(
                   child: _isLoading
                       ? const Center(
@@ -272,143 +276,6 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
               ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Consumer<UserStateProvider>(
-      builder: (context, userState, child) {
-        return Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  // Avatar utilisateur
-                  CircleAvatar(
-                    radius: 22,
-                    backgroundColor: Colors.grey.shade300,
-                    backgroundImage: userState.avatarUrl != null
-                        ? NetworkImage(userState.avatarUrl!)
-                        : widget.avatarUrl != null
-                            ? NetworkImage(widget.avatarUrl!)
-                            : null,
-                    child: (userState.avatarUrl == null && widget.avatarUrl == null)
-                        ? const Icon(Icons.person, color: Colors.white, size: 24)
-                        : null,
-                  ),
-                  const SizedBox(width: 10),
-
-                  // Nom et niveau
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          userState.userName.isNotEmpty ? userState.userName : (widget.userName ?? 'Joueur'),
-                          style: const TextStyle(
-                            color: Colors.black87,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          userState.userLevel,
-                          style: TextStyle(
-                            color: Colors.orange.shade700,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Stats: Vies
-                  _buildStatBadge(
-                    icon: Icons.favorite,
-                    value: '${userState.lives.toString().padLeft(2, '0')}/${userState.maxLives.toString().padLeft(2, '0')}',
-                    color: Colors.red,
-                    bgColor: Colors.red.shade50,
-                  ),
-                  const SizedBox(width: 8),
-
-                  // Stats: Coins
-                  _buildStatBadge(
-                    icon: Icons.monetization_on,
-                    value: userState.coins.toString(),
-                    color: Colors.orange,
-                    bgColor: Colors.orange.shade50,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              // Titre avec bouton retour
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.of(context).pop(),
-                    child: const Icon(
-                      Icons.arrow_back,
-                      color: Colors.black87,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  const Text(
-                    'Bienvenu(e) au mode Fiesta',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildStatBadge({
-    required IconData icon,
-    required String value,
-    required Color color,
-    required Color bgColor,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            '+',
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-            ),
-          ),
-          const SizedBox(width: 2),
-          Text(
-            value,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-              color: color,
-            ),
-          ),
-          const SizedBox(width: 4),
-          Icon(icon, color: color, size: 14),
         ],
       ),
     );

@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
+import '../../../../shared/widgets/app_header.dart';
+import '../../../../shared/widgets/bottom_nav_bar.dart';
 import '../../../stage/presentation/screens/stage_mode_screen.dart';
 import '../../../fiesta/presentation/screens/fiesta_mode_screen.dart';
 import '../../../challenge/presentation/screens/challenge_question_count_screen.dart';
@@ -365,7 +367,9 @@ class _HomeScreenState extends State<HomeScreen> {
           SafeArea(
             child: Column(
               children: [
-                _buildHeader(),
+                AppHeader(
+                  onAvatarTap: () => _onNavItemTapped(3),
+                ),
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -388,113 +392,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: _buildBottomNavBar(),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Consumer<UserStateProvider>(
-      builder: (context, userState, child) {
-        return Container(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              // Avatar et info utilisateur
-              GestureDetector(
-                onTap: () => _onNavItemTapped(3), // Aller au profil
-                child: CircleAvatar(
-                  radius: 25,
-                  backgroundColor: Colors.grey.shade300,
-                  backgroundImage: userState.avatarUrl != null
-                      ? NetworkImage(userState.avatarUrl!)
-                      : widget.avatarUrl != null
-                          ? NetworkImage(widget.avatarUrl!)
-                          : null,
-                  child: (userState.avatarUrl == null && widget.avatarUrl == null)
-                      ? const Icon(Icons.person, color: Colors.white, size: 30)
-                      : null,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      userState.userName.isNotEmpty ? userState.userName : widget.userName,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      userState.userLevel,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.orange.shade700,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Stats: Vies
-              _buildStatBadge(
-                icon: Icons.favorite,
-                value: '${userState.lives.toString().padLeft(2, '0')}/${userState.maxLives.toString().padLeft(2, '0')}',
-                color: Colors.red,
-                bgColor: Colors.red.shade50,
-              ),
-              const SizedBox(width: 10),
-              // Stats: Coins
-              _buildStatBadge(
-                icon: Icons.monetization_on,
-                value: userState.coins.toString(),
-                color: Colors.orange,
-                bgColor: Colors.orange.shade50,
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildStatBadge({
-    required IconData icon,
-    required String value,
-    required Color color,
-    required Color bgColor,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            '+',
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-            ),
-          ),
-          const SizedBox(width: 2),
-          Text(
-            value,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 13,
-              color: color,
-            ),
-          ),
-          const SizedBox(width: 4),
-          Icon(icon, color: color, size: 16),
-        ],
+      bottomNavigationBar: AppBottomNavBar(
+        currentIndex: _currentNavIndex,
+        onTap: _onNavItemTapped,
       ),
     );
   }
@@ -699,53 +599,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildBottomNavBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
-        currentIndex: _currentNavIndex,
-        onTap: _onNavItemTapped,
-        selectedFontSize: 12,
-        unselectedFontSize: 12,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Accueil',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.style_outlined),
-            activeIcon: Icon(Icons.style),
-            label: 'Mes Cartes',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_bag_outlined),
-            activeIcon: Icon(Icons.shopping_bag),
-            label: 'Boutiques',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: 'Profil',
-          ),
-        ],
       ),
     );
   }
