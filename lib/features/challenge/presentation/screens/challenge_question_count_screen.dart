@@ -51,30 +51,16 @@ class _ChallengeQuestionCountScreenState
                 child: Column(
                   children: [
                     const SizedBox(height: 40),
-                    // Titre avec flèche retour
-                    Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () => Navigator.pop(context),
-                          child: const Icon(
-                            Icons.arrow_back,
-                            color: Colors.black87,
-                            size: 24,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        const Expanded(
-                          child: Text(
-                            'Definissez le nombre de questions\nqui vous convient',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black87,
-                              height: 1.4,
-                            ),
-                          ),
-                        ),
-                      ],
+                    // Titre
+                    const Text(
+                      'Definissez le nombre de questions\nqui vous convient',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black87,
+                        height: 1.4,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 40),
 
@@ -182,64 +168,91 @@ class _ChallengeQuestionCountScreenState
   Widget _buildHeader() {
     return Consumer<UserStateProvider>(
       builder: (context, userState, child) {
-        return Container(
+        return Padding(
           padding: const EdgeInsets.all(16),
-          decoration: const BoxDecoration(
-            color: Color(0xFF1A1A2E),
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(20),
-              bottomRight: Radius.circular(20),
-            ),
-          ),
-          child: Row(
+          child: Column(
             children: [
-              // Avatar
-              CircleAvatar(
-                radius: 20,
-                backgroundColor: Colors.grey.shade300,
-                backgroundImage: userState.avatarUrl != null
-                    ? NetworkImage(userState.avatarUrl!)
-                    : null,
-                child: userState.avatarUrl == null
-                    ? const Icon(Icons.person, color: Colors.white, size: 22)
-                    : null,
-              ),
-              const SizedBox(width: 10),
-              // Nom et niveau
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      userState.userName,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
+              Row(
+                children: [
+                  // Avatar utilisateur
+                  CircleAvatar(
+                    radius: 22,
+                    backgroundColor: Colors.grey.shade300,
+                    backgroundImage: userState.avatarUrl != null
+                        ? NetworkImage(userState.avatarUrl!)
+                        : null,
+                    child: userState.avatarUrl == null
+                        ? const Icon(Icons.person, color: Colors.white, size: 24)
+                        : null,
+                  ),
+                  const SizedBox(width: 10),
+
+                  // Nom et niveau
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          userState.userName.isNotEmpty ? userState.userName : 'Joueur',
+                          style: const TextStyle(
+                            color: Colors.black87,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          userState.userLevel,
+                          style: TextStyle(
+                            color: Colors.orange.shade700,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(
-                      userState.userLevel,
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 11,
-                      ),
+                  ),
+
+                  // Stats: Vies
+                  _buildStatBadge(
+                    icon: Icons.favorite,
+                    value: '${userState.lives.toString().padLeft(2, '0')}/${userState.maxLives.toString().padLeft(2, '0')}',
+                    color: Colors.red,
+                    bgColor: Colors.red.shade50,
+                  ),
+                  const SizedBox(width: 8),
+
+                  // Stats: Coins
+                  _buildStatBadge(
+                    icon: Icons.monetization_on,
+                    value: userState.coins.toString(),
+                    color: Colors.orange,
+                    bgColor: Colors.orange.shade50,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              // Titre avec bouton retour
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: const Icon(
+                      Icons.arrow_back,
+                      color: Colors.black87,
+                      size: 24,
                     ),
-                  ],
-                ),
-              ),
-              // Vies
-              _buildStatBadge(
-                icon: Icons.favorite,
-                value: '${userState.lives.toString().padLeft(2, '0')}/${userState.maxLives.toString().padLeft(2, '0')}',
-                color: Colors.red,
-              ),
-              const SizedBox(width: 8),
-              // Coins
-              _buildStatBadge(
-                icon: Icons.monetization_on,
-                value: userState.coins.toString(),
-                color: Colors.orange,
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    'Mode Challenge',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -252,12 +265,13 @@ class _ChallengeQuestionCountScreenState
     required IconData icon,
     required String value,
     required Color color,
+    required Color bgColor,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
+        color: bgColor,
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -267,16 +281,16 @@ class _ChallengeQuestionCountScreenState
             style: TextStyle(
               color: color,
               fontWeight: FontWeight.bold,
-              fontSize: 10,
+              fontSize: 12,
             ),
           ),
           const SizedBox(width: 2),
           Text(
             value,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 12,
+              color: color,
             ),
           ),
           const SizedBox(width: 4),

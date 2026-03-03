@@ -162,7 +162,9 @@ class _HomeScreenState extends State<HomeScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const ChallengeQuestionCountScreen(),
+          builder: (context) => ChallengeQuestionCountScreen(
+            token: widget.token,
+          ),
         ),
       );
     } else {
@@ -315,19 +317,12 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
     
-    // Naviguer vers le mode Fiesta avec sous-mode Challenges
+    // Naviguer vers le mode Challenge (PvP)
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => GameScreen(
-          userName: userState.userName,
-          userLevel: userState.userLevel,
-          userLives: userState.lives,
-          userCoins: userState.coins,
-          avatarUrl: userState.avatarUrl,
+        builder: (context) => ChallengeQuestionCountScreen(
           token: userState.token,
-          mode: 'fiesta',
-          nombreQuestions: 10,
         ),
       ),
     );

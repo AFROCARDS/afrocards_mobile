@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
+import '../../../challenge/presentation/screens/challenge_question_count_screen.dart';
 import '../../../quiz/presentation/screens/game_screen.dart';
 
 /// Modèle pour un sous-mode Fiesta
@@ -174,19 +175,12 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
     final subModeName = _selectedSubMode!.nom.toLowerCase();
     
     if (subModeName.contains('challenge')) {
-      // Mode Challenges - quiz avec défis quotidiens
+      // Mode Challenges - naviguer vers sélection nombre de questions
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => GameScreen(
-            userName: widget.userName,
-            userLevel: widget.userLevel,
-            userLives: widget.userLives,
-            userCoins: widget.userPoints,
-            avatarUrl: widget.avatarUrl,
+          builder: (context) => ChallengeQuestionCountScreen(
             token: widget.token,
-            nombreQuestions: 10,
-            mode: 'fiesta',
           ),
         ),
       );
@@ -208,11 +202,13 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
         ),
       );
     } else if (subModeName.contains('defier') || subModeName.contains('amis')) {
-      // Mode Défier des amis - bientôt disponible
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Mode "Défier des amis" bientôt disponible !'),
-          backgroundColor: Color(0xFF6B4EAA),
+      // Mode Défier des amis - naviguer vers Challenge
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ChallengeQuestionCountScreen(
+            token: widget.token,
+          ),
         ),
       );
     } else {
