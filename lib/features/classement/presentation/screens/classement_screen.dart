@@ -334,9 +334,8 @@ class _ClassementScreenState extends State<ClassementScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: AppBottomNavBar(
+      bottomNavigationBar: const AppBottomNavBar(
         currentIndex: 0,
-        onTap: (index) {},
       ),
     );
   }
