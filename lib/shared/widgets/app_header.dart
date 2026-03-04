@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/providers/user_state_provider.dart';
+import '../../features/profile/presentation/screens/profile_screen.dart';
 
 /// Widget réutilisable pour le header de l'application
 /// Affiche l'avatar, le nom, le niveau, les vies et les coins
@@ -35,7 +36,11 @@ class AppHeader extends StatelessWidget {
                 children: [
                   // Avatar et info utilisateur
                   GestureDetector(
-                    onTap: onAvatarTap,
+                    onTap: onAvatarTap ?? () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                      );
+                    },
                     child: CircleAvatar(
                       radius: 25,
                       backgroundColor: Colors.grey.shade300,

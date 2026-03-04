@@ -5,6 +5,7 @@ import '../../core/providers/user_state_provider.dart';
 import '../../features/home/presentation/screens/card_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/home/presentation/screens/boutique_screen.dart';
+import '../../features/profile/presentation/screens/profile_screen.dart';
 
 /// Widget réutilisable pour la barre de navigation inférieure
 class AppBottomNavBar extends StatelessWidget {
@@ -81,7 +82,13 @@ class AppBottomNavBar extends StatelessWidget {
                   (route) => false,
                 );
                 break;
-              // Les autres onglets peuvent être personnalisés ici
+              case 3:
+                // Profil
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                  (route) => false,
+                );
+                break;
             }
           }
         },
