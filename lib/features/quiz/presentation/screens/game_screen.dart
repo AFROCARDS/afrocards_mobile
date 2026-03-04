@@ -10,6 +10,7 @@ import '../../../../shared/widgets/app_header.dart';
 import '../../../challenge/presentation/screens/challenge_result_screen.dart';
 import '../../../challenge/presentation/screens/friend_challenge_result_screen.dart';
 import 'result_screen.dart';
+import 'report_question_screen.dart';
 
 /// Modèle pour une réponse
 class Answer {
@@ -1058,15 +1059,41 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildQuestionText(Question question) {
-    return Text(
-      question.texte,
-      textAlign: TextAlign.center,
-      style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
-        color: Colors.black87,
-        height: 1.4,
-      ),
+    return Column(
+      children: [
+        Text(
+          question.texte,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+            height: 1.4,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton.icon(
+            style: TextButton.styleFrom(
+              foregroundColor: Color(0xFFFF4B4B),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+            ),
+            icon: const Icon(Icons.report_gmailerrorred_rounded, size: 18),
+            label: const Text('Signaler', style: TextStyle(fontSize: 14)),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => ReportQuestionScreen(
+                    questionId: question.idQuestion,
+                    questionText: question.texte,
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
