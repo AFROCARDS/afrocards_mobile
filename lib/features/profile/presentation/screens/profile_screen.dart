@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../../../history/presentation/screens/history_screen.dart';
+import '../../../inventory/presentation/screens/inventory_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -170,7 +171,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
               ),
               const _ProfileMenuItem(title: 'Portefeuille'),
-              const _ProfileMenuItem(title: 'Mon Inventaire'),
+              _ProfileMenuItem(
+                title: 'Mon Inventaire',
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const InventoryScreen()),
+                  );
+                },
+              ),
             ],
           ),
           const SizedBox(height: 18),
