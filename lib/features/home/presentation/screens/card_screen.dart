@@ -4,11 +4,14 @@ import 'dart:convert';
 
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/services/session_service.dart';
+import '../../../../shared/widgets/app_header.dart';
+import '../../../../shared/widgets/bottom_nav_bar.dart';
+import '../../../quiz/presentation/screens/game_screen.dart';
 import 'home_screen.dart';
 
 /// Écran de sélection des centres d'intérêt (catégories)
 /// Premier écran affiché après la connexion pour personnaliser l'expérience
-class CategorySelectionScreen extends StatefulWidget {
+class CardScreen extends StatefulWidget {
   final String userName;
   final String userLevel;
   final int userPoints;
@@ -16,7 +19,7 @@ class CategorySelectionScreen extends StatefulWidget {
   final String? avatarUrl;
   final String? token;
 
-  const CategorySelectionScreen({
+  const CardScreen({
     super.key,
     required this.userName,
     this.userLevel = 'Stage 1',
@@ -27,10 +30,10 @@ class CategorySelectionScreen extends StatefulWidget {
   });
 
   @override
-  State<CategorySelectionScreen> createState() => _CategorySelectionScreenState();
+  State<CardScreen> createState() => _CardScreenState();
 }
 
-class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
+class _CardScreenState extends State<CardScreen> {
   List<dynamic> _categories = [];
   bool _isLoading = true;
   String? _error;
@@ -128,7 +131,6 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -137,112 +139,61 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
               ),
             ),
           ),
-
           SafeArea(
             child: Column(
               children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 40),
-                        _buildWelcomeSection(),
-                        const SizedBox(height: 40),
-                        _buildCategoriesSection(),
-                        const SizedBox(height: 30),
-                      ],
-                    ),
+                AppHeader(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: _showAllCategories,
+                        child: const Text('Voir plus', style: TextStyle(color: Colors.black54)),
+                      ),
+                    ],
                   ),
                 ),
-                // Bouton Continuer en bas
-                if (_selectedCategories.isNotEmpty)
-                  _buildContinueButton(),
+                Expanded(
+                  child: _isLoading
+                      ? const Center(child: CircularProgressIndicator(color: Colors.black))
+                      : GridView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 15,
+                      mainAxisSpacing: 15,
+                      childAspectRatio: 0.95,
+                    ),
+                    itemCount: _categories.length,
+                    itemBuilder: (context, index) {
+                      final category = _categories[index];
+                      return _buildCategoryCard(category);
+                    },
+                  ),
+                ),
               ],
             ),
           ),
         ],
       ),
+      bottomNavigationBar: AppBottomNavBar(
+        currentIndex: 1,
+        onTap: (index) {
+          if (index != 1) Navigator.of(context).pop();
+        },
+      ),
     );
   }
 
   Widget _buildWelcomeSection() {
-    return const Column(
-      children: [
-        Text(
-          'Bienvenu(e) sur AFROCARDS !',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        SizedBox(height: 15),
-        Text(
-          'Selectionnez votre centre d\'interet\npour commencer',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.black54,
-            height: 1.4,
-          ),
-        ),
-      ],
-    );
+    return const SizedBox.shrink();
   }
 
   Widget _buildCategoriesSection() {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Categories',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            TextButton(
-              onPressed: _showAllCategories,
-              child: const Text(
-                'Voir plus',
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 15),
-        _isLoading
-            ? const Center(
-          child: Padding(
-            padding: EdgeInsets.all(40),
-            child: CircularProgressIndicator(color: Colors.black),
-          ),
-        )
-            : GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 15,
-            mainAxisSpacing: 15,
-            childAspectRatio: 0.95,
-          ),
-          itemCount: _categories.length > 6 ? 6 : _categories.length,
-          itemBuilder: (context, index) {
-            final category = _categories[index];
-            return _buildCategoryCard(category);
-          },
-        ),
-      ],
-    );
+    // Plus utilisé, la grille est directement dans le build principal
+    return const SizedBox.shrink();
   }
 
   Widget _buildCategoryCard(dynamic category) {
@@ -250,7 +201,25 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
     final isSelected = _selectedCategories.contains(id);
 
     return GestureDetector(
-      onTap: () => _onCategorySelected(category),
+      onTap: () {
+        // Démarrer un quiz pour cette catégorie
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => GameScreen(
+              userName: widget.userName,
+              userLevel: widget.userLevel,
+              userLives: widget.userLives,
+              userCoins: null,
+              avatarUrl: widget.avatarUrl,
+              token: widget.token,
+              idCategorie: id,
+              mode: 'category',
+              nombreQuestions: 10,
+            ),
+          ),
+        );
+      },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
