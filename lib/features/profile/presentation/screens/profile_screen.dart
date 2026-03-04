@@ -7,6 +7,8 @@ import '../../../../shared/widgets/bottom_nav_bar.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../../../history/presentation/screens/history_screen.dart';
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
@@ -157,11 +159,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const SizedBox(height: 24),
           _ProfileMenuSection(
-            items: const [
-              _ProfileMenuItem(title: 'Ajouter des amis'),
-              _ProfileMenuItem(title: 'Historique Quizz'),
-              _ProfileMenuItem(title: 'Portefeuille'),
-              _ProfileMenuItem(title: 'Mon Inventaire'),
+            items: [
+              const _ProfileMenuItem(title: 'Ajouter des amis'),
+              _ProfileMenuItem(
+                title: 'Historique Quizz',
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const HistoryScreen()),
+                  );
+                },
+              ),
+              const _ProfileMenuItem(title: 'Portefeuille'),
+              const _ProfileMenuItem(title: 'Mon Inventaire'),
             ],
           ),
           const SizedBox(height: 18),
@@ -241,13 +250,14 @@ class _ProfileMenuSection extends StatelessWidget {
 
 class _ProfileMenuItem extends StatelessWidget {
   final String title;
-  const _ProfileMenuItem({required this.title});
+  final VoidCallback? onTap;
+  const _ProfileMenuItem({required this.title, this.onTap});
   @override
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(title, style: const TextStyle(fontSize: 15)),
       trailing: const Icon(Icons.chevron_right, color: Colors.black38),
-      onTap: () {},
+      onTap: onTap,
       dense: true,
       contentPadding: const EdgeInsets.symmetric(horizontal: 12),
     );
