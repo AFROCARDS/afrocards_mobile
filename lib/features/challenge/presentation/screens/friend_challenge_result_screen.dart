@@ -92,7 +92,7 @@ class _FriendChallengeResultScreenState
           token: widget.token,
         ),
       ),
-      (route) => false,
+          (route) => false,
     );
   }
 
@@ -100,7 +100,7 @@ class _FriendChallengeResultScreenState
     final message = widget.isWinner
         ? 'Je viens de battre ${widget.opponentName ?? 'mon ami'} ${widget.playerScore}-${widget.opponentScore} sur AFROCARDS! 🏆'
         : 'Belle partie contre ${widget.opponentName ?? 'mon ami'} sur AFROCARDS! Score: ${widget.playerScore}-${widget.opponentScore}';
-    
+
     Share.share(message);
   }
 
@@ -148,11 +148,8 @@ class _FriendChallengeResultScreenState
           ),
         ],
       ),
-      bottomNavigationBar: AppBottomNavBar(
+      bottomNavigationBar: const AppBottomNavBar(
         currentIndex: 0,
-        onTap: (index) {
-          // Navigation handled by nav bar
-        },
       ),
     );
   }
@@ -193,9 +190,9 @@ class _FriendChallengeResultScreenState
                     ),
                     image: winnerAvatar != null
                         ? DecorationImage(
-                            image: NetworkImage(winnerAvatar),
-                            fit: BoxFit.cover,
-                          )
+                      image: NetworkImage(winnerAvatar),
+                      fit: BoxFit.cover,
+                    )
                         : null,
                   ),
                   child: winnerAvatar == null
@@ -296,9 +293,9 @@ class _FriendChallengeResultScreenState
             ),
             image: avatarUrl != null
                 ? DecorationImage(
-                    image: NetworkImage(avatarUrl),
-                    fit: BoxFit.cover,
-                  )
+              image: NetworkImage(avatarUrl),
+              fit: BoxFit.cover,
+            )
                 : null,
           ),
           child: avatarUrl == null

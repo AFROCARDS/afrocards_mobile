@@ -129,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onGameModeSelected(dynamic mode) {
     final modeName = (mode['nom'] ?? '').toString().toLowerCase();
-    
+
     if (modeName == 'stages' || modeName == 'stage') {
       // Naviguer vers le mode Stage
       Navigator.push(
@@ -198,13 +198,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _startQuiz() {
     final userState = context.read<UserStateProvider>();
-    
+
     // Vérifier si l'utilisateur a des vies
     if (!userState.hasLives) {
       _showNoLivesDialog();
       return;
     }
-    
+
     // Lancer le quiz au niveau actuel du stage
     Navigator.push(
       context,
@@ -223,7 +223,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-  
+
   void _showNoLivesDialog() {
     showDialog(
       context: context,
@@ -275,7 +275,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-  
+
   void _buyLives() {
     final userState = context.read<UserStateProvider>();
     if (userState.buyLives(1, 50)) {
@@ -314,12 +314,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _navigateToChallenge() {
     final userState = context.read<UserStateProvider>();
-    
+
     if (!userState.hasLives) {
       _showNoLivesDialog();
       return;
     }
-    
+
     // Naviguer vers le mode Challenge (PvP)
     Navigator.push(
       context,
@@ -379,9 +379,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: AppBottomNavBar(
-        currentIndex: _currentNavIndex,
-        onTap: _onNavItemTapped,
+      bottomNavigationBar: const AppBottomNavBar(
+        currentIndex: 0,
       ),
     );
   }
@@ -410,33 +409,33 @@ class _HomeScreenState extends State<HomeScreen> {
         const SizedBox(height: 20),
         _isLoadingModes
             ? const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(20),
-                  child: CircularProgressIndicator(color: Colors.black),
-                ),
-              )
+          child: Padding(
+            padding: EdgeInsets.all(20),
+            child: CircularProgressIndicator(color: Colors.black),
+          ),
+        )
             : Row(
-                children: _gameModes.map((mode) {
-                  return Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: _buildGameModeCard(mode),
-                    ),
-                  );
-                }).toList(),
+          children: _gameModes.map((mode) {
+            return Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: _buildGameModeCard(mode),
               ),
+            );
+          }).toList(),
+        ),
       ],
     );
   }
 
   Widget _buildGameModeCard(dynamic mode) {
     final modeName = (mode['nom'] ?? '').toString().toLowerCase();
-    
+
     // Définir l'icône et les couleurs selon le mode
     IconData modeIcon;
     List<Color> gradientColors;
     Color iconBgColor;
-    
+
     if (modeName == 'stages' || modeName == 'stage') {
       modeIcon = Icons.stairs_rounded;
       gradientColors = [const Color(0xFFFFD700), const Color(0xFFFFA500)];
@@ -773,7 +772,7 @@ class _QuizBuzzerButtonState extends State<_QuizBuzzerButton>
                       ),
                     ),
                   ),
-                  
+
                   // Cercle intermédiaire (bord du bouton)
                   Container(
                     width: 180,
@@ -798,7 +797,7 @@ class _QuizBuzzerButtonState extends State<_QuizBuzzerButton>
                       ],
                     ),
                   ),
-                  
+
                   // Surface principale du buzzer
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 100),
@@ -816,34 +815,34 @@ class _QuizBuzzerButtonState extends State<_QuizBuzzerButton>
                         radius: 0.8,
                         colors: _isPressed
                             ? [
-                                const Color(0xFF7C3AED),
-                                const Color(0xFF6B4EAA),
-                                const Color(0xFF5B3E9A),
-                              ]
+                          const Color(0xFF7C3AED),
+                          const Color(0xFF6B4EAA),
+                          const Color(0xFF5B3E9A),
+                        ]
                             : [
-                                const Color(0xFFA78BFA),
-                                const Color(0xFF8B5CF6),
-                                const Color(0xFF7C3AED),
-                              ],
+                          const Color(0xFFA78BFA),
+                          const Color(0xFF8B5CF6),
+                          const Color(0xFF7C3AED),
+                        ],
                       ),
                       boxShadow: _isPressed
                           ? []
                           : [
-                              // Effet 3D - ombre interne haute
-                              BoxShadow(
-                                color: Colors.white.withOpacity(0.4),
-                                blurRadius: 0,
-                                spreadRadius: 0,
-                                offset: const Offset(-2, -2),
-                              ),
-                              // Effet 3D - ombre basse
-                              BoxShadow(
-                                color: const Color(0xFF4C1D95).withOpacity(0.8),
-                                blurRadius: 0,
-                                spreadRadius: 0,
-                                offset: const Offset(0, 6),
-                              ),
-                            ],
+                        // Effet 3D - ombre interne haute
+                        BoxShadow(
+                          color: Colors.white.withOpacity(0.4),
+                          blurRadius: 0,
+                          spreadRadius: 0,
+                          offset: const Offset(-2, -2),
+                        ),
+                        // Effet 3D - ombre basse
+                        BoxShadow(
+                          color: const Color(0xFF4C1D95).withOpacity(0.8),
+                          blurRadius: 0,
+                          spreadRadius: 0,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
                     ),
                     child: Container(
                       decoration: BoxDecoration(
@@ -855,7 +854,7 @@ class _QuizBuzzerButtonState extends State<_QuizBuzzerButton>
                       ),
                     ),
                   ),
-                  
+
                   // Reflet brillant en haut
                   Positioned(
                     top: 25,
@@ -879,7 +878,7 @@ class _QuizBuzzerButtonState extends State<_QuizBuzzerButton>
                       ),
                     ),
                   ),
-                  
+
                   // Contenu textuel
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 100),

@@ -119,9 +119,9 @@ class ChallengeMatchedScreen extends StatelessWidget {
                               ],
                               image: opponent.avatarUrl != null
                                   ? DecorationImage(
-                                      image: NetworkImage(opponent.avatarUrl!),
-                                      fit: BoxFit.cover,
-                                    )
+                                image: NetworkImage(opponent.avatarUrl!),
+                                fit: BoxFit.cover,
+                              )
                                   : null,
                             ),
                             child: opponent.avatarUrl == null
@@ -219,11 +219,8 @@ class ChallengeMatchedScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: AppBottomNavBar(
+      bottomNavigationBar: const AppBottomNavBar(
         currentIndex: 0,
-        onTap: (index) {
-          // Navigation handled by nav bar
-        },
       ),
     );
   }

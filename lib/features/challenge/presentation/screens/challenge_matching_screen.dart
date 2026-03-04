@@ -188,11 +188,8 @@ class _ChallengeMatchingScreenState extends State<ChallengeMatchingScreen>
           ),
         ],
       ),
-      bottomNavigationBar: AppBottomNavBar(
+      bottomNavigationBar: const AppBottomNavBar(
         currentIndex: 0,
-        onTap: (index) {
-          // Navigation handled by nav bar
-        },
       ),
     );
   }

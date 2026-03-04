@@ -104,7 +104,7 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen>
           token: widget.token,
         ),
       ),
-      (route) => false,
+          (route) => false,
     );
   }
 
@@ -134,11 +134,8 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen>
           ),
         ],
       ),
-      bottomNavigationBar: AppBottomNavBar(
+      bottomNavigationBar: const AppBottomNavBar(
         currentIndex: 0,
-        onTap: (index) {
-          // Navigation handled by nav bar
-        },
       ),
     );
   }
@@ -157,7 +154,7 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen>
               children: [
                 // Décorations autour du cercle
                 ..._buildDecorations(),
-                
+
                 // Cercle principal (gris simple comme dans la maquette)
                 Container(
                   width: 160,
@@ -198,7 +195,7 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen>
               ),
             ),
           ),
-          
+
           const SizedBox(height: 40),
 
           // Bouton Voir Classement

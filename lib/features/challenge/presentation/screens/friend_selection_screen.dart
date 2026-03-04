@@ -176,67 +176,64 @@ class _FriendSelectionScreenState extends State<FriendSelectionScreen> {
                 Expanded(
                   child: _isLoading
                       ? const Center(
-                          child: CircularProgressIndicator(
-                            color: Color(0xFF6B4EAA),
-                          ),
-                        )
+                    child: CircularProgressIndicator(
+                      color: Color(0xFF6B4EAA),
+                    ),
+                  )
                       : SingleChildScrollView(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
-                          child: Column(
-                            children: [
-                              const SizedBox(height: 10),
-                              // Sous-titre
-                              const Text(
-                                'ou',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-
-                              // Bouton Inviter un ami
-                              _buildInviteButton(),
-
-                              const SizedBox(height: 30),
-
-                              // Liste des amis
-                              ..._friends.map((friend) => _buildFriendCard(friend)),
-
-                              const SizedBox(height: 30),
-
-                              // Bouton Valider
-                              _buildValidateButton(),
-
-                              const SizedBox(height: 16),
-
-                              // Lien Retour au menu principal
-                              TextButton(
-                                onPressed: _returnToMainMenu,
-                                child: const Text(
-                                  'Retour au menu principal',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                              ),
-
-                              const SizedBox(height: 40),
-                            ],
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 10),
+                        // Sous-titre
+                        const Text(
+                          'ou',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.black54,
                           ),
                         ),
+                        const SizedBox(height: 20),
+
+                        // Bouton Inviter un ami
+                        _buildInviteButton(),
+
+                        const SizedBox(height: 30),
+
+                        // Liste des amis
+                        ..._friends.map((friend) => _buildFriendCard(friend)),
+
+                        const SizedBox(height: 30),
+
+                        // Bouton Valider
+                        _buildValidateButton(),
+
+                        const SizedBox(height: 16),
+
+                        // Lien Retour au menu principal
+                        TextButton(
+                          onPressed: _returnToMainMenu,
+                          child: const Text(
+                            'Retour au menu principal',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black54,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 40),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
         ],
       ),
-      bottomNavigationBar: AppBottomNavBar(
+      bottomNavigationBar: const AppBottomNavBar(
         currentIndex: 0,
-        onTap: (index) {
-          // Navigation handled by nav bar
-        },
       ),
     );
   }
@@ -300,7 +297,7 @@ class _FriendSelectionScreenState extends State<FriendSelectionScreen> {
               radius: 25,
               backgroundColor: Colors.grey[200],
               backgroundImage:
-                  friend.avatarUrl != null ? NetworkImage(friend.avatarUrl!) : null,
+              friend.avatarUrl != null ? NetworkImage(friend.avatarUrl!) : null,
               child: friend.avatarUrl == null
                   ? const Icon(Icons.person, color: Colors.grey, size: 30)
                   : null,
