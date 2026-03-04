@@ -8,6 +8,8 @@ import '../../../../core/providers/user_state_provider.dart';
 import '../../../../shared/widgets/app_header.dart';
 import '../../../../shared/widgets/bottom_nav_bar.dart';
 import '../../../quiz/presentation/screens/game_screen.dart';
+import '../../../social/presentation/screens/friends_screen.dart';
+
 
 /// Modèle pour un ami
 class Friend {
@@ -105,12 +107,8 @@ class _FriendSelectionScreenState extends State<FriendSelectionScreen> {
   }
 
   void _inviteFriend() {
-    // TODO: Implémenter l'invitation d'ami
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Fonctionnalité bientôt disponible'),
-        backgroundColor: Color(0xFF6B4EAA),
-      ),
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const FriendsScreen()),
     );
   }
 
