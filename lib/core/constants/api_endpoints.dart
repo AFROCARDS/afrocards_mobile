@@ -2,6 +2,12 @@
 /// Tous les endpoints de l'API Backend
 
 class ApiEndpoints {
+    // ========================================
+    // 🛒 BOUTIQUE
+    // ========================================
+
+    /// GET - Liste des articles de la boutique
+    static const String boutiqueArticles = '/boutique/articles';
   // ========================================
   // 🔧 CONFIGURATION DE BASE
   // ========================================

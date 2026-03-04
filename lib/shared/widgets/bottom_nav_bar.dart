@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/providers/user_state_provider.dart';
 import '../../features/home/presentation/screens/card_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
+import '../../features/home/presentation/screens/boutique_screen.dart';
 
 /// Widget réutilisable pour la barre de navigation inférieure
 class AppBottomNavBar extends StatelessWidget {
@@ -70,6 +71,13 @@ class AppBottomNavBar extends StatelessWidget {
                     avatarUrl: userState.avatarUrl,
                     token: userState.token,
                   )),
+                  (route) => false,
+                );
+                break;
+              case 2:
+                // Boutiques
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => BoutiqueScreen()),
                   (route) => false,
                 );
                 break;
