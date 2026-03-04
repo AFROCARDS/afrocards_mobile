@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import '../../../history/presentation/screens/history_screen.dart';
 import '../../../inventory/presentation/screens/inventory_screen.dart';
 import '../../../wallet/presentation/screens/wallet_screen.dart';
+import '../../../social/presentation/screens/friends_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -162,7 +163,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(height: 24),
           _ProfileMenuSection(
             items: [
-              const _ProfileMenuItem(title: 'Ajouter des amis'),
+              _ProfileMenuItem(
+                title: 'Ajouter des amis',
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const FriendsScreen()),
+                  );
+                },
+              ),
               _ProfileMenuItem(
                 title: 'Historique Quizz',
                 onTap: () {
