@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 
 import '../../../history/presentation/screens/history_screen.dart';
 import '../../../inventory/presentation/screens/inventory_screen.dart';
+import '../../../social/presentation/screens/notifications_screen.dart';
 import '../../../wallet/presentation/screens/wallet_screen.dart';
 import '../../../social/presentation/screens/friends_screen.dart';
 
@@ -192,6 +193,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => const InventoryScreen()),
+                  );
+                },
+              ),
+              _ProfileMenuItem(
+                title: 'Notifications',
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const NotificationsScreen()),
                   );
                 },
               ),
