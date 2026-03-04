@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/services/session_service.dart';
+import '../../../quiz/presentation/screens/game_screen.dart';
 import 'home_screen.dart';
 
 /// Écran de sélection des centres d'intérêt (catégories)
@@ -250,7 +251,25 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
     final isSelected = _selectedCategories.contains(id);
 
     return GestureDetector(
-      onTap: () => _onCategorySelected(category),
+      onTap: () {
+        // Démarrer un quiz pour cette catégorie
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => GameScreen(
+              userName: widget.userName,
+              userLevel: widget.userLevel,
+              userLives: widget.userLives,
+              userCoins: null,
+              avatarUrl: widget.avatarUrl,
+              token: widget.token,
+              idCategorie: id,
+              mode: 'category',
+              nombreQuestions: 10,
+            ),
+          ),
+        );
+      },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
