@@ -12,7 +12,7 @@ import '../../../fiesta/presentation/screens/fiesta_mode_screen.dart';
 import '../../../challenge/presentation/screens/challenge_question_count_screen.dart';
 import '../../../quiz/presentation/screens/game_screen.dart';
 import '../../../classement/presentation/screens/classement_screen.dart';
-import 'category_selection_screen.dart';
+import 'card_screen.dart';
 
 /// Écran principal Home avec le bouton JOUER UN QUIZZ
 /// Affiche les modes de jeu et les sections Explorez et Gagnez
@@ -333,34 +333,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onNavItemTapped(int index) {
     setState(() => _currentNavIndex = index);
-    switch (index) {
-      case 0:
-        // Déjà sur Accueil
-        break;
-      case 1:
-        // Mes Cartes : ouvrir la sélection de catégorie
-        final userState = context.read<UserStateProvider>();
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CategorySelectionScreen(
-              userName: userState.userName,
-              userLevel: userState.userLevel,
-              userPoints: userState.pointsXP,
-              userLives: userState.lives,
-              avatarUrl: userState.avatarUrl,
-              token: userState.token,
-            ),
-          ),
-        );
-        break;
-      case 2:
-        // Boutiques
-        break;
-      case 3:
-        // Profil
-        break;
-    }
+    // La navigation est maintenant gérée dans AppBottomNavBar
   }
 
   @override

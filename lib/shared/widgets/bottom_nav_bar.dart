@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../features/home/presentation/screens/card_screen.dart';
+import '../../features/home/presentation/screens/home_screen.dart';
+
 /// Widget réutilisable pour la barre de navigation inférieure
 class AppBottomNavBar extends StatelessWidget {
   /// Index de l'onglet actuellement sélectionné
@@ -33,7 +36,36 @@ class AppBottomNavBar extends StatelessWidget {
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.grey,
         currentIndex: currentIndex,
-        onTap: onTap,
+        onTap: (index) {
+          if (onTap != null) {
+            onTap!(index);
+          } else {
+            // Navigation centralisée
+            switch (index) {
+              case 0:
+                // Accueil
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => HomeScreen(
+                    userName: '',
+                    // ...existing code...
+                  )),
+                  (route) => false,
+                );
+                break;
+              case 1:
+                // Mes Cartes
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => CardScreen(
+                    userName: '',
+                    // ...existing code...
+                  )),
+                  (route) => false,
+                );
+                break;
+              // Les autres onglets peuvent être personnalisés ici
+            }
+          }
+        },
         selectedFontSize: 12,
         unselectedFontSize: 12,
         items: const [
@@ -55,7 +87,7 @@ class AppBottomNavBar extends StatelessWidget {
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
             activeIcon: Icon(Icons.person),
-          label: 'Profil',
+            label: 'Profil',
           ),
         ],
       ),
