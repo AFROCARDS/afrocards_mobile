@@ -143,22 +143,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
             child: Column(
               children: [
                 AppHeader(),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Catégories',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
-                      ),
-                      TextButton(
-                        onPressed: _showAllCategories,
-                        child: const Text('Voir plus', style: TextStyle(color: Colors.black54)),
-                      ),
-                    ],
-                  ),
-                ),
+                // ...enlever le label et le bouton 'Voir plus'
                 Expanded(
                   child: _isLoading
                       ? const Center(child: CircularProgressIndicator(color: Colors.black))
