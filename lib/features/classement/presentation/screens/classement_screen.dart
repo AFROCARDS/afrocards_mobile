@@ -7,6 +7,7 @@ import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
 import '../../../../shared/widgets/app_header.dart';
 import '../../../../shared/widgets/bottom_nav_bar.dart';
+import '../../../profile/presentation/screens/profile_screen.dart';
 
 /// Modèle pour un joueur dans le classement
 class ClassementPlayer {
@@ -281,7 +282,11 @@ class _ClassementScreenState extends State<ClassementScreen> {
             children: [
               // Header
               AppHeader(
-                onAvatarTap: () {},
+                onAvatarTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                  );
+                },
               ),
 
               // Titre avec flèche retour

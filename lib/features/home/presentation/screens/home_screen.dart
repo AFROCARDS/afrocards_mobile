@@ -7,6 +7,7 @@ import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
 import '../../../../shared/widgets/app_header.dart';
 import '../../../../shared/widgets/bottom_nav_bar.dart';
+import '../../../profile/presentation/screens/profile_screen.dart';
 import '../../../stage/presentation/screens/stage_mode_screen.dart';
 import '../../../fiesta/presentation/screens/fiesta_mode_screen.dart';
 import '../../../challenge/presentation/screens/challenge_question_count_screen.dart';
@@ -355,7 +356,11 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               children: [
                 AppHeader(
-                  onAvatarTap: () => _onNavItemTapped(3),
+                  onAvatarTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                    );
+                  },
                 ),
                 Expanded(
                   child: SingleChildScrollView(
