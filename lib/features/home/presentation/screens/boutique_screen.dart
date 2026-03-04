@@ -61,7 +61,7 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> {
           SafeArea(
             child: Column(
               children: [
-                const AppHeader(),
+                const AppHeader(centerTitle: true,),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Text(

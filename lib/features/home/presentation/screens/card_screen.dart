@@ -142,7 +142,7 @@ class _CardScreenState extends State<CardScreen> {
           SafeArea(
             child: Column(
               children: [
-                AppHeader(),
+                AppHeader(centerTitle: true,),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Row(

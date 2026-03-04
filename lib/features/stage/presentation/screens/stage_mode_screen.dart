@@ -257,7 +257,7 @@ class _StageModeScreenState extends State<StageModeScreen> {
               children: [
                 AppHeader(
                   title: 'Bienvenu(e) au mode Stage',
-                  onBackTap: () => Navigator.of(context).pop(),
+                  onBackTap: () => Navigator.of(context).pop(), centerTitle: true,
                 ),
                 Expanded(
                   child: _isLoading

@@ -20,7 +20,7 @@ class AppHeader extends StatelessWidget {
     super.key,
     this.onAvatarTap,
     this.title,
-    this.onBackTap,
+    this.onBackTap, required bool centerTitle,
   });
 
   @override

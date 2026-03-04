@@ -56,7 +56,7 @@ class _ChallengeQuestionCountScreenState
               children: [
                 AppHeader(
                   title: 'Mode Challenge',
-                  onBackTap: () => Navigator.of(context).pop(),
+                  onBackTap: () => Navigator.of(context).pop(), centerTitle: true,
                 ),
                 Expanded(
                   child: Padding(

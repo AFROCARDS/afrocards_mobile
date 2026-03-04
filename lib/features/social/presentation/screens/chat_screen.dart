@@ -98,7 +98,7 @@ class _ChatScreenState extends State<ChatScreen> {
               children: [
                 AppHeader(
                   title: widget.friendName,
-                  onBackTap: () => Navigator.of(context).pop(),
+                  centerTitle: true,
                 ),
                 Expanded(
                   child: _loading

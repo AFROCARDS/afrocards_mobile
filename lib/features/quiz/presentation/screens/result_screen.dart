@@ -236,7 +236,7 @@ class _ResultScreenState extends State<ResultScreen>
             child: Column(
               children: [
                 // Header with user info
-                const AppHeader(),
+                const AppHeader(centerTitle: true,),
 
                 // Main content
                 Expanded(

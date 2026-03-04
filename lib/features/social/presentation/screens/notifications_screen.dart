@@ -63,7 +63,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           SafeArea(
             child: Column(
               children: [
-                const AppHeader(title: 'Notifications'),
+                const AppHeader(title: 'Notifications', centerTitle: true),
                 Expanded(
                   child: _loading
                       ? const Center(child: CircularProgressIndicator())

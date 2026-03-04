@@ -169,7 +169,7 @@ class _FriendSelectionScreenState extends State<FriendSelectionScreen> {
               children: [
                 AppHeader(
                   title: 'Selectionnez un ami',
-                  onBackTap: () => Navigator.of(context).pop(),
+                  onBackTap: () => Navigator.of(context).pop(), centerTitle: true,
                 ),
                 Expanded(
                   child: _isLoading

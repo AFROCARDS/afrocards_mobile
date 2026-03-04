@@ -125,7 +125,7 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen>
           SafeArea(
             child: Column(
               children: [
-                const AppHeader(),
+                const AppHeader(centerTitle: true,),
                 Expanded(
                   child: _buildContent(),
                 ),

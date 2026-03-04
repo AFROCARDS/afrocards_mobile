@@ -93,9 +93,9 @@ class _WalletScreenState extends State<WalletScreen> {
           SafeArea(
             child: Column(
               children: [
-                AppHeader(
+                const AppHeader(
                   title: 'Mon Portefeuille',
-                  onBackTap: () => Navigator.of(context).pop(),
+                  centerTitle: true,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),

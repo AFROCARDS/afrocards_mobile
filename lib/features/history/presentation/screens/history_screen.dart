@@ -66,9 +66,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
           SafeArea(
             child: Column(
               children: [
-                AppHeader(
+                const AppHeader(
                   title: 'Historique des Quizz',
-                  onBackTap: () => Navigator.of(context).pop(),
+                  centerTitle: true,
                 ),
                 Expanded(
                   child: _loading

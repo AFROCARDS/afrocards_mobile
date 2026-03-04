@@ -257,7 +257,7 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
               children: [
                 AppHeader(
                   title: 'Bienvenu(e) au mode Fiesta',
-                  onBackTap: () => Navigator.of(context).pop(),
+                  onBackTap: () => Navigator.of(context).pop(), centerTitle: true,
                 ),
                 Expanded(
                   child: _isLoading

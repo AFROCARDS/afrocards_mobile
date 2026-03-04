@@ -131,7 +131,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
           SafeArea(
             child: Column(
               children: [
-                const AppHeader(title: 'Ajouter des amis'),
+                const AppHeader(title: 'Ajouter des amis', centerTitle: true),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   child: TextField(

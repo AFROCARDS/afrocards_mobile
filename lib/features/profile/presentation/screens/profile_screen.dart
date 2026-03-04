@@ -73,9 +73,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           SafeArea(
             child: Column(
               children: [
-                AppHeader(
+                const AppHeader(
                   title: 'Profil',
-                  onBackTap: () => Navigator.of(context).pop(),
+                  centerTitle: true,
                 ),
                 Expanded(
                   child: _loading

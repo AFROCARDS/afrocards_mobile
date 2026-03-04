@@ -77,9 +77,9 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
           SafeArea(
             child: Column(
               children: [
-                AppHeader(
+                const AppHeader(
                   title: 'Mon Inventaire',
-                  onBackTap: () => Navigator.of(context).pop(),
+                  centerTitle: true,
                 ),
                 TabBar(
                   controller: _tabController,

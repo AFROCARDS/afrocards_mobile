@@ -788,7 +788,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
             child: Column(
               children: [
                 // Header avec infos utilisateur
-                const AppHeader(),
+                const AppHeader(centerTitle: true,),
 
                 // Question counter et timer
                 _buildQuestionHeader(currentQuestion),
@@ -1229,7 +1229,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
             child: Column(
               children: [
                 // Header
-                const AppHeader(),
+                const AppHeader(centerTitle: true),
 
                 // Question number
                 Padding(

@@ -360,7 +360,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Navigator.of(context).push(
                       MaterialPageRoute(builder: (context) => const ProfileScreen()),
                     );
-                  },
+                  }, centerTitle: true,
                 ),
                 Expanded(
                   child: SingleChildScrollView(

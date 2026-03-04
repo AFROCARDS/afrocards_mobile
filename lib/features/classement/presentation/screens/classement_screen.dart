@@ -286,7 +286,7 @@ class _ClassementScreenState extends State<ClassementScreen> {
                   Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => const ProfileScreen()),
                   );
-                },
+                }, centerTitle: true,
               ),
 
               // Titre avec flèche retour
