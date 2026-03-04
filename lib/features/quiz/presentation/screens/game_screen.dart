@@ -10,7 +10,8 @@ import '../../../../shared/widgets/app_header.dart';
 import '../../../challenge/presentation/screens/challenge_result_screen.dart';
 import '../../../challenge/presentation/screens/friend_challenge_result_screen.dart';
 import 'result_screen.dart';
-import 'report_question_screen.dart';
+// import 'report_question_screen.dart';
+import 'report_question_dialog.dart';
 
 /// Modèle pour une réponse
 class Answer {
@@ -1082,13 +1083,10 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
             icon: const Icon(Icons.report_gmailerrorred_rounded, size: 18),
             label: const Text('Signaler', style: TextStyle(fontSize: 14)),
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => ReportQuestionScreen(
-                    questionId: question.idQuestion,
-                    questionText: question.texte,
-                  ),
-                ),
+              showReportQuestionDialog(
+                context: context,
+                questionId: question.idQuestion,
+                questionText: question.texte,
               );
             },
           ),

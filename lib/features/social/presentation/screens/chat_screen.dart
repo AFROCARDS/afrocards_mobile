@@ -6,7 +6,8 @@ import '../../../../shared/widgets/app_header.dart';
 import '../../../../shared/widgets/bottom_nav_bar.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'report_player_screen.dart';
+// import 'report_player_screen.dart';
+import 'report_player_dialog.dart';
 
 class ChatScreen extends StatefulWidget {
   final int friendId;
@@ -109,13 +110,10 @@ class _ChatScreenState extends State<ChatScreen> {
                       icon: const Icon(Icons.report_gmailerrorred_rounded, color: Color(0xFFFF4B4B)),
                       tooltip: 'Signaler',
                       onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => ReportPlayerScreen(
-                              playerId: widget.friendId,
-                              playerName: widget.friendName,
-                            ),
-                          ),
+                        showReportPlayerDialog(
+                          context: context,
+                          playerId: widget.friendId,
+                          playerName: widget.friendName,
                         );
                       },
                     ),
