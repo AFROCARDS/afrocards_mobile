@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../core/providers/user_state_provider.dart';
 import '../../features/home/presentation/screens/card_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 
@@ -40,14 +42,19 @@ class AppBottomNavBar extends StatelessWidget {
           if (onTap != null) {
             onTap!(index);
           } else {
-            // Navigation centralisée
+            // Navigation centralisée avec Provider
+            final userState = context.read<UserStateProvider>();
             switch (index) {
               case 0:
                 // Accueil
                 Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(builder: (context) => HomeScreen(
-                    userName: '',
-                    // ...existing code...
+                    userName: userState.userName,
+                    userLevel: userState.userLevel,
+                    userPoints: userState.pointsXP,
+                    userLives: userState.lives,
+                    avatarUrl: userState.avatarUrl,
+                    token: userState.token,
                   )),
                   (route) => false,
                 );
@@ -56,8 +63,12 @@ class AppBottomNavBar extends StatelessWidget {
                 // Mes Cartes
                 Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(builder: (context) => CardScreen(
-                    userName: '',
-                    // ...existing code...
+                    userName: userState.userName,
+                    userLevel: userState.userLevel,
+                    userPoints: userState.pointsXP,
+                    userLives: userState.lives,
+                    avatarUrl: userState.avatarUrl,
+                    token: userState.token,
                   )),
                   (route) => false,
                 );
