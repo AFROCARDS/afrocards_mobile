@@ -13,6 +13,14 @@ class UserStateProvider extends ChangeNotifier {
   String? _token;
   String _userName = 'Joueur';
   String? _avatarUrl;
+  int? _joueurId;
+
+  int? get joueurId => _joueurId;
+    /// Setter pour l'id du joueur (à appeler après récupération du profil)
+    void setJoueurId(int? id) {
+      _joueurId = id;
+      notifyListeners();
+    }
   
   // Progression
   int _pointsXP = 0;

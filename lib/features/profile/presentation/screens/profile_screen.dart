@@ -200,10 +200,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(height: 18),
           _ProfileMenuSection(
             title: 'Général',
-            items: const [
-              _ProfileMenuItem(title: 'Chat'),
-              _ProfileMenuItem(title: 'Préférences'),
-              _ProfileMenuItem(title: 'Réglages'),
+            items: [
+              _ProfileMenuItem(
+                title: 'Chat',
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const FriendsScreen(),
+                    ),
+                  );
+                },
+              ),
+              const _ProfileMenuItem(title: 'Préférences'),
+              const _ProfileMenuItem(title: 'Réglages'),
             ],
           ),
         ],

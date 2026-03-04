@@ -7,6 +7,8 @@ import '../../../../shared/widgets/bottom_nav_bar.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import 'chat_screen.dart';
+
 class FriendsScreen extends StatefulWidget {
   const FriendsScreen({Key? key}) : super(key: key);
 
@@ -199,41 +201,54 @@ class _FriendsScreenState extends State<FriendsScreen> {
       itemCount: _friends.length,
       itemBuilder: (context, idx) {
         final friend = _friends[idx];
-        return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 5,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 25,
-                backgroundColor: Colors.grey[200],
-                backgroundImage: friend['avatar'] != null ? NetworkImage(friend['avatar']) : null,
-                child: friend['avatar'] == null ? const Icon(Icons.person, color: Colors.grey, size: 30) : null,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(friend['pseudo'] ?? 'Joueur', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black87)),
-                    const SizedBox(height: 2),
-                    Text(friend['niveau'] ?? '', style: TextStyle(fontSize: 13, color: Colors.grey[600])),
-                  ],
+        return GestureDetector(
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => ChatScreen(
+                  friendId: friend['id'] ?? friend['idJoueur'],
+                  friendName: friend['pseudo'] ?? 'Joueur',
+                  friendAvatar: friend['avatar'],
                 ),
               ),
-              Text('${friend['xp'] ?? 0}XP', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black87)),
-            ],
+            );
+          },
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 5,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 25,
+                  backgroundColor: Colors.grey[200],
+                  backgroundImage: friend['avatar'] != null ? NetworkImage(friend['avatar']) : null,
+                  child: friend['avatar'] == null ? const Icon(Icons.person, color: Colors.grey, size: 30) : null,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(friend['pseudo'] ?? 'Joueur', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black87)),
+                      const SizedBox(height: 2),
+                      Text(friend['niveau'] ?? '', style: TextStyle(fontSize: 13, color: Colors.grey[600])),
+                    ],
+                  ),
+                ),
+                Text('${friend['xp'] ?? 0}XP', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black87)),
+              ],
+            ),
           ),
         );
       },
