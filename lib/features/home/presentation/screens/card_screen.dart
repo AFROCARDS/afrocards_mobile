@@ -178,11 +178,8 @@ class _CardScreenState extends State<CardScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: AppBottomNavBar(
+      bottomNavigationBar: const AppBottomNavBar(
         currentIndex: 1,
-        onTap: (index) {
-          if (index != 1) Navigator.of(context).pop();
-        },
       ),
     );
   }

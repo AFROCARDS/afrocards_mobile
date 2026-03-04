@@ -6,6 +6,7 @@ import 'dart:convert';
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
 import '../../../../shared/widgets/app_header.dart';
+import '../../../../shared/widgets/bottom_nav_bar.dart';
 import '../widgets/difficulty_selection_dialog.dart';
 import '../../../quiz/presentation/screens/game_screen.dart';
 
@@ -141,7 +142,7 @@ class _StageModeScreenState extends State<StageModeScreen> {
   List<StageLevel> _generateTestLevels() {
     final userState = context.read<UserStateProvider>();
     final maxUnlocked = userState.maxUnlockedStage;
-    
+
     return List.generate(10, (index) {
       final numero = index + 1;
       String difficulte;
@@ -175,7 +176,7 @@ class _StageModeScreenState extends State<StageModeScreen> {
   void _onLevelTap(StageLevel level) async {
     final userState = context.read<UserStateProvider>();
     final isUnlocked = level.numero <= userState.maxUnlockedStage;
-    
+
     if (!isUnlocked) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -212,7 +213,7 @@ class _StageModeScreenState extends State<StageModeScreen> {
 
   void _startLevel(StageLevel level, Difficulty difficulty) {
     debugPrint('Démarrage niveau ${level.numero} en difficulté ${difficulty.label}');
-    
+
     // Naviguer vers l'écran de quiz
     Navigator.push(
       context,
@@ -236,6 +237,9 @@ class _StageModeScreenState extends State<StageModeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: const AppBottomNavBar(
+        currentIndex: 0,
+      ),
       body: Stack(
         children: [
           // Background image
@@ -258,8 +262,8 @@ class _StageModeScreenState extends State<StageModeScreen> {
                 Expanded(
                   child: _isLoading
                       ? const Center(
-                          child: CircularProgressIndicator(color: Colors.white),
-                        )
+                    child: CircularProgressIndicator(color: Colors.white),
+                  )
                       : _buildLevelPath(),
                 ),
               ],
@@ -296,7 +300,7 @@ class _StageModeScreenState extends State<StageModeScreen> {
           padding: const EdgeInsets.only(bottom: 20),
           child: Row(
             mainAxisAlignment:
-                isLeftAligned ? MainAxisAlignment.start : MainAxisAlignment.end,
+            isLeftAligned ? MainAxisAlignment.start : MainAxisAlignment.end,
             children: [
               if (!isLeftAligned) _buildPathLine(i, reversedLevels.length),
               _buildLevelNode(level),
@@ -342,7 +346,7 @@ class _StageModeScreenState extends State<StageModeScreen> {
               mainAxisSize: MainAxisSize.min,
               children: List.generate(
                 3,
-                (i) => Icon(
+                    (i) => Icon(
                   i < stars ? Icons.star : Icons.star_border,
                   color: Colors.amber,
                   size: 18,
@@ -383,18 +387,18 @@ class _StageModeScreenState extends State<StageModeScreen> {
                 child: Center(
                   child: isLocked
                       ? Icon(
-                          Icons.lock,
-                          color: lockColor,
-                          size: 26,
-                        )
+                    Icons.lock,
+                    color: lockColor,
+                    size: 26,
+                  )
                       : Text(
-                          level.numero.toString().padLeft(2, '0'),
-                          style: const TextStyle(
-                            color: Colors.black87,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                    level.numero.toString().padLeft(2, '0'),
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
             ),

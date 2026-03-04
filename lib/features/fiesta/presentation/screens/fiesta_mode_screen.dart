@@ -6,6 +6,7 @@ import 'dart:convert';
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
 import '../../../../shared/widgets/app_header.dart';
+import '../../../../shared/widgets/bottom_nav_bar.dart';
 import '../../../challenge/presentation/screens/challenge_question_count_screen.dart';
 import '../../../challenge/presentation/screens/friend_selection_screen.dart';
 import '../../../quiz/presentation/screens/game_screen.dart';
@@ -173,9 +174,9 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
     }
 
     debugPrint('Sous-mode sélectionné: ${_selectedSubMode!.nom}');
-    
+
     final subModeName = _selectedSubMode!.nom.toLowerCase();
-    
+
     if (subModeName.contains('challenge')) {
       // Mode Challenges - naviguer vers sélection nombre de questions
       Navigator.push(
@@ -236,6 +237,9 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: const AppBottomNavBar(
+        currentIndex: 0,
+      ),
       body: Stack(
         children: [
           // Background image
@@ -258,20 +262,20 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
                 Expanded(
                   child: _isLoading
                       ? const Center(
-                          child: CircularProgressIndicator(color: Colors.black),
-                        )
+                    child: CircularProgressIndicator(color: Colors.black),
+                  )
                       : SingleChildScrollView(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            children: [
-                              const SizedBox(height: 20),
-                              _buildSubtitle(),
-                              const SizedBox(height: 30),
-                              _buildSubModesGrid(),
-                              const SizedBox(height: 40),
-                            ],
-                          ),
-                        ),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        _buildSubtitle(),
+                        const SizedBox(height: 30),
+                        _buildSubModesGrid(),
+                        const SizedBox(height: 40),
+                      ],
+                    ),
+                  ),
                 ),
                 _buildSuivantButton(),
               ],
@@ -306,7 +310,7 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
 
     // Disposition: 2 premières cartes côte à côte, la 3ème centrée en dessous
     final List<Widget> rows = [];
-    
+
     if (_subModes.length >= 2) {
       rows.add(
         Row(
@@ -347,11 +351,11 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
   Widget _buildSubModeCard(FiestaSubMode subMode) {
     final isSelected = _selectedSubMode?.idSousMode == subMode.idSousMode;
     final subModeName = subMode.nom.toLowerCase();
-    
+
     // Définir l'icône et les couleurs selon le sous-mode
     IconData modeIcon;
     List<Color> gradientColors;
-    
+
     if (subModeName.contains('challenge')) {
       modeIcon = Icons.emoji_events_rounded;
       gradientColors = [const Color(0xFFFF9800), const Color(0xFFFF5722)];
