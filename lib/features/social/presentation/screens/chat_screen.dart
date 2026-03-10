@@ -5,6 +5,7 @@ import '../../../../core/providers/user_state_provider.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'report_player_dialog.dart';
+import 'player_profile_screen.dart';
 
 class ChatScreen extends StatefulWidget {
   final int friendId;
@@ -167,7 +168,11 @@ class _ChatScreenState extends State<ChatScreen> {
               color: const Color(0xFF2196F3),
               onTap: () {
                 Navigator.pop(context);
-                // TODO: Navigate to friend profile
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => PlayerProfileScreen(idJoueur: widget.friendId),
+                  ),
+                );
               },
             ),
             _buildOptionTile(

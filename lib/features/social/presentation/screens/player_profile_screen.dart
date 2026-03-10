@@ -61,13 +61,20 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
     }
 
     try {
+      final url = ApiEndpoints.buildUrl(ApiEndpoints.profilJoueur(widget.idJoueur));
+      debugPrint('🔍 [PlayerProfile] URL: $url');
+      debugPrint('🔍 [PlayerProfile] idJoueur: ${widget.idJoueur}');
+      
       final response = await http.get(
-        Uri.parse(ApiEndpoints.buildUrl(ApiEndpoints.profilJoueur(widget.idJoueur))),
+        Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
       );
+
+      debugPrint('🔍 [PlayerProfile] Status: ${response.statusCode}');
+      debugPrint('🔍 [PlayerProfile] Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -93,14 +100,17 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
           _loading = false;
         });
       } else {
+        final data = jsonDecode(response.body);
         setState(() {
-          _error = 'Erreur de chargement';
+          _error = 'Erreur ${response.statusCode}: ${data['message'] ?? response.body}';
           _loading = false;
         });
       }
-    } catch (e) {
+    } catch (e, stack) {
+      debugPrint('❌ [PlayerProfile] Exception: $e');
+      debugPrint('❌ [PlayerProfile] Stack: $stack');
       setState(() {
-        _error = 'Erreur réseau';
+        _error = 'Erreur: $e';
         _loading = false;
       });
     }
