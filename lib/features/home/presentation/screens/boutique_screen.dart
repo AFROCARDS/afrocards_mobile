@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'dart:convert';
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
+import '../../../../shared/widgets/app_header.dart';
+import '../../../../shared/widgets/bottom_nav_bar.dart';
 
 /// Couleurs du design (identiques à profile_screen)
 class _DesignColors {
@@ -448,8 +450,11 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
           SafeArea(
             child: Column(
               children: [
-                // Custom Header (style profile_screen)
-                _buildHeader(userState),
+                // Header
+                const AppHeader(
+                  title: 'Boutique',
+                  centerTitle: true,
+                ),
                 
                 const SizedBox(height: 16),
                 
@@ -482,6 +487,7 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
           ),
         ],
       ),
+      bottomNavigationBar: const AppBottomNavBar(currentIndex: 2),
     );
   }
 

@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/services/session_service.dart';
+import '../../../../shared/widgets/app_header.dart';
 import '../../../../shared/widgets/bottom_nav_bar.dart';
 import '../../../quiz/presentation/screens/game_screen.dart';
 import 'home_screen.dart';
@@ -177,8 +178,11 @@ class _CardScreenState extends State<CardScreen> {
           SafeArea(
             child: Column(
               children: [
-                // Header (style profile_screen)
-                _buildHeader(),
+                // Header
+                const AppHeader(
+                  title: 'Mes Cartes',
+                  centerTitle: true,
+                ),
                 
                 const SizedBox(height: 16),
                 
