@@ -119,36 +119,114 @@ class _HistoryScreenState extends State<HistoryScreen> {
 class _HistoryCard extends StatelessWidget {
   final Map<String, dynamic> data;
   const _HistoryCard({required this.data});
+  
   @override
   Widget build(BuildContext context) {
-    final mode = data['modeJeu'] ?? data['statut'] ?? '';
-    final adversaire = data['adversaire'] ?? data['nomAdversaire'] ?? '';
-    final xp = data['xpGagne'] ?? data['xp'] ?? 0;
-    final coins = data['coinsGagnes'] ?? data['coins'] ?? 0;
-    final avatar = data['avatarAdversaire'] ?? null;
-    final score = data['score'] ?? null;
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundImage: avatar != null ? NetworkImage(avatar) : null,
-        child: avatar == null ? const Icon(Icons.person) : null,
-      ),
-      title: Text(
-        mode.toString().toLowerCase().contains('duel')
-            ? 'Duel contre $adversaire'
-            : mode.toString().toLowerCase().contains('challenge')
-                ? 'Challenge ${adversaire.isNotEmpty ? adversaire : ''}'
-                : 'Mode ${mode ?? ''}${score != null ? '-Stage $score' : ''}',
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (xp != 0) Text('+$xp XP', style: const TextStyle(color: Color(0xFF9C27B0), fontWeight: FontWeight.bold)),
-          if (coins != 0) Text('+$coins Coins', style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+    final mode = data['modeJeu'] ?? '';
+    final adversaire = data['nomAdversaire'] ?? '';
+    final xp = data['xpGagne'] ?? 0;
+    final coins = data['coinsGagnes'] ?? 0;
+    final avatar = data['avatarAdversaire'];
+    final bonnesReponses = data['bonnesReponses'] ?? 0;
+    final totalQuestions = data['totalQuestions'] ?? 10;
+    final niveauStage = data['niveauStage'];
+    
+    // Construire le titre selon le mode
+    String titre;
+    if (mode.toLowerCase().contains('défi') || mode.toLowerCase().contains('duel')) {
+      titre = 'Duel contre ${adversaire.isNotEmpty ? adversaire : 'Joueur'}';
+    } else if (mode.toLowerCase().contains('challenge')) {
+      titre = 'Challenge ${adversaire.isNotEmpty ? adversaire : ''}';
+    } else if (mode.toLowerCase().contains('stage')) {
+      titre = 'Mode Stage${niveauStage != null ? '-Stage $niveauStage' : ''}';
+    } else {
+      titre = 'Mode ${mode.isNotEmpty ? mode : 'Quiz'}';
+    }
+    
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.9),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Row(
+        children: [
+          // Avatar
+          CircleAvatar(
+            radius: 28,
+            backgroundColor: Colors.grey.shade200,
+            backgroundImage: avatar != null && avatar.isNotEmpty
+                ? NetworkImage(avatar)
+                : null,
+            child: avatar == null || avatar.isEmpty
+                ? Icon(
+                    mode.toLowerCase().contains('stage') 
+                        ? Icons.emoji_events 
+                        : Icons.person,
+                    color: Colors.grey.shade400,
+                    size: 28,
+                  )
+                : null,
+          ),
+          const SizedBox(width: 14),
+          
+          // Titre
+          Expanded(
+            child: Text(
+              titre,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          
+          // XP et Coins/Score
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (xp > 0)
+                Text(
+                  '+${xp}XP',
+                  style: const TextStyle(
+                    color: Color(0xFFFFB300), // Jaune/Orange
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              const SizedBox(height: 2),
+              if (coins > 0)
+                Text(
+                  '+${coins}Coins',
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontSize: 13,
+                  ),
+                )
+              else if (mode.toLowerCase().contains('stage'))
+                Text(
+                  '$bonnesReponses/$totalQuestions',
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontSize: 13,
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
