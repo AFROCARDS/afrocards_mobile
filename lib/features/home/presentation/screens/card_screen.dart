@@ -230,59 +230,6 @@ class _CardScreenState extends State<CardScreen> {
     );
   }
 
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      child: Row(
-        children: [
-          // Title section
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Mes Cartes',
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    color: _DesignColors.textDark,
-                  ),
-                ),
-                Text(
-                  'Choisissez une catégorie pour jouer',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: _DesignColors.textMuted,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          
-          // Refresh button (style profile_screen)
-          GestureDetector(
-            onTap: _loadCategories,
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: const Icon(Icons.refresh, size: 22, color: _DesignColors.textDark),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildStatsCard() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
