@@ -11,6 +11,17 @@ import '../../../challenge/presentation/screens/challenge_question_count_screen.
 import '../../../challenge/presentation/screens/friend_selection_screen.dart';
 import '../../../quiz/presentation/screens/game_screen.dart';
 
+/// Couleurs du design (identiques à profile_screen)
+class _DesignColors {
+  static const Color primary = Color(0xFFFFB74D);
+  static const Color secondary = Color(0xFF9C27B0);
+  static const Color cyan = Color(0xFF00BCD4);
+  static const Color pink = Color(0xFFE91E63);
+  static const Color orange = Color(0xFFFF9800);
+  static const Color textDark = Color(0xFF2D3436);
+  static const Color textMuted = Color(0xFF636E72);
+}
+
 /// Modèle pour un sous-mode Fiesta
 class FiestaSubMode {
   final int idSousMode;
@@ -107,7 +118,6 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
       setState(() {
         _error = e.toString();
         _isLoading = false;
-        // Données de test en cas d'erreur
         _subModes = _generateTestSubModes();
       });
     }
@@ -149,13 +159,38 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(subMode.nom),
-        content: Text(subMode.description ?? 'Aucune description disponible'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        backgroundColor: Colors.white,
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: _DesignColors.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.info_outline, color: _DesignColors.primary, size: 24),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                subMode.nom,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: _DesignColors.textDark),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          subMode.description ?? 'Aucune description disponible',
+          style: const TextStyle(color: _DesignColors.textMuted, fontSize: 14, height: 1.5),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Fermer', style: TextStyle(color: Colors.black)),
+            style: TextButton.styleFrom(
+              foregroundColor: _DesignColors.textMuted,
+            ),
+            child: const Text('Fermer', style: TextStyle(fontWeight: FontWeight.w600)),
           ),
         ],
       ),
@@ -165,9 +200,25 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
   void _onSuivantPressed() {
     if (_selectedSubMode == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Veuillez sélectionner un mode de jeu'),
-          backgroundColor: Colors.orange,
+        SnackBar(
+          content: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.warning_amber_rounded, color: Colors.white, size: 20),
+              ),
+              const SizedBox(width: 12),
+              const Text('Veuillez sélectionner un mode de jeu'),
+            ],
+          ),
+          backgroundColor: _DesignColors.orange,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          margin: const EdgeInsets.all(16),
         ),
       );
       return;
@@ -178,7 +229,6 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
     final subModeName = _selectedSubMode!.nom.toLowerCase();
 
     if (subModeName.contains('challenge')) {
-      // Mode Challenges - naviguer vers sélection nombre de questions
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -188,7 +238,6 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
         ),
       );
     } else if (subModeName.contains('aleatoire') || subModeName.contains('aléatoire')) {
-      // Mode Aléatoire - questions de toutes catégories
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -205,7 +254,6 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
         ),
       );
     } else if (subModeName.contains('defier') || subModeName.contains('amis')) {
-      // Mode Défier des amis - naviguer vers sélection d'ami
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -215,7 +263,6 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
         ),
       );
     } else {
-      // Autres modes - quiz aléatoire par défaut
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -237,12 +284,9 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: const AppBottomNavBar(
-        currentIndex: 0,
-      ),
+      bottomNavigationBar: const AppBottomNavBar(currentIndex: 0),
       body: Stack(
         children: [
-          // Background image
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -251,33 +295,19 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
               ),
             ),
           ),
-
           SafeArea(
             child: Column(
               children: [
                 AppHeader(
-                  title: 'Bienvenu(e) au mode Fiesta',
-                  onBackTap: () => Navigator.of(context).pop(), centerTitle: true,
+                  onBackTap: () => Navigator.of(context).pop(),
                 ),
                 Expanded(
                   child: _isLoading
-                      ? const Center(
-                    child: CircularProgressIndicator(color: Colors.black),
-                  )
-                      : SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 20),
-                        _buildSubtitle(),
-                        const SizedBox(height: 30),
-                        _buildSubModesGrid(),
-                        const SizedBox(height: 40),
-                      ],
-                    ),
-                  ),
+                      ? const Center(child: CircularProgressIndicator(color: _DesignColors.primary))
+                      : _error != null && _subModes.isEmpty
+                          ? _buildErrorState()
+                          : _buildContent(),
                 ),
-                _buildSuivantButton(),
               ],
             ),
           ),
@@ -286,152 +316,262 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
     );
   }
 
-  Widget _buildSubtitle() {
-    return const Text(
-      'Selectionnez le mode de jeu qui vous\ny convient',
-      textAlign: TextAlign.center,
-      style: TextStyle(
-        fontSize: 16,
-        color: Colors.black87,
-        height: 1.4,
-      ),
-    );
-  }
-
-  Widget _buildSubModesGrid() {
-    if (_subModes.isEmpty) {
-      return const Center(
-        child: Text(
-          'Aucun mode disponible',
-          style: TextStyle(color: Colors.grey),
-        ),
-      );
-    }
-
-    // Disposition: 2 premières cartes côte à côte, la 3ème centrée en dessous
-    final List<Widget> rows = [];
-
-    if (_subModes.length >= 2) {
-      rows.add(
-        Row(
-          children: [
-            Expanded(child: _buildSubModeCard(_subModes[0])),
-            const SizedBox(width: 15),
-            Expanded(child: _buildSubModeCard(_subModes[1])),
-          ],
-        ),
-      );
-    } else if (_subModes.length == 1) {
-      rows.add(
-        Center(
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.45,
-            child: _buildSubModeCard(_subModes[0]),
-          ),
-        ),
-      );
-    }
-
-    // Ajouter les modes restants (à partir du 3ème) centrés
-    for (int i = 2; i < _subModes.length; i++) {
-      rows.add(const SizedBox(height: 15));
-      rows.add(
-        Center(
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.45,
-            child: _buildSubModeCard(_subModes[i]),
-          ),
-        ),
-      );
-    }
-
-    return Column(children: rows);
-  }
-
-  Widget _buildSubModeCard(FiestaSubMode subMode) {
-    final isSelected = _selectedSubMode?.idSousMode == subMode.idSousMode;
-    final subModeName = subMode.nom.toLowerCase();
-
-    // Définir l'icône et les couleurs selon le sous-mode
-    IconData modeIcon;
-    List<Color> gradientColors;
-
-    if (subModeName.contains('challenge')) {
-      modeIcon = Icons.emoji_events_rounded;
-      gradientColors = [const Color(0xFFFF9800), const Color(0xFFFF5722)];
-    } else if (subModeName.contains('aleatoire') || subModeName.contains('aléatoire')) {
-      modeIcon = Icons.casino_rounded;
-      gradientColors = [const Color(0xFF00BCD4), const Color(0xFF0097A7)];
-    } else if (subModeName.contains('defier') || subModeName.contains('amis')) {
-      modeIcon = Icons.people_alt_rounded;
-      gradientColors = [const Color(0xFFE91E63), const Color(0xFF9C27B0)];
-    } else {
-      modeIcon = Icons.star_rounded;
-      gradientColors = [const Color(0xFF6B4EAA), const Color(0xFF9C27B0)];
-    }
-
-    return GestureDetector(
-      onTap: () => _onSubModeSelected(subMode),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(20),
+  Widget _buildErrorState() {
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(24),
-          border: isSelected
-              ? Border.all(color: gradientColors[0], width: 2.5)
-              : null,
           boxShadow: [
             BoxShadow(
-              color: isSelected
-                  ? gradientColors[0].withOpacity(0.3)
-                  : Colors.black.withOpacity(0.08),
-              blurRadius: isSelected ? 20 : 15,
-              offset: const Offset(0, 8),
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Icône avec gradient
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: _DesignColors.pink.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.error_outline, size: 48, color: _DesignColors.pink),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Erreur de chargement',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _DesignColors.textDark),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Impossible de charger les modes de jeu',
+              style: TextStyle(color: _DesignColors.textMuted, fontSize: 14),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: _loadSubModes,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Réessayer'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _DesignColors.primary,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent() {
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              children: [
+                const SizedBox(height: 10),
+                _buildHeaderCard(),
+                const SizedBox(height: 24),
+                _buildSubModesSection(),
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
+        ),
+        _buildSuivantButton(),
+      ],
+    );
+  }
+
+  Widget _buildHeaderCard() {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  _DesignColors.primary.withOpacity(0.2),
+                  _DesignColors.orange.withOpacity(0.1),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.celebration_rounded, size: 40, color: _DesignColors.primary),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Mode Fiesta',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: _DesignColors.textDark,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Sélectionnez le mode de jeu\nqui vous convient',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              color: _DesignColors.textMuted,
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSubModesSection() {
+    if (_subModes.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: const Center(
+          child: Text(
+            'Aucun mode disponible',
+            style: TextStyle(color: _DesignColors.textMuted),
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      children: _subModes.map((subMode) => Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: _buildSubModeCard(subMode),
+      )).toList(),
+    );
+  }
+
+  Widget _buildSubModeCard(FiestaSubMode subMode) {
+    final isSelected = _selectedSubMode?.idSousMode == subMode.idSousMode;
+    final subModeName = subMode.nom.toLowerCase();
+
+    IconData modeIcon;
+    Color accentColor;
+
+    if (subModeName.contains('challenge')) {
+      modeIcon = Icons.emoji_events_rounded;
+      accentColor = _DesignColors.orange;
+    } else if (subModeName.contains('aleatoire') || subModeName.contains('aléatoire')) {
+      modeIcon = Icons.casino_rounded;
+      accentColor = _DesignColors.cyan;
+    } else if (subModeName.contains('defier') || subModeName.contains('amis')) {
+      modeIcon = Icons.people_alt_rounded;
+      accentColor = _DesignColors.pink;
+    } else {
+      modeIcon = Icons.star_rounded;
+      accentColor = _DesignColors.secondary;
+    }
+
+    return GestureDetector(
+      onTap: () => _onSubModeSelected(subMode),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: isSelected
+              ? Border.all(color: accentColor, width: 2.5)
+              : Border.all(color: Colors.grey.shade100, width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: isSelected
+                  ? accentColor.withOpacity(0.2)
+                  : Colors.black.withOpacity(0.05),
+              blurRadius: isSelected ? 16 : 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            // Icône
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              width: isSelected ? 85 : 75,
-              height: isSelected ? 85 : 75,
+              width: 56,
+              height: 56,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: gradientColors,
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: gradientColors[0].withOpacity(0.4),
-                    blurRadius: 15,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
+                color: accentColor.withOpacity(isSelected ? 0.15 : 0.1),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(
                 modeIcon,
-                size: isSelected ? 40 : 35,
-                color: Colors.white,
+                size: 28,
+                color: accentColor,
               ),
             ),
-            const SizedBox(height: 16),
-            // Nom du mode
-            Text(
-              subMode.nom,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: isSelected ? gradientColors[0] : Colors.black87,
+            const SizedBox(width: 16),
+            // Texte
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    subMode.nom,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: isSelected ? accentColor : _DesignColors.textDark,
+                    ),
+                  ),
+                  if (subMode.description != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      subMode.description!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: _DesignColors.textMuted,
+                        height: 1.3,
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(width: 12),
             // Indicateur de sélection
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
@@ -439,14 +579,14 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
               height: 24,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isSelected ? gradientColors[0] : Colors.grey.shade200,
+                color: isSelected ? accentColor : Colors.transparent,
                 border: Border.all(
-                  color: isSelected ? gradientColors[0] : Colors.grey.shade300,
+                  color: isSelected ? accentColor : Colors.grey.shade300,
                   width: 2,
                 ),
               ),
               child: isSelected
-                  ? const Icon(Icons.check, size: 16, color: Colors.white)
+                  ? const Icon(Icons.check, size: 14, color: Colors.white)
                   : null,
             ),
           ],
@@ -456,27 +596,39 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
   }
 
   Widget _buildSuivantButton() {
-    return Padding(
+    return Container(
       padding: const EdgeInsets.all(20),
-      child: SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: _onSuivantPressed,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFFFB74D), // Orange primaire
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-            ),
-            elevation: 0,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -4),
           ),
-          child: const Text(
-            'Suivant',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 1,
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: _onSuivantPressed,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _DesignColors.primary,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 0,
+            ),
+            child: const Text(
+              'Suivant',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),
