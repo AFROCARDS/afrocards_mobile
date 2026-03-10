@@ -393,8 +393,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ],
                         ),
                       ],
-                                            // Bio
-                      if (bio != null && bio.isNotEmpty) ..[
+                      
+                      // Bio
+                      if (bio != null && bio.isNotEmpty) ...[
                         const SizedBox(height: 8),
                         Text(
                           bio,
@@ -406,7 +407,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                       ],
-                                            const SizedBox(height: 12),
+                      
+                      const SizedBox(height: 12),
                       
                       // Badge
                       Container(
