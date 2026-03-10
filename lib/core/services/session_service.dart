@@ -50,12 +50,15 @@ class SessionService {
   // 👤 DONNÉES UTILISATEUR PRATIQUES
   // ========================================
 
-  /// Nom de l'utilisateur
+  /// Pseudo du joueur (priorité sur le nom utilisateur)
   String get userName {
-    return _cachedUserData?['nom'] ?? 
-           _cachedProfileData?['pseudo'] ?? 
+    return _cachedProfileData?['pseudo'] ?? 
+           _cachedUserData?['nom'] ?? 
            'Joueur';
   }
+
+  /// ID du joueur
+  int? get joueurId => _cachedProfileData?['id'] ?? _cachedProfileData?['idJoueur'];
 
   /// Niveau de l'utilisateur (ex: "Stage 1-98XP")
   String get userLevel {

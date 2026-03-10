@@ -85,9 +85,14 @@ class _LoginScreenState extends State<LoginScreen> {
           final userState = context.read<UserStateProvider>();
           await userState.initialize(
             token: token ?? '',
-            userName: utilisateur?['nom'] ?? profil?['pseudo'] ?? 'Joueur',
+            userName: profil?['pseudo'] ?? utilisateur?['nom'] ?? 'Joueur',
             avatarUrl: profil?['avatarURL'],
           );
+          
+          // Stocker l'ID du joueur
+          if (profil?['id'] != null) {
+            userState.setJoueurId(profil['id']);
+          }
           
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -102,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
             context,
             MaterialPageRoute(
               builder: (context) => CategorySelectionScreen(
-                userName: utilisateur?['nom'] ?? profil?['pseudo'] ?? 'Joueur',
+                userName: profil?['pseudo'] ?? utilisateur?['nom'] ?? 'Joueur',
                 userLevel: userState.userLevel,
                 userPoints: userState.coins,
                 userLives: userState.lives,

@@ -295,8 +295,8 @@ class ApiEndpoints {
   /// POST - Démarrer un quiz aléatoire
   static const String startRandomQuiz = '/fiesta/random/start';
 
-  /// GET - Liste des amis pour défier
-  static const String friendsToChallenge = '/fiesta/friends';
+  /// GET - Liste des amis pour défier (utilise l'API social/amis)
+  static const String friendsToChallenge = '/social/amis';
 
   /// POST - Envoyer un défi à un ami
   static String challengeFriend(int friendId) => '/fiesta/friends/$friendId/challenge';

@@ -28,11 +28,15 @@ class Friend {
   });
 
   factory Friend.fromJson(Map<String, dynamic> json) {
+    // Construire le niveau affiché
+    final niveauStage = json['niveauStage'] ?? json['niveau'] ?? 1;
+    final niveauStr = niveauStage is String ? niveauStage : 'Stage $niveauStage';
+    
     return Friend(
       id: json['idJoueur'] ?? json['id'] ?? 0,
       nom: json['pseudo'] ?? json['nom'] ?? 'Ami',
-      niveau: json['niveau'] ?? 'Stage 1',
-      xp: json['xpTotal'] ?? json['xp'] ?? 0,
+      niveau: niveauStr,
+      xp: json['totalXP'] ?? json['xpTotal'] ?? json['xp'] ?? 0,
       avatarUrl: json['avatarURL'] ?? json['avatar'],
     );
   }
@@ -67,16 +71,33 @@ class _FriendSelectionScreenState extends State<FriendSelectionScreen> {
     setState(() => _isLoading = true);
 
     try {
+      // Récupérer le token depuis le provider si non fourni
+      final userState = context.read<UserStateProvider>();
+      final token = widget.token ?? userState.token;
+      
+      if (token == null) {
+        debugPrint('⚠️ Pas de token disponible');
+        setState(() {
+          _friends = _generateMockFriends();
+          _isLoading = false;
+        });
+        return;
+      }
+
       final response = await http.get(
-        Uri.parse('${ApiEndpoints.baseUrl}${ApiEndpoints.friendsToChallenge}'),
+        Uri.parse(ApiEndpoints.buildUrl(ApiEndpoints.friendsToChallenge)),
         headers: {
           'Content-Type': 'application/json',
-          if (widget.token != null) 'Authorization': 'Bearer ${widget.token}',
+          'Authorization': 'Bearer $token',
         },
       );
 
+      debugPrint('📡 Réponse amis: ${response.statusCode}');
+      
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+        debugPrint('📦 Data amis: ${data['data']?.length ?? 0} amis');
+        
         if (data['success'] == true && data['data'] != null) {
           final friendsList = data['data'] as List;
           setState(() {
@@ -85,9 +106,11 @@ class _FriendSelectionScreenState extends State<FriendSelectionScreen> {
           });
           return;
         }
+      } else {
+        debugPrint('❌ Erreur API: ${response.body}');
       }
     } catch (e) {
-      debugPrint('Erreur chargement amis: $e');
+      debugPrint('❌ Erreur chargement amis: $e');
     }
 
     // Fallback: générer des amis fictifs
