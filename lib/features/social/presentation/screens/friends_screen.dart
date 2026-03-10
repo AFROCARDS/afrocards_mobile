@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'chat_screen.dart';
+import 'player_profile_screen.dart';
 
 class FriendsScreen extends StatefulWidget {
   const FriendsScreen({Key? key}) : super(key: key);
@@ -394,22 +395,19 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
     );
   }
 
+  void _navigateToProfile(int idJoueur) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => PlayerProfileScreen(idJoueur: idJoueur),
+      ),
+    );
+  }
+
   Widget _buildFriendCard(Map<String, dynamic> friend) {
     final xp = friend['totalXP'] ?? friend['pointsXP'] ?? 0;
+    final idJoueur = friend['idJoueur'] ?? friend['id'];
     
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => ChatScreen(
-              friendId: friend['idJoueur'] ?? friend['id'],
-              friendName: friend['pseudo'] ?? 'Joueur',
-              friendAvatar: friend['avatarURL'],
-            ),
-          ),
-        );
-      },
-      child: Container(
+    return Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -425,32 +423,35 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
         ),
         child: Row(
           children: [
-            // Avatar avec bordure
-            Container(
-              padding: const EdgeInsets.all(3),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [
-                    const Color(0xFFFFB74D).withOpacity(0.5),
-                    const Color(0xFFFFB74D),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+            // Avatar avec bordure (tap pour voir profil)
+            GestureDetector(
+              onTap: () => _navigateToProfile(idJoueur),
+              child: Container(
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [
+                      const Color(0xFFFFB74D).withOpacity(0.5),
+                      const Color(0xFFFFB74D),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                 ),
-              ),
-              child: CircleAvatar(
-                radius: 28,
-                backgroundColor: Colors.white,
                 child: CircleAvatar(
-                  radius: 26,
-                  backgroundColor: Colors.grey.shade200,
-                  backgroundImage: friend['avatarURL'] != null
-                      ? NetworkImage(friend['avatarURL'])
-                      : null,
-                  child: friend['avatarURL'] == null
-                      ? Icon(Icons.person, color: Colors.grey.shade400, size: 28)
-                      : null,
+                  radius: 28,
+                  backgroundColor: Colors.white,
+                  child: CircleAvatar(
+                    radius: 26,
+                    backgroundColor: Colors.grey.shade200,
+                    backgroundImage: friend['avatarURL'] != null
+                        ? NetworkImage(friend['avatarURL'])
+                        : null,
+                    child: friend['avatarURL'] == null
+                        ? Icon(Icons.person, color: Colors.grey.shade400, size: 28)
+                        : null,
+                  ),
                 ),
               ),
             ),
@@ -523,23 +524,52 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
               ),
             ),
             
-            // Bouton chat
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFB74D).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
+            // Bouton voir profil
+            GestureDetector(
+              onTap: () => _navigateToProfile(idJoueur),
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF9C27B0).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.person,
+                  color: Color(0xFF9C27B0),
+                  size: 22,
+                ),
               ),
-              child: const Icon(
-                Icons.chat_bubble_rounded,
-                color: Color(0xFFFFB74D),
-                size: 22,
+            ),
+            const SizedBox(width: 8),
+            // Bouton chat
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ChatScreen(
+                      friendId: idJoueur,
+                      friendName: friend['pseudo'] ?? 'Joueur',
+                      friendAvatar: friend['avatarURL'],
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFB74D).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.chat_bubble_rounded,
+                  color: Color(0xFFFFB74D),
+                  size: 22,
+                ),
               ),
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildPendingRequestsList() {
@@ -568,6 +598,7 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
   Widget _buildRequestCard(Map<String, dynamic> request) {
     final demandeur = request['demandeur'] ?? {};
     final xp = demandeur['totalXP'] ?? demandeur['pointsXP'] ?? 0;
+    final idJoueur = demandeur['idJoueur'];
     
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -585,32 +616,35 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
       ),
       child: Row(
         children: [
-          // Avatar
-          Container(
-            padding: const EdgeInsets.all(3),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [
-                  const Color(0xFFE91E63).withOpacity(0.5),
-                  const Color(0xFFE91E63),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+          // Avatar (tap pour voir profil)
+          GestureDetector(
+            onTap: idJoueur != null ? () => _navigateToProfile(idJoueur) : null,
+            child: Container(
+              padding: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [
+                    const Color(0xFFE91E63).withOpacity(0.5),
+                    const Color(0xFFE91E63),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
               ),
-            ),
-            child: CircleAvatar(
-              radius: 28,
-              backgroundColor: Colors.white,
               child: CircleAvatar(
-                radius: 26,
-                backgroundColor: Colors.grey.shade200,
-                backgroundImage: demandeur['avatarURL'] != null
-                    ? NetworkImage(demandeur['avatarURL'])
-                    : null,
-                child: demandeur['avatarURL'] == null
-                    ? Icon(Icons.person, color: Colors.grey.shade400, size: 28)
-                    : null,
+                radius: 28,
+                backgroundColor: Colors.white,
+                child: CircleAvatar(
+                  radius: 26,
+                  backgroundColor: Colors.grey.shade200,
+                  backgroundImage: demandeur['avatarURL'] != null
+                      ? NetworkImage(demandeur['avatarURL'])
+                      : null,
+                  child: demandeur['avatarURL'] == null
+                      ? Icon(Icons.person, color: Colors.grey.shade400, size: 28)
+                      : null,
+                ),
               ),
             ),
           ),
@@ -702,42 +736,45 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
   Widget _buildSearchResultCard(Map<String, dynamic> user) {
     final statut = user['statut'] ?? 'inconnu';
     final xp = user['totalXP'] ?? user['pointsXP'] ?? 0;
+    final idJoueur = user['idJoueur'];
     
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Avatar
-          Container(
-            padding: const EdgeInsets.all(3),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.grey.shade300,
+    return GestureDetector(
+      onTap: idJoueur != null ? () => _navigateToProfile(idJoueur) : null,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
             ),
-            child: CircleAvatar(
-              radius: 28,
-              backgroundColor: Colors.white,
+          ],
+        ),
+        child: Row(
+          children: [
+            // Avatar (tap pour voir profil)
+            Container(
+              padding: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey.shade300,
+              ),
               child: CircleAvatar(
-                radius: 26,
-                backgroundColor: Colors.grey.shade200,
-                backgroundImage: user['avatarURL'] != null
-                    ? NetworkImage(user['avatarURL'])
-                    : null,
-                child: user['avatarURL'] == null
-                    ? Icon(Icons.person, color: Colors.grey.shade400, size: 28)
-                    : null,
+                radius: 28,
+                backgroundColor: Colors.white,
+                child: CircleAvatar(
+                  radius: 26,
+                  backgroundColor: Colors.grey.shade200,
+                  backgroundImage: user['avatarURL'] != null
+                      ? NetworkImage(user['avatarURL'])
+                      : null,
+                  child: user['avatarURL'] == null
+                      ? Icon(Icons.person, color: Colors.grey.shade400, size: 28)
+                      : null,
               ),
             ),
           ),
@@ -813,6 +850,7 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
           // Action button
           _buildStatusWidget(statut, user),
         ],
+      ),
       ),
     );
   }

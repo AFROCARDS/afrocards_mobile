@@ -226,6 +226,9 @@ class ApiEndpoints {
   /// GET - Rechercher des joueurs
   static const String rechercherJoueurs = '/social/joueurs/rechercher';
 
+  /// GET - Profil public d'un joueur
+  static String profilJoueur(int idJoueur) => '/social/joueurs/$idJoueur/profil';
+
   // ========================================
   // 🎒 INVENTAIRE
   // ========================================
