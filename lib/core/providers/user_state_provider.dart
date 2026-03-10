@@ -60,13 +60,26 @@ class UserStateProvider extends ChangeNotifier {
     required String token,
     String? userName,
     String? avatarUrl,
+    int? joueurId,
   }) async {
     _token = token;
-    _userName = userName ?? 'Joueur';
-    _avatarUrl = avatarUrl;
     
-    // Charger les données locales
+    // Charger les données locales d'abord
     await _loadLocalData();
+    
+    // Si des nouvelles valeurs sont fournies, les utiliser et sauvegarder
+    if (userName != null && userName.isNotEmpty) {
+      _userName = userName;
+    }
+    if (avatarUrl != null && avatarUrl.isNotEmpty) {
+      _avatarUrl = avatarUrl;
+    }
+    if (joueurId != null) {
+      _joueurId = joueurId;
+    }
+    
+    // Sauvegarder les infos utilisateur
+    await _saveUserInfo();
     
     // Charger les données serveur
     await _loadServerData();
@@ -77,10 +90,47 @@ class UserStateProvider extends ChangeNotifier {
     notifyListeners();
   }
   
+  /// Sauvegarder les informations utilisateur (nom, avatar, token)
+  Future<void> _saveUserInfo() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      
+      if (_token != null) {
+        await prefs.setString('auth_token', _token!);
+      }
+      await prefs.setString('user_name', _userName);
+      if (_avatarUrl != null && _avatarUrl!.isNotEmpty) {
+        await prefs.setString('avatar_url', _avatarUrl!);
+      }
+      if (_joueurId != null) {
+        await prefs.setInt('joueur_id', _joueurId!);
+      }
+    } catch (e) {
+      debugPrint('Erreur sauvegarde infos utilisateur: $e');
+    }
+  }
+  
   /// Charger les données depuis SharedPreferences
   Future<void> _loadLocalData() async {
     try {
       final prefs = await SharedPreferences.getInstance();
+      
+      // Charger les informations utilisateur (avatar, nom)
+      final savedUserName = prefs.getString('user_name');
+      final savedAvatarUrl = prefs.getString('avatar_url');
+      final savedJoueurId = prefs.getInt('joueur_id');
+      
+      if (savedUserName != null && savedUserName.isNotEmpty) {
+        _userName = savedUserName;
+      }
+      if (savedAvatarUrl != null && savedAvatarUrl.isNotEmpty) {
+        _avatarUrl = savedAvatarUrl;
+      }
+      if (savedJoueurId != null) {
+        _joueurId = savedJoueurId;
+      }
+      
+      // Charger les stats
       _pointsXP = prefs.getInt('user_xp') ?? 0;
       _coins = prefs.getInt('user_coins') ?? 0;
       _lives = prefs.getInt('user_lives') ?? 5;
@@ -362,6 +412,7 @@ class UserStateProvider extends ChangeNotifier {
       await prefs.remove('auth_token');
       await prefs.remove('user_name');
       await prefs.remove('avatar_url');
+      await prefs.remove('joueur_id');
     } catch (e) {
       debugPrint('Erreur effacement données locales: $e');
     }

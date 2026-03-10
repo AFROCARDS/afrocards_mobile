@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
+import '../../../../core/services/session_service.dart';
 import '../../../../shared/widgets/app_header.dart';
 import '../../../../shared/widgets/bottom_nav_bar.dart';
 
@@ -176,6 +177,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           userName: _pseudoController.text.trim(),
           avatarUrl: _selectedAvatar,
         );
+        
+        // Mettre à jour le SessionService (cache profil)
+        final session = SessionService.instance;
+        final updatedProfile = {
+          ...session.profileData ?? {},
+          'pseudo': _pseudoController.text.trim(),
+          'avatarURL': _selectedAvatar,
+          'nationalite': _selectedNationality,
+          if (_bioController.text.isNotEmpty) 'bio': _bioController.text.trim(),
+        };
+        await session.updateProfile(updatedProfile);
         
         _showSnackBar('Profil mis à jour avec succès !');
         

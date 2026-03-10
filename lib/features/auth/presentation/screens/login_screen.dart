@@ -87,12 +87,8 @@ class _LoginScreenState extends State<LoginScreen> {
             token: token ?? '',
             userName: profil?['pseudo'] ?? utilisateur?['nom'] ?? 'Joueur',
             avatarUrl: profil?['avatarURL'],
+            joueurId: profil?['id'],
           );
-          
-          // Stocker l'ID du joueur
-          if (profil?['id'] != null) {
-            userState.setJoueurId(profil['id']);
-          }
           
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(

@@ -60,6 +60,7 @@ class _SplashScreenState extends State<SplashScreen>
           token: session.token ?? '',
           userName: session.userName,
           avatarUrl: session.avatarUrl,
+          joueurId: session.joueurId,
         );
       }
       
