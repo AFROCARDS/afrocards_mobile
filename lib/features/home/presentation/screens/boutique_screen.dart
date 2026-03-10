@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'dart:convert';
-import '../../../../shared/widgets/app_header.dart';
-import '../../../../shared/widgets/bottom_nav_bar.dart';
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
 
@@ -18,6 +16,7 @@ class ArticleBoutique {
   final int? valeur;
   final int? duree;
   final String categorie;
+  final bool popular;
 
   ArticleBoutique({
     required this.id,
@@ -29,6 +28,7 @@ class ArticleBoutique {
     this.valeur,
     this.duree,
     required this.categorie,
+    this.popular = false,
   });
 
   factory ArticleBoutique.fromJson(Map<String, dynamic> json) {
@@ -42,6 +42,7 @@ class ArticleBoutique {
       valeur: json['valeur'],
       duree: json['duree'],
       categorie: json['categorie'] ?? 'consommable',
+      popular: json['popular'] ?? false,
     );
   }
 
@@ -54,9 +55,9 @@ class ArticleBoutique {
       case 'coins':
         return Icons.monetization_on;
       case 'premium':
-        return Icons.star;
+        return Icons.workspace_premium;
       case 'avatar':
-        return Icons.person;
+        return Icons.face;
       case 'badge':
         return Icons.military_tech;
       default:
@@ -69,15 +70,15 @@ class ArticleBoutique {
       case 'vie':
         return Colors.red;
       case 'xp_boost':
-        return Colors.purple;
+        return const Color(0xFF9C27B0);
       case 'coins':
-        return Colors.amber;
+        return const Color(0xFFFFB74D);
       case 'premium':
-        return Colors.orange;
+        return const Color(0xFFFF9800);
       case 'avatar':
-        return Colors.blue;
+        return const Color(0xFF2196F3);
       case 'badge':
-        return Colors.green;
+        return const Color(0xFF4CAF50);
       default:
         return Colors.grey;
     }
@@ -93,16 +94,31 @@ class BoutiqueScreen extends StatefulWidget {
   State<BoutiqueScreen> createState() => _BoutiqueScreenState();
 }
 
-class _BoutiqueScreenState extends State<BoutiqueScreen> {
+class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProviderStateMixin {
   List<ArticleBoutique> _articles = [];
   bool _isLoading = true;
   String? _error;
   bool _isPurchasing = false;
+  late TabController _tabController;
+  
+  final List<Map<String, dynamic>> _categories = [
+    {'id': 'all', 'label': 'Tout', 'icon': Icons.apps},
+    {'id': 'consommable', 'label': 'Vies', 'icon': Icons.favorite},
+    {'id': 'boost', 'label': 'Boosts', 'icon': Icons.bolt},
+    {'id': 'premium', 'label': 'Premium', 'icon': Icons.workspace_premium},
+  ];
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: _categories.length, vsync: this);
     _loadArticles();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadArticles() async {
@@ -126,7 +142,6 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> {
       setState(() {
         _error = 'Impossible de charger les articles';
         _isLoading = false;
-        // Articles de test
         _articles = _generateTestArticles();
       });
     }
@@ -134,70 +149,31 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> {
 
   List<ArticleBoutique> _generateTestArticles() {
     return [
-      ArticleBoutique(id: 1, nom: '1 Vie', description: 'Récupérez une vie', prix: 50, type: 'vie', valeur: 1, categorie: 'consommable'),
-      ArticleBoutique(id: 2, nom: 'Pack 3 Vies', description: 'Rechargez 3 vies', prix: 120, type: 'vie', valeur: 3, categorie: 'consommable'),
+      ArticleBoutique(id: 1, nom: '1 Vie', description: 'Récupérez une vie instantanément', prix: 50, type: 'vie', valeur: 1, categorie: 'consommable'),
+      ArticleBoutique(id: 2, nom: 'Pack 3 Vies', description: 'Rechargez 3 vies d\'un coup', prix: 120, type: 'vie', valeur: 3, categorie: 'consommable', popular: true),
       ArticleBoutique(id: 3, nom: 'Pack 5 Vies', description: 'Rechargez toutes vos vies', prix: 180, type: 'vie', valeur: 5, categorie: 'consommable'),
-      ArticleBoutique(id: 4, nom: 'Boost XP x2 (30min)', description: 'Doublez vos gains XP', prix: 100, type: 'xp_boost', valeur: 2, duree: 30, categorie: 'boost'),
-      ArticleBoutique(id: 5, nom: 'Boost XP x2 (1h)', description: 'Doublez vos gains XP pendant 1h', prix: 180, type: 'xp_boost', valeur: 2, duree: 60, categorie: 'boost'),
-      ArticleBoutique(id: 6, nom: 'Pass VIP (7 jours)', description: 'Vies illimitées + Boost XP', prix: 500, type: 'premium', valeur: 1, duree: 10080, categorie: 'premium'),
+      ArticleBoutique(id: 4, nom: 'Boost XP x2', description: 'Double vos gains XP pendant 30min', prix: 100, type: 'xp_boost', valeur: 2, duree: 30, categorie: 'boost'),
+      ArticleBoutique(id: 5, nom: 'Boost XP x2 Pro', description: 'Double vos gains XP pendant 1 heure', prix: 180, type: 'xp_boost', valeur: 2, duree: 60, categorie: 'boost', popular: true),
+      ArticleBoutique(id: 6, nom: 'Boost XP x3', description: 'Triple vos gains XP pendant 30min', prix: 200, type: 'xp_boost', valeur: 3, duree: 30, categorie: 'boost'),
+      ArticleBoutique(id: 7, nom: 'Pass VIP Semaine', description: 'Vies illimitées + Boost XP permanent', prix: 500, type: 'premium', valeur: 1, duree: 10080, categorie: 'premium', popular: true),
+      ArticleBoutique(id: 8, nom: 'Pass VIP Mois', description: 'Tous les avantages VIP pour 30 jours', prix: 1500, type: 'premium', valeur: 1, duree: 43200, categorie: 'premium'),
     ];
+  }
+
+  List<ArticleBoutique> _getFilteredArticles(String categoryId) {
+    if (categoryId == 'all') return _articles;
+    return _articles.where((a) => a.categorie == categoryId).toList();
   }
 
   Future<void> _acheterArticle(ArticleBoutique article) async {
     final userState = context.read<UserStateProvider>();
     
-    // Vérifier si l'utilisateur a assez de pièces
     if (userState.coins < article.prix) {
-      _showMessage('Pas assez de pièces ! Vous avez ${userState.coins} 🪙', isError: true);
+      _showMessage('Pas assez de coins ! Vous avez ${userState.coins} coins', isError: true);
       return;
     }
 
-    // Confirmation d'achat
-    final confirme = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Confirmer l\'achat'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(article.icon, size: 48, color: article.iconColor),
-            const SizedBox(height: 16),
-            Text(article.nom, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-            const SizedBox(height: 8),
-            Text(article.description, textAlign: TextAlign.center),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.amber.shade100,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                '${article.prix} 🪙',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Solde après achat: ${userState.coins - article.prix} 🪙',
-              style: TextStyle(color: Colors.grey[600], fontSize: 14),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annuler'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF6B4EAA)),
-            child: const Text('Acheter', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-
+    final confirme = await _showPurchaseConfirmation(article, userState);
     if (confirme != true) return;
 
     setState(() => _isPurchasing = true);
@@ -206,7 +182,6 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> {
       final token = widget.token ?? userState.token;
       
       if (token == null) {
-        // Achat local sans backend
         await _applyPurchaseLocally(article, userState);
         return;
       }
@@ -223,7 +198,6 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> {
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200 && data['success'] == true) {
-        // Mettre à jour l'état local
         await _applyPurchaseLocally(article, userState);
         _showMessage('${data['message']} - ${data['effet']}');
       } else {
@@ -231,24 +205,163 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> {
       }
     } catch (e) {
       debugPrint('Erreur achat: $e');
-      // En cas d'erreur réseau, appliquer localement
       await _applyPurchaseLocally(article, userState);
     } finally {
       setState(() => _isPurchasing = false);
     }
   }
 
+  Future<bool?> _showPurchaseConfirmation(ArticleBoutique article, UserStateProvider userState) {
+    return showModalBottomSheet<bool>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 24),
+            
+            // Article icon
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: article.iconColor.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(article.icon, size: 48, color: article.iconColor),
+            ),
+            const SizedBox(height: 16),
+            
+            Text(
+              article.nom,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
+                color: Color(0xFF2D3436),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              article.description,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade600,
+              ),
+            ),
+            const SizedBox(height: 24),
+            
+            // Prix
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFFB74D), Color(0xFFFF9800)],
+                ),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.monetization_on, color: Colors.white, size: 24),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${article.prix}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            
+            Text(
+              'Solde après achat: ${userState.coins - article.prix} coins',
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey.shade500,
+              ),
+            ),
+            const SizedBox(height: 24),
+            
+            // Buttons
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      side: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    child: const Text(
+                      'Annuler',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF2D3436),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFFB74D),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      'Confirmer',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _applyPurchaseLocally(ArticleBoutique article, UserStateProvider userState) async {
-    // Déduire les pièces
     if (!await userState.spendCoins(article.prix)) {
-      _showMessage('Pas assez de pièces !', isError: true);
+      _showMessage('Pas assez de coins !', isError: true);
       return;
     }
 
-    // Appliquer l'effet selon le type
     switch (article.type) {
       case 'vie':
-        // Ajouter les vies
         final viesToAdd = article.valeur ?? 1;
         for (int i = 0; i < viesToAdd; i++) {
           if (userState.lives < userState.maxLives) {
@@ -264,7 +377,7 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> {
         
       case 'coins':
         await userState.addCoins(article.valeur ?? 0);
-        _showMessage('+${article.valeur} pièces ajoutées !');
+        _showMessage('+${article.valeur} coins ajoutés !');
         break;
         
       case 'premium':
@@ -283,9 +396,20 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> {
   void _showMessage(String message, {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? Colors.red : Colors.green,
-        duration: const Duration(seconds: 3),
+        content: Row(
+          children: [
+            Icon(
+              isError ? Icons.error_outline : Icons.check_circle,
+              color: Colors.white,
+            ),
+            const SizedBox(width: 12),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: isError ? Colors.red : const Color(0xFF4CAF50),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(16),
       ),
     );
   }
@@ -293,13 +417,6 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> {
   @override
   Widget build(BuildContext context) {
     final userState = context.watch<UserStateProvider>();
-    
-    // Grouper les articles par catégorie
-    final Map<String, List<ArticleBoutique>> articlesByCategory = {};
-    for (final article in _articles) {
-      articlesByCategory.putIfAbsent(article.categorie, () => []);
-      articlesByCategory[article.categorie]!.add(article);
-    }
 
     return Scaffold(
       body: Stack(
@@ -315,80 +432,26 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> {
           SafeArea(
             child: Column(
               children: [
-                const AppHeader(centerTitle: true),
+                // Custom Header
+                _buildHeader(userState),
                 
-                // Titre et solde
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20),
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: const Icon(Icons.arrow_back, color: Colors.black),
-                      ),
-                      const Expanded(
-                        child: Text(
-                          'Boutique',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      // Afficher le solde
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.amber.shade100,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.monetization_on, color: Colors.amber, size: 20),
-                            const SizedBox(width: 4),
-                            Text(
-                              '${userState.coins}',
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                // Category Tabs
+                _buildCategoryTabs(),
                 
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Text(
-                    'Dépensez vos pièces pour booster votre progression !',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                  ),
-                ),
-                
-                const SizedBox(height: 16),
-                
+                // Content
                 Expanded(
                   child: _isLoading
-                      ? const Center(child: CircularProgressIndicator(color: Color(0xFF6B4EAA)))
+                      ? const Center(
+                          child: CircularProgressIndicator(color: Color(0xFFFFB74D)),
+                        )
                       : _isPurchasing
-                          ? const Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  CircularProgressIndicator(color: Color(0xFF6B4EAA)),
-                                  SizedBox(height: 16),
-                                  Text('Achat en cours...'),
-                                ],
-                              ),
-                            )
-                          : RefreshIndicator(
-                              onRefresh: _loadArticles,
-                              child: ListView(
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
-                                children: articlesByCategory.entries.map((entry) {
-                                  return _buildCategorySection(entry.key, entry.value, userState);
-                                }).toList(),
-                              ),
+                          ? _buildPurchasingState()
+                          : TabBarView(
+                              controller: _tabController,
+                              children: _categories.map((cat) {
+                                final filteredArticles = _getFilteredArticles(cat['id']);
+                                return _buildArticlesList(filteredArticles, userState);
+                              }).toList(),
                             ),
                 ),
               ],
@@ -396,129 +459,428 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: const AppBottomNavBar(currentIndex: 2),
     );
   }
 
-  Widget _buildCategorySection(String category, List<ArticleBoutique> articles, UserStateProvider userState) {
-    String categoryTitle;
-    switch (category) {
-      case 'consommable':
-        categoryTitle = '❤️ Vies';
-        break;
-      case 'boost':
-        categoryTitle = '⚡ Boosts';
-        break;
-      case 'premium':
-        categoryTitle = '⭐ Premium';
-        break;
-      case 'cosmétique':
-        categoryTitle = '🎨 Cosmétiques';
-        break;
-      default:
-        categoryTitle = category;
+  Widget _buildHeader(UserStateProvider userState) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // Back button
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, size: 20, color: Color(0xFF2D3436)),
+            ),
+          ),
+          const SizedBox(width: 16),
+          
+          // Title
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Boutique',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2D3436),
+                  ),
+                ),
+                Text(
+                  'Boostez votre progression !',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Coins balance
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFFFFB74D), Color(0xFFFF9800)],
+              ),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFFFB74D).withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.monetization_on, color: Colors.white, size: 20),
+                const SizedBox(width: 6),
+                Text(
+                  '${userState.coins}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryTabs() {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: TabBar(
+        controller: _tabController,
+        indicator: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFFFFB74D), Color(0xFFFF9800)],
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        indicatorSize: TabBarIndicatorSize.tab,
+        indicatorPadding: const EdgeInsets.all(4),
+        labelColor: Colors.white,
+        unselectedLabelColor: Colors.grey.shade600,
+        labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+        dividerColor: Colors.transparent,
+        tabs: _categories.map((cat) => Tab(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(cat['icon'] as IconData, size: 16),
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(
+                  cat['label'] as String,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        )).toList(),
+      ),
+    );
+  }
+
+  Widget _buildPurchasingState() {
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircularProgressIndicator(color: Color(0xFFFFB74D)),
+            const SizedBox(height: 20),
+            const Text(
+              'Achat en cours...',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF2D3436),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Veuillez patienter',
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey.shade600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildArticlesList(List<ArticleBoutique> articles, UserStateProvider userState) {
+    if (articles.isEmpty) {
+      return _buildEmptyState();
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Text(
-            categoryTitle,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
+    return RefreshIndicator(
+      onRefresh: _loadArticles,
+      color: const Color(0xFFFFB74D),
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: articles.length,
+        itemBuilder: (context, index) {
+          return _buildArticleCard(articles[index], userState);
+        },
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-        ...articles.map((article) => _buildArticleCard(article, userState)),
-        const SizedBox(height: 8),
-      ],
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.shopping_bag_outlined,
+                size: 48,
+                color: Colors.grey.shade400,
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Aucun article',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF2D3436),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Cette catégorie est vide',
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey.shade600,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   Widget _buildArticleCard(ArticleBoutique article, UserStateProvider userState) {
     final canAfford = userState.coins >= article.prix;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 2,
-      child: InkWell(
-        onTap: canAfford ? () => _acheterArticle(article) : null,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              // Icône de l'article
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: article.iconColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(article.icon, color: article.iconColor, size: 32),
-              ),
-              const SizedBox(width: 16),
-              
-              // Nom et description
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      article.nom,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      article.description,
-                      style: TextStyle(color: Colors.grey[600], fontSize: 13),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 12),
-              
-              // Prix et bouton
-              Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: canAfford ? const Color(0xFF6B4EAA) : Colors.grey,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '${article.prix}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        const Text('🪙', style: TextStyle(fontSize: 14)),
-                      ],
-                    ),
+    return GestureDetector(
+      onTap: canAfford ? () => _acheterArticle(article) : null,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: article.popular
+              ? Border.all(color: const Color(0xFFFFB74D), width: 2)
+              : null,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            Row(
+              children: [
+                // Icon container
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: article.iconColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  if (!canAfford)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        'Insuffisant',
-                        style: TextStyle(color: Colors.red[400], fontSize: 11),
+                  child: Icon(article.icon, color: article.iconColor, size: 32),
+                ),
+                const SizedBox(width: 14),
+                
+                // Info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              article.nom,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Color(0xFF2D3436),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        article.description,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey.shade600,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (article.duree != null) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(Icons.timer_outlined, size: 14, color: Colors.grey.shade500),
+                            const SizedBox(width: 4),
+                            Text(
+                              article.duree! >= 60 
+                                  ? '${(article.duree! / 60).toInt()}h'
+                                  : '${article.duree}min',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                
+                // Price button
+                Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      decoration: BoxDecoration(
+                        gradient: canAfford
+                            ? const LinearGradient(
+                                colors: [Color(0xFFFFB74D), Color(0xFFFF9800)],
+                              )
+                            : LinearGradient(
+                                colors: [Colors.grey.shade400, Colors.grey.shade500],
+                              ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: canAfford
+                            ? [
+                                BoxShadow(
+                                  color: const Color(0xFFFFB74D).withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                            : null,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.monetization_on, color: Colors.white, size: 16),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${article.prix}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                ],
+                    if (!canAfford) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        'Insuffisant',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.red.shade400,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ],
+            ),
+            
+            // Popular badge
+            if (article.popular)
+              Positioned(
+                top: -4,
+                right: -4,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE91E63),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text(
+                    'POPULAIRE',
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
               ),
-            ],
-          ),
+          ],
         ),
       ),
     );
