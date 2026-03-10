@@ -450,11 +450,8 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
           SafeArea(
             child: Column(
               children: [
-                // Header
-                const AppHeader(
-                  title: 'Boutique',
-                  centerTitle: true,
-                ),
+                // Header (mode complet comme home_screen)
+                const AppHeader(),
                 
                 const SizedBox(height: 16),
                 

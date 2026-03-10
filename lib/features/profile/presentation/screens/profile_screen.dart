@@ -197,9 +197,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           SafeArea(
             child: Column(
               children: [
+                // Header (mode complet comme home_screen)
                 AppHeader(
-                  title: 'Mon Profil',
-                  centerTitle: true,
                   actions: [
                     IconButton(
                       icon: Container(
