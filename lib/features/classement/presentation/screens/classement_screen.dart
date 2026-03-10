@@ -208,9 +208,9 @@ class _ClassementScreenState extends State<ClassementScreen> {
       },
       {
         'nom': userState.userName,
-        'niveau': userState.userLevel,
+        'niveau': 'Stage ${userState.currentStageLevel}',
         'badge': 'Emeraude',
-        'xp': 98,
+        'xp': userState.pointsXP,
         'avatar': userState.avatarUrl,
         'isCurrentUser': true
       },
@@ -454,15 +454,26 @@ class _ClassementScreenState extends State<ClassementScreen> {
   }
 
   Widget _buildPlayerTile(ClassementPlayer player) {
-    // Formater le niveau avec badge
-    String levelDisplay = player.niveau;
-    if (player.badge != null && player.badge!.isNotEmpty) {
-      levelDisplay = '${player.niveau}-${player.badge}';
+    final userState = context.watch<UserStateProvider>();
+    
+    // Si c'est l'utilisateur courant, utiliser les données synchronisées du provider
+    final bool isCurrentUser = player.isCurrentUser;
+    final String levelDisplay;
+    final int displayXp;
+    
+    if (isCurrentUser) {
+      // Utiliser les données du provider pour l'utilisateur courant
+      levelDisplay = 'Stage ${userState.currentStageLevel}';
+      displayXp = userState.pointsXP;
+    } else {
+      // Pour les autres joueurs, utiliser les données du classement
+      levelDisplay = player.niveau;
+      displayXp = player.xp;
     }
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
-      decoration: player.isCurrentUser
+      decoration: isCurrentUser
           ? BoxDecoration(
               color: const Color(0xFFF5F0FF),
               borderRadius: BorderRadius.circular(12),
@@ -470,7 +481,7 @@ class _ClassementScreenState extends State<ClassementScreen> {
             )
           : null,
       child: Padding(
-        padding: player.isCurrentUser
+        padding: isCurrentUser
             ? const EdgeInsets.symmetric(horizontal: 12)
             : EdgeInsets.zero,
         child: Row(
@@ -495,11 +506,11 @@ class _ClassementScreenState extends State<ClassementScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    player.nom,
+                    isCurrentUser ? userState.userName : player.nom,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: player.isCurrentUser
+                      color: isCurrentUser
                           ? const Color(0xFF6B4EAA)
                           : Colors.black87,
                     ),
@@ -518,11 +529,11 @@ class _ClassementScreenState extends State<ClassementScreen> {
 
             // XP
             Text(
-              '${player.xp}XP',
+              '${displayXp}XP',
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
-                color: player.isCurrentUser
+                color: isCurrentUser
                     ? const Color(0xFF6B4EAA)
                     : Colors.black87,
               ),
