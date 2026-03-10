@@ -16,6 +16,11 @@ class _DesignColors {
   static const Color green = Color(0xFF4CAF50);
   static const Color textDark = Color(0xFF2D3436);
   static const Color textMuted = Color(0xFF636E72);
+  static const Color textPrimary = Color(0xFF2D3436);
+  static const Color textSecondary = Color(0xFF636E72);
+  static const Color background = Color(0xFFF5F5F5);
+  static const Color cardBackground = Color(0xFFFFFFFF);
+  static const Color divider = Color(0xFFE0E0E0);
 }
 
 /// Écran pour voir le profil public d'un joueur
@@ -782,15 +787,15 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => GameScreen(
-                            userName: userState.name ?? 'Joueur',
-                            userLevel: userState.niveau ?? 1,
-                            userLives: userState.vies ?? 5,
+                            userName: userState.userName,
+                            userLevel: userState.userLevel,
+                            userLives: userState.lives,
                             userCoins: userState.coins,
                             avatarUrl: userState.avatarUrl,
                             token: userState.token ?? '',
                             mode: 'friend_challenge',
                             nombreQuestions: 7,
-                            opponentName: profil['pseudo'] ?? 'Ami',
+                            opponentName: _profilData?['pseudo'] ?? 'Ami',
                             opponentId: widget.idJoueur,
                             coinsBet: betAmount,
                           ),
