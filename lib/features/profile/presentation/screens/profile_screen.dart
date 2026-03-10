@@ -198,22 +198,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               children: [
                 // Header (mode complet comme home_screen)
-                AppHeader(
-                  actions: [
-                    IconButton(
-                      icon: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Colors.red.shade50,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(Icons.logout, color: Colors.red, size: 20),
-                      ),
-                      onPressed: _logout,
-                      tooltip: 'Déconnexion',
-                    ),
-                  ],
-                ),
+                const AppHeader(),
                 Expanded(
                   child: _loading
                       ? const Center(child: CircularProgressIndicator(color: Color(0xFFFFB74D)))
@@ -306,12 +291,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ],
             ),
-            child: Column(
+            child: Stack(
               children: [
-                // Avatar avec bouton modifier
-                GestureDetector(
-                  onTap: _navigateToEditProfile,
-                  child: Stack(
+                // Bouton déconnexion en haut à droite
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: GestureDetector(
+                    onTap: _logout,
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade50,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.logout, color: Colors.red, size: 20),
+                    ),
+                  ),
+                ),
+                // Contenu du profil
+                Column(
+                  children: [
+                    // Avatar avec bouton modifier
+                    GestureDetector(
+                      onTap: _navigateToEditProfile,
+                      child: Stack(
                     alignment: Alignment.bottomRight,
                     children: [
                       Container(
@@ -423,6 +427,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   ),
                 ),
+                ],
+              ),
               ],
             ),
           ),
