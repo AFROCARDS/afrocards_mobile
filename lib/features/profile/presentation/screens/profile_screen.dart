@@ -393,8 +393,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ],
                         ),
                       ],
-                      
-                      const SizedBox(height: 12),
+                                            // Bio
+                      if (bio != null && bio.isNotEmpty) ..[
+                        const SizedBox(height: 8),
+                        Text(
+                          bio,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Color(0xFF636E72),
+                            fontSize: 14,
+                            height: 1.4,
+                          ),
+                        ),
+                      ],
+                                            const SizedBox(height: 12),
                       
                       // Badge
                       Container(
@@ -429,72 +441,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                     ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Bio Card
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFB74D).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(Icons.edit_note, color: Color(0xFFFFB74D), size: 20),
-                    ),
-                    const SizedBox(width: 12),
-                    const Text(
-                      'Bio',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2D3436),
-                      ),
-                    ),
-                    const Spacer(),
-                    GestureDetector(
-                      onTap: _navigateToEditProfile,
-                      child: const Icon(Icons.edit, size: 18, color: Colors.grey),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  bio != null && bio.isNotEmpty
-                      ? bio
-                      : 'Aucune bio renseignée. Appuyez pour ajouter une description.',
-                  style: TextStyle(
-                    color: bio != null && bio.isNotEmpty
-                        ? const Color(0xFF636E72)
-                        : Colors.grey,
-                    fontSize: 14,
-                    fontStyle: bio != null && bio.isNotEmpty
-                        ? FontStyle.normal
-                        : FontStyle.italic,
-                    height: 1.5,
                   ),
                 ),
               ],
