@@ -15,12 +15,17 @@ class AppHeader extends StatelessWidget {
   
   /// Callback pour le bouton retour
   final VoidCallback? onBackTap;
+  
+  /// Actions supplémentaires à afficher (boutons, icons, etc.)
+  final List<Widget>? actions;
 
   const AppHeader({
     super.key,
     this.onAvatarTap,
     this.title,
-    this.onBackTap, required bool centerTitle,
+    this.onBackTap,
+    this.actions,
+    bool centerTitle = false,
   });
 
   @override
@@ -117,6 +122,7 @@ class AppHeader extends StatelessWidget {
                         ),
                       ),
                     ),
+                    if (actions != null) ...actions!,
                   ],
                 ),
               ],

@@ -12,6 +12,7 @@ import '../../../inventory/presentation/screens/inventory_screen.dart';
 import '../../../social/presentation/screens/notifications_screen.dart';
 import '../../../wallet/presentation/screens/wallet_screen.dart';
 import '../../../social/presentation/screens/friends_screen.dart';
+import '../../../auth/presentation/screens/login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -23,11 +24,14 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   Map<String, dynamic>? _profileData;
   bool _loading = true;
+  int _nombreAmis = 0;
+  int _nombreTrophees = 0;
 
   @override
   void initState() {
     super.initState();
     _fetchProfile();
+    _fetchStats();
   }
 
   Future<void> _fetchProfile() async {
@@ -56,6 +60,87 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _fetchStats() async {
+    final userState = context.read<UserStateProvider>();
+    final token = userState.token;
+    if (token == null) return;
+    
+    try {
+      // Fetch nombre d'amis
+      final amisResponse = await http.get(
+        Uri.parse(ApiEndpoints.buildUrl(ApiEndpoints.amisCount)),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (amisResponse.statusCode == 200) {
+        final data = jsonDecode(amisResponse.body);
+        setState(() {
+          _nombreAmis = data['count'] ?? 0;
+        });
+      }
+      
+      // Fetch badges et trophées du joueur
+      final inventaireResponse = await http.get(
+        Uri.parse(ApiEndpoints.buildUrl(ApiEndpoints.inventaire)),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (inventaireResponse.statusCode == 200) {
+        final data = jsonDecode(inventaireResponse.body);
+        setState(() {
+          _nombreTrophees = (data['data']?['trophees'] as List?)?.length ?? 0;
+        });
+      }
+    } catch (e) {
+      debugPrint('Erreur fetch stats: $e');
+    }
+  }
+
+  void _logout() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Déconnexion'),
+        content: const Text('Voulez-vous vraiment vous déconnecter ?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              final userState = context.read<UserStateProvider>();
+              userState.logout();
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+                (route) => false,
+              );
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Déconnecter'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getBadgeName(int xp) {
+    if (xp >= 10000) return 'Légende';
+    if (xp >= 7500) return 'Maître';
+    if (xp >= 5000) return 'Diamant';
+    if (xp >= 3000) return 'Platine';
+    if (xp >= 2000) return 'Or';
+    if (xp >= 1000) return 'Argent';
+    if (xp >= 500) return 'Bronze';
+    if (xp >= 100) return 'Débutant';
+    return 'Novice';
+  }
+
   @override
   Widget build(BuildContext context) {
     final userState = context.watch<UserStateProvider>();
@@ -73,9 +158,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           SafeArea(
             child: Column(
               children: [
-                const AppHeader(
+                AppHeader(
                   title: 'Profil',
                   centerTitle: true,
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.logout, color: Colors.red),
+                      onPressed: _logout,
+                      tooltip: 'Déconnexion',
+                    ),
+                  ],
                 ),
                 Expanded(
                   child: _loading
@@ -96,6 +188,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildProfileContent(UserStateProvider userState) {
     final profil = _profileData?['profil'] ?? {};
     final utilisateur = _profileData?['utilisateur'] ?? {};
+    final totalXP = profil['totalXP'] ?? userState.pointsXP;
+    
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Column(
@@ -148,17 +242,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
               color: const Color(0xFFEDE7F6),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Text('Bronze', style: TextStyle(color: Color(0xFF9C27B0), fontWeight: FontWeight.w600)),
+            child: Text(
+              _getBadgeName(totalXP),
+              style: const TextStyle(color: Color(0xFF9C27B0), fontWeight: FontWeight.w600),
+            ),
           ),
           const SizedBox(height: 18),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _StatCard(label: 'XP', value: profil['xp']?.toString() ?? '0'),
+              _StatCard(label: 'XP', value: totalXP.toString()),
               const SizedBox(width: 16),
-              _StatCard(label: 'Trophés', value: profil['nbTrophees']?.toString() ?? '0'),
+              _StatCard(label: 'Trophées', value: _nombreTrophees.toString()),
               const SizedBox(width: 16),
-              _StatCard(label: 'Ami(e)s', value: profil['nbAmis']?.toString() ?? '0'),
+              _StatCard(label: 'Ami(e)s', value: _nombreAmis.toString()),
             ],
           ),
           const SizedBox(height: 24),

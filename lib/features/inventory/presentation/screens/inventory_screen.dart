@@ -26,6 +26,7 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _fetchInventory();
+    _fetchBonus();
   }
 
   Future<void> _fetchInventory() async {
@@ -34,7 +35,7 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
     if (token == null) return;
     try {
       final response = await http.get(
-        Uri.parse(ApiEndpoints.buildUrl(ApiEndpoints.myRewards)),
+        Uri.parse(ApiEndpoints.buildUrl(ApiEndpoints.inventaire)),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -52,6 +53,34 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
       }
     } catch (e) {
       setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _fetchBonus() async {
+    final userState = context.read<UserStateProvider>();
+    final token = userState.token;
+    if (token == null) return;
+    try {
+      final response = await http.get(
+        Uri.parse(ApiEndpoints.buildUrl(ApiEndpoints.boutiqueMesAchats)),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final achats = data['data'] ?? [];
+        // Filtrer les bonus actifs (XP boosts, vies, premium)
+        setState(() {
+          _bonus = achats.where((achat) {
+            final type = achat['article']?['type'] ?? '';
+            return type == 'xp_boost' || type == 'vie' || type == 'premium';
+          }).toList();
+        });
+      }
+    } catch (e) {
+      debugPrint('Erreur fetch bonus: $e');
     }
   }
 
@@ -173,6 +202,85 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
   }
 
   Widget _buildBonusList() {
-    return const Center(child: Text('Aucun bonus'));
+    if (_bonus.isEmpty) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.card_giftcard, size: 60, color: Colors.grey),
+            SizedBox(height: 16),
+            Text('Aucun bonus actif', style: TextStyle(color: Colors.grey, fontSize: 16)),
+            SizedBox(height: 8),
+            Text('Achetez des bonus dans la boutique !', style: TextStyle(color: Colors.black54)),
+          ],
+        ),
+      );
+    }
+    return ListView.separated(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      itemCount: _bonus.length,
+      separatorBuilder: (_, __) => const Divider(height: 1),
+      itemBuilder: (context, idx) {
+        final achat = _bonus[idx];
+        final article = achat['article'] ?? {};
+        final type = article['type'] ?? '';
+        
+        IconData icon;
+        Color iconColor;
+        switch (type) {
+          case 'xp_boost':
+            icon = Icons.trending_up;
+            iconColor = Colors.purple;
+            break;
+          case 'vie':
+            icon = Icons.favorite;
+            iconColor = Colors.red;
+            break;
+          case 'premium':
+            icon = Icons.star;
+            iconColor = Colors.amber;
+            break;
+          default:
+            icon = Icons.card_giftcard;
+            iconColor = Colors.blue;
+        }
+        
+        return ListTile(
+          leading: Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, size: 30, color: iconColor),
+          ),
+          title: Text(article['nom'] ?? 'Bonus', style: const TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: Text(article['description'] ?? ''),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              if (article['valeur'] != null)
+                Text('x${article['valeur']}', style: TextStyle(color: iconColor, fontWeight: FontWeight.bold)),
+              Text(
+                _formatDate(achat['dateAchat']),
+                style: const TextStyle(fontSize: 11, color: Colors.grey),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  String _formatDate(String? dateStr) {
+    if (dateStr == null) return '';
+    try {
+      final date = DateTime.parse(dateStr);
+      return '${date.day}/${date.month}/${date.year}';
+    } catch (_) {
+      return '';
+    }
   }
 }

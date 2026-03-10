@@ -193,6 +193,47 @@ class ApiEndpoints {
   static const String updateNotificationPrefs = '/social/preferences';
 
   // ========================================
+  // 👥 AMIS
+  // ========================================
+
+  /// GET - Liste de mes amis
+  static const String amis = '/social/amis';
+
+  /// GET - Nombre d'amis
+  static const String amisCount = '/social/amis/count';
+
+  /// GET - Demandes d'amis reçues
+  static const String amisDemandesRecues = '/social/amis/demandes/recues';
+
+  /// GET - Demandes d'amis envoyées
+  static const String amisDemandesEnvoyees = '/social/amis/demandes/envoyees';
+
+  /// POST - Envoyer une demande d'ami
+  static const String amisDemande = '/social/amis/demande';
+
+  /// PUT - Accepter une demande d'ami
+  static String amisAccepter(int idAmitie) => '/social/amis/$idAmitie/accepter';
+
+  /// PUT - Refuser une demande d'ami
+  static String amisRefuser(int idAmitie) => '/social/amis/$idAmitie/refuser';
+
+  /// DELETE - Supprimer un ami
+  static String amisSupprimer(int idAmitie) => '/social/amis/$idAmitie';
+
+  /// POST - Bloquer un joueur
+  static const String amisBloquer = '/social/amis/bloquer';
+
+  /// GET - Rechercher des joueurs
+  static const String rechercherJoueurs = '/social/joueurs/rechercher';
+
+  // ========================================
+  // 🎒 INVENTAIRE
+  // ========================================
+
+  /// GET - Mon inventaire (badges et trophées)
+  static const String inventaire = '/gamification/my-rewards';
+
+  // ========================================
   // 📁 CATÉGORIES
   // ========================================
 

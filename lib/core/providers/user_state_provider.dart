@@ -334,6 +334,41 @@ class UserStateProvider extends ChangeNotifier {
     await _loadServerData();
   }
   
+  /// Déconnexion - réinitialiser toutes les données
+  Future<void> logout() async {
+    _livesRegenTimer?.cancel();
+    
+    // Réinitialiser les données locales
+    _token = null;
+    _userName = 'Joueur';
+    _avatarUrl = null;
+    _joueurId = null;
+    _pointsXP = 0;
+    _coins = 0;
+    _lives = 5;
+    _currentStageLevel = 1;
+    _maxUnlockedStage = 1;
+    _lastLivesUpdate = null;
+    
+    // Effacer les données persistantes
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('user_xp');
+      await prefs.remove('user_coins');
+      await prefs.remove('user_lives');
+      await prefs.remove('user_current_stage');
+      await prefs.remove('user_max_stage');
+      await prefs.remove('user_last_lives_update');
+      await prefs.remove('auth_token');
+      await prefs.remove('user_name');
+      await prefs.remove('avatar_url');
+    } catch (e) {
+      debugPrint('Erreur effacement données locales: $e');
+    }
+    
+    notifyListeners();
+  }
+  
   @override
   void dispose() {
     _livesRegenTimer?.cancel();
