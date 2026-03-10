@@ -7,6 +7,7 @@ import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
 import '../../../../shared/widgets/app_header.dart';
 import '../../../classement/presentation/screens/classement_screen.dart';
+import '../../../stage/presentation/screens/stage_mode_screen.dart';
 
 /// Écran de résultat après un quiz
 class ResultScreen extends StatefulWidget {
@@ -619,8 +620,25 @@ class _ResultScreenState extends State<ResultScreen>
   }
 
   void _continuer() {
-    // Retourner à l'écran précédent (mode de jeu)
-    Navigator.pop(context);
-    Navigator.pop(context);
+    // Si on est en mode stage, retourner au StageModeScreen
+    if (widget.mode == 'stage') {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => StageModeScreen(
+            userName: widget.userName,
+            userLevel: widget.userLevel,
+            userLives: widget.userLives,
+            avatarUrl: widget.avatarUrl,
+            token: widget.token,
+          ),
+        ),
+        (route) => route.isFirst,
+      );
+    } else {
+      // Retourner à l'écran précédent (mode de jeu)
+      Navigator.pop(context);
+      Navigator.pop(context);
+    }
   }
 }
