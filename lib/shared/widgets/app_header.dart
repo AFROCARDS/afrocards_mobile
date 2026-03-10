@@ -5,6 +5,17 @@ import '../../core/providers/user_state_provider.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/home/presentation/screens/boutique_screen.dart';
 
+/// Couleurs du design (identiques à profile_screen)
+class _DesignColors {
+  static const Color primary = Color(0xFFFFB74D);      // Orange principal
+  static const Color secondary = Color(0xFF9C27B0);    // Violet
+  static const Color cyan = Color(0xFF00BCD4);         // Cyan
+  static const Color green = Color(0xFF4CAF50);        // Vert
+  static const Color pink = Color(0xFFE91E63);         // Rose
+  static const Color textDark = Color(0xFF2D3436);     // Texte foncé
+  static const Color textMuted = Color(0xFF636E72);    // Texte atténué
+}
+
 /// Widget réutilisable pour le header de l'application
 /// Affiche l'avatar, le nom, le niveau, les vies et les coins
 class AppHeader extends StatelessWidget {
@@ -81,12 +92,19 @@ class AppHeader extends StatelessWidget {
           GestureDetector(
             onTap: onBackTap ?? () => Navigator.pop(context),
             child: Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.grey.shade100,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              child: const Icon(Icons.arrow_back_ios_new, size: 20, color: Color(0xFF2D3436)),
+              child: const Icon(Icons.arrow_back_ios_new, size: 20, color: _DesignColors.textDark),
             ),
           ),
           
@@ -99,9 +117,9 @@ class AppHeader extends StatelessWidget {
             Text(
               title!,
               style: const TextStyle(
-                fontSize: 18,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF2D3436),
+                color: _DesignColors.textDark,
               ),
             )
           else
@@ -109,9 +127,9 @@ class AppHeader extends StatelessWidget {
               child: Text(
                 title!,
                 style: const TextStyle(
-                  fontSize: 18,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF2D3436),
+                  color: _DesignColors.textDark,
                 ),
               ),
             ),
@@ -163,22 +181,26 @@ class AppHeader extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF2D3436),
+                          color: _DesignColors.textDark,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 4),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFFB74D).withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(8),
+                          color: _DesignColors.primary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: _DesignColors.primary.withOpacity(0.3),
+                            width: 1,
+                          ),
                         ),
                         child: Text(
                           userState.userLevel,
                           style: const TextStyle(
                             fontSize: 11,
-                            color: Color(0xFFFF9800),
-                            fontWeight: FontWeight.w600,
+                            color: _DesignColors.primary,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
@@ -191,7 +213,7 @@ class AppHeader extends StatelessWidget {
                   context: context,
                   icon: Icons.favorite,
                   value: '${userState.lives}/${userState.maxLives}',
-                  color: Colors.red,
+                  color: _DesignColors.pink,
                   showPlus: true,
                 ),
                 const SizedBox(width: 8),
@@ -199,7 +221,7 @@ class AppHeader extends StatelessWidget {
                   context: context,
                   icon: Icons.monetization_on,
                   value: _formatNumber(userState.coins),
-                  color: const Color(0xFFFFB74D),
+                  color: _DesignColors.primary,
                   showPlus: true,
                 ),
               ],
@@ -216,12 +238,19 @@ class AppHeader extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: const Icon(
                     Icons.arrow_back_ios_new,
-                    color: Color(0xFF2D3436),
+                    color: _DesignColors.textDark,
                     size: 20,
                   ),
                 ),
@@ -236,9 +265,9 @@ class AppHeader extends StatelessWidget {
                 Text(
                   title!,
                   style: const TextStyle(
-                    fontSize: 20,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF2D3436),
+                    color: _DesignColors.textDark,
                   ),
                 )
               else
@@ -246,9 +275,9 @@ class AppHeader extends StatelessWidget {
                   child: Text(
                     title!,
                     style: const TextStyle(
-                      fontSize: 20,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF2D3436),
+                      color: _DesignColors.textDark,
                     ),
                   ),
                 ),
@@ -299,30 +328,54 @@ class AppHeader extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF2D3436),
+                    color: _DesignColors.textDark,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Row(
                   children: [
+                    // Badge niveau
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFFFB74D), Color(0xFFFF9800)],
-                        ),
+                        color: _DesignColors.secondary.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: _DesignColors.secondary.withOpacity(0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        userState.userLevel,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: _DesignColors.secondary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    // Badge XP
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: _DesignColors.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: _DesignColors.primary.withOpacity(0.3),
+                          width: 1,
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.bolt, color: Colors.white, size: 14),
+                          const Icon(Icons.bolt, color: _DesignColors.primary, size: 14),
                           const SizedBox(width: 4),
                           Text(
                             '${userState.pointsXP} XP',
                             style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.white,
+                              fontSize: 11,
+                              color: _DesignColors.primary,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -343,7 +396,7 @@ class AppHeader extends StatelessWidget {
                 context: context,
                 icon: Icons.favorite,
                 value: '${userState.lives}/${userState.maxLives}',
-                color: Colors.red,
+                color: _DesignColors.pink,
                 showPlus: true,
               ),
               const SizedBox(height: 6),
@@ -351,7 +404,7 @@ class AppHeader extends StatelessWidget {
                 context: context,
                 icon: Icons.monetization_on,
                 value: _formatNumber(userState.coins),
-                color: const Color(0xFFFFB74D),
+                color: _DesignColors.primary,
                 showPlus: true,
               ),
             ],
@@ -373,13 +426,13 @@ class AppHeader extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: const LinearGradient(
-            colors: [Color(0xFFFFB74D), Color(0xFFFF9800), Color(0xFF9C27B0)],
+            colors: [_DesignColors.primary, _DesignColors.pink, _DesignColors.secondary],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFFFB74D).withOpacity(0.3),
+              color: _DesignColors.primary.withOpacity(0.3),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
