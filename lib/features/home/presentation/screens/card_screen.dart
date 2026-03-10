@@ -4,10 +4,20 @@ import 'dart:convert';
 
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/services/session_service.dart';
-import '../../../../shared/widgets/app_header.dart';
 import '../../../../shared/widgets/bottom_nav_bar.dart';
 import '../../../quiz/presentation/screens/game_screen.dart';
 import 'home_screen.dart';
+
+/// Couleurs du design (identiques à profile_screen)
+class _DesignColors {
+  static const Color primary = Color(0xFFFFB74D);      // Orange principal
+  static const Color secondary = Color(0xFF9C27B0);    // Violet
+  static const Color cyan = Color(0xFF00BCD4);         // Cyan
+  static const Color green = Color(0xFF4CAF50);        // Vert
+  static const Color pink = Color(0xFFE91E63);         // Rose
+  static const Color textDark = Color(0xFF2D3436);     // Texte foncé
+  static const Color textMuted = Color(0xFF636E72);    // Texte atténué
+}
 
 /// Écran de sélection des centres d'intérêt (catégories)
 /// Premier écran affiché après la connexion pour personnaliser l'expérience
@@ -39,10 +49,24 @@ class _CardScreenState extends State<CardScreen> {
   String? _error;
   final Set<int> _selectedCategories = {};
 
+  // Couleurs pour chaque catégorie
+  final List<Color> _categoryColors = [
+    _DesignColors.primary,
+    _DesignColors.secondary,
+    _DesignColors.cyan,
+    _DesignColors.green,
+    _DesignColors.pink,
+    const Color(0xFF607D8B),
+  ];
+
   @override
   void initState() {
     super.initState();
     _loadCategories();
+  }
+
+  Color _getCategoryColor(int index) {
+    return _categoryColors[index % _categoryColors.length];
   }
 
   /// Charger les catégories depuis l'API
@@ -120,9 +144,20 @@ class _CardScreenState extends State<CardScreen> {
   }
 
   void _showAllCategories() {
-    // TODO: Naviguer vers une page avec toutes les catégories
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Voir toutes les catégories')),
+      SnackBar(
+        content: const Row(
+          children: [
+            Icon(Icons.info_outline, color: Colors.white),
+            SizedBox(width: 12),
+            Text('Toutes les catégories sont affichées'),
+          ],
+        ),
+        backgroundColor: _DesignColors.primary,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(16),
+      ),
     );
   }
 
@@ -142,36 +177,43 @@ class _CardScreenState extends State<CardScreen> {
           SafeArea(
             child: Column(
               children: [
-                AppHeader(centerTitle: true,),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextButton(
-                        onPressed: _showAllCategories,
-                        child: const Text('Voir plus', style: TextStyle(color: Colors.black54)),
-                      ),
-                    ],
-                  ),
-                ),
+                // Header (style profile_screen)
+                _buildHeader(),
+                
+                const SizedBox(height: 16),
+                
+                // Stats Card
+                _buildStatsCard(),
+                
+                const SizedBox(height: 16),
+                
+                // Section title
+                _buildSectionTitle(),
+                
+                // Categories Grid
                 Expanded(
                   child: _isLoading
-                      ? const Center(child: CircularProgressIndicator(color: Colors.black))
-                      : GridView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 15,
-                      mainAxisSpacing: 15,
-                      childAspectRatio: 0.95,
-                    ),
-                    itemCount: _categories.length,
-                    itemBuilder: (context, index) {
-                      final category = _categories[index];
-                      return _buildCategoryCard(category);
-                    },
-                  ),
+                      ? const Center(
+                          child: CircularProgressIndicator(color: _DesignColors.primary),
+                        )
+                      : RefreshIndicator(
+                          onRefresh: _loadCategories,
+                          color: _DesignColors.primary,
+                          child: GridView.builder(
+                            padding: const EdgeInsets.all(20),
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
+                              childAspectRatio: 0.9,
+                            ),
+                            itemCount: _categories.length,
+                            itemBuilder: (context, index) {
+                              final category = _categories[index];
+                              return _buildCategoryCard(category, index);
+                            },
+                          ),
+                        ),
                 ),
               ],
             ),
@@ -184,18 +226,201 @@ class _CardScreenState extends State<CardScreen> {
     );
   }
 
-  Widget _buildWelcomeSection() {
-    return const SizedBox.shrink();
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      child: Row(
+        children: [
+          // Title section
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Mes Cartes',
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: _DesignColors.textDark,
+                  ),
+                ),
+                Text(
+                  'Choisissez une catégorie pour jouer',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: _DesignColors.textMuted,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Refresh button (style profile_screen)
+          GestureDetector(
+            onTap: _loadCategories,
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.refresh, size: 22, color: _DesignColors.textDark),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
-  Widget _buildCategoriesSection() {
-    // Plus utilisé, la grille est directement dans le build principal
-    return const SizedBox.shrink();
+  Widget _buildStatsCard() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            // Categories count
+            Expanded(
+              child: _buildMiniStatCard(
+                'Catégories',
+                '${_categories.length}',
+                Icons.category,
+                _DesignColors.secondary,
+              ),
+            ),
+            Container(
+              width: 1,
+              height: 50,
+              color: Colors.grey.shade200,
+            ),
+            // Niveau
+            Expanded(
+              child: _buildMiniStatCard(
+                'Niveau',
+                widget.userLevel,
+                Icons.trending_up,
+                _DesignColors.green,
+              ),
+            ),
+            Container(
+              width: 1,
+              height: 50,
+              color: Colors.grey.shade200,
+            ),
+            // XP
+            Expanded(
+              child: _buildMiniStatCard(
+                'XP',
+                '${widget.userPoints}',
+                Icons.bolt,
+                _DesignColors.primary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
-  Widget _buildCategoryCard(dynamic category) {
+  Widget _buildMiniStatCard(String label, String value, IconData icon, Color color) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: color, size: 22),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: _DesignColors.textDark,
+          ),
+          textAlign: TextAlign.center,
+          overflow: TextOverflow.ellipsis,
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: Colors.grey.shade600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSectionTitle() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text(
+            'Toutes les catégories',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: _DesignColors.textDark,
+            ),
+          ),
+          GestureDetector(
+            onTap: _showAllCategories,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: _DesignColors.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Row(
+                children: [
+                  Text(
+                    'Voir tout',
+                    style: TextStyle(
+                      color: _DesignColors.primary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                  ),
+                  SizedBox(width: 4),
+                  Icon(Icons.arrow_forward, size: 16, color: _DesignColors.primary),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryCard(dynamic category, int index) {
     final id = category['idCategorie'] ?? category['id'];
     final isSelected = _selectedCategories.contains(id);
+    final color = _getCategoryColor(index);
 
     return GestureDetector(
       onTap: () {
@@ -220,58 +445,101 @@ class _CardScreenState extends State<CardScreen> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFE8E8FF) : const Color(0xFFF5F5FF),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected ? Colors.deepPurple.shade300 : Colors.grey.shade200,
-            width: isSelected ? 2 : 1,
-          ),
-          boxShadow: isSelected
-              ? [
-            BoxShadow(
-              color: Colors.deepPurple.withOpacity(0.2),
-              blurRadius: 10,
-              spreadRadius: 2,
-            ),
-          ]
+          border: isSelected
+              ? Border.all(color: color, width: 2)
               : null,
+          boxShadow: [
+            BoxShadow(
+              color: isSelected 
+                  ? color.withOpacity(0.2)
+                  : Colors.black.withOpacity(0.05),
+              blurRadius: isSelected ? 15 : 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Icône ou image de la catégorie
+            // Icône (style profile_screen)
             Container(
-              width: 80,
-              height: 80,
+              width: 70,
+              height: 70,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: color.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Center(
                 child: Text(
                   category['icone'] ?? '📚',
-                  style: const TextStyle(fontSize: 40),
+                  style: const TextStyle(fontSize: 36),
                 ),
               ),
             ),
-            const SizedBox(height: 12),
-            Text(
-              category['nom'] ?? 'Catégorie',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                color: isSelected ? Colors.deepPurple : Colors.black,
+            const SizedBox(height: 14),
+            
+            // Nom catégorie
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                category['nom'] ?? 'Catégorie',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: isSelected ? color : _DesignColors.textDark,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-            if (isSelected)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Icon(
-                  Icons.check_circle,
-                  color: Colors.deepPurple.shade400,
-                  size: 20,
+            
+            const SizedBox(height: 8),
+            
+            // Play button
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    color.withOpacity(0.2),
+                    color.withOpacity(0.1),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: color.withOpacity(0.3),
+                  width: 1,
                 ),
               ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.play_arrow, size: 16, color: color),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Jouer',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: color,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Check icon if selected
+            if (isSelected) ...[
+              const SizedBox(height: 8),
+              Icon(
+                Icons.check_circle,
+                color: color,
+                size: 20,
+              ),
+            ],
           ],
         ),
       ),
@@ -287,12 +555,12 @@ class _CardScreenState extends State<CardScreen> {
         child: ElevatedButton(
           onPressed: _navigateToHome,
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.black,
+            backgroundColor: _DesignColors.primary,
             foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(16),
             ),
-            elevation: 3,
+            elevation: 0,
           ),
           child: Text(
             'Continuer (${_selectedCategories.length} sélectionnée${_selectedCategories.length > 1 ? 's' : ''})',
