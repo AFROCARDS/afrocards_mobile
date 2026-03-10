@@ -13,6 +13,7 @@ import '../../../social/presentation/screens/notifications_screen.dart';
 import '../../../wallet/presentation/screens/wallet_screen.dart';
 import '../../../social/presentation/screens/friends_screen.dart';
 import '../../../auth/presentation/screens/login_screen.dart';
+import 'edit_profile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -225,7 +226,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   child: IconButton(
                     icon: const Icon(Icons.camera_alt, size: 20),
-                    onPressed: () {}, // TODO: Ajout modification avatar
+                    onPressed: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+                      );
+                      if (result == true) _fetchProfile();
+                    },
                   ),
                 ),
               ),

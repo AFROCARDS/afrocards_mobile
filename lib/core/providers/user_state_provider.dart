@@ -369,6 +369,38 @@ class UserStateProvider extends ChangeNotifier {
     notifyListeners();
   }
   
+  /// Mettre à jour les infos utilisateur (pseudo, avatar) après édition du profil
+  Future<void> updateUserInfo({String? userName, String? avatarUrl}) async {
+    bool updated = false;
+    
+    if (userName != null && userName.isNotEmpty) {
+      _userName = userName;
+      updated = true;
+    }
+    
+    if (avatarUrl != null) {
+      _avatarUrl = avatarUrl.isEmpty ? null : avatarUrl;
+      updated = true;
+    }
+    
+    if (updated) {
+      // Sauvegarder localement
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user_name', _userName);
+        if (_avatarUrl != null) {
+          await prefs.setString('avatar_url', _avatarUrl!);
+        } else {
+          await prefs.remove('avatar_url');
+        }
+      } catch (e) {
+        debugPrint('Erreur sauvegarde infos utilisateur: $e');
+      }
+      
+      notifyListeners();
+    }
+  }
+  
   @override
   void dispose() {
     _livesRegenTimer?.cancel();
