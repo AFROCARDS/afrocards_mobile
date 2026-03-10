@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/providers/user_state_provider.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
+import '../../features/home/presentation/screens/boutique_screen.dart';
 
 /// Widget réutilisable pour le header de l'application
 /// Affiche l'avatar, le nom, le niveau, les vies et les coins
@@ -187,15 +188,19 @@ class AppHeader extends StatelessWidget {
                 
                 // Stats
                 _buildStatBadge(
+                  context: context,
                   icon: Icons.favorite,
                   value: '${userState.lives}/${userState.maxLives}',
                   color: Colors.red,
+                  showPlus: true,
                 ),
                 const SizedBox(width: 8),
                 _buildStatBadge(
+                  context: context,
                   icon: Icons.monetization_on,
                   value: _formatNumber(userState.coins),
                   color: const Color(0xFFFFB74D),
+                  showPlus: true,
                 ),
               ],
             ),
@@ -335,15 +340,19 @@ class AppHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               _buildStatBadge(
+                context: context,
                 icon: Icons.favorite,
                 value: '${userState.lives}/${userState.maxLives}',
                 color: Colors.red,
+                showPlus: true,
               ),
               const SizedBox(height: 6),
               _buildStatBadge(
+                context: context,
                 icon: Icons.monetization_on,
                 value: _formatNumber(userState.coins),
                 color: const Color(0xFFFFB74D),
+                showPlus: true,
               ),
             ],
           ),
@@ -399,31 +408,52 @@ class AppHeader extends StatelessWidget {
   }
 
   Widget _buildStatBadge({
+    required BuildContext context,
     required IconData icon,
     required String value,
     required Color color,
+    bool showPlus = false,
   }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.2), width: 1),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: color, size: 16),
-          const SizedBox(width: 6),
-          Text(
-            value,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 13,
-              color: color,
+    return GestureDetector(
+      onTap: showPlus ? () {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const BoutiqueScreen()),
+        );
+      } : null,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withOpacity(0.2), width: 1),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (showPlus) ...[
+              Container(
+                width: 18,
+                height: 18,
+                decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.add, color: Colors.white, size: 14),
+              ),
+              const SizedBox(width: 6),
+            ],
+            Icon(icon, color: color, size: 16),
+            const SizedBox(width: 6),
+            Text(
+              value,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+                color: color,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
