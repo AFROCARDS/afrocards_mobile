@@ -5,6 +5,17 @@ import 'dart:convert';
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
 
+/// Couleurs du design (identiques à profile_screen)
+class _DesignColors {
+  static const Color primary = Color(0xFFFFB74D);      // Orange principal
+  static const Color secondary = Color(0xFF9C27B0);    // Violet
+  static const Color cyan = Color(0xFF00BCD4);         // Cyan
+  static const Color green = Color(0xFF4CAF50);        // Vert
+  static const Color pink = Color(0xFFE91E63);         // Rose
+  static const Color textDark = Color(0xFF2D3436);     // Texte foncé
+  static const Color textMuted = Color(0xFF636E72);    // Texte atténué
+}
+
 /// Modèle pour un article de la boutique
 class ArticleBoutique {
   final int id;
@@ -70,15 +81,15 @@ class ArticleBoutique {
       case 'vie':
         return Colors.red;
       case 'xp_boost':
-        return const Color(0xFF9C27B0);
+        return _DesignColors.secondary;
       case 'coins':
-        return const Color(0xFFFFB74D);
+        return _DesignColors.primary;
       case 'premium':
-        return const Color(0xFFFF9800);
+        return _DesignColors.pink;
       case 'avatar':
-        return const Color(0xFF2196F3);
+        return _DesignColors.cyan;
       case 'badge':
-        return const Color(0xFF4CAF50);
+        return _DesignColors.green;
       default:
         return Colors.grey;
     }
@@ -236,7 +247,7 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
             ),
             const SizedBox(height: 24),
             
-            // Article icon
+            // Article icon (style profile_screen)
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -252,7 +263,7 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 22,
-                color: Color(0xFF2D3436),
+                color: _DesignColors.textDark,
               ),
             ),
             const SizedBox(height: 8),
@@ -266,26 +277,33 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
             ),
             const SizedBox(height: 24),
             
-            // Prix
+            // Prix (style badge profile_screen)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFFFB74D), Color(0xFFFF9800)],
+                gradient: LinearGradient(
+                  colors: [
+                    _DesignColors.primary.withOpacity(0.2),
+                    _DesignColors.primary.withOpacity(0.1),
+                  ],
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: _DesignColors.primary.withOpacity(0.5),
+                  width: 1,
+                ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.monetization_on, color: Colors.white, size: 24),
+                  const Icon(Icons.monetization_on, color: _DesignColors.primary, size: 24),
                   const SizedBox(width: 8),
                   Text(
                     '${article.prix}',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
-                      color: Colors.white,
+                      color: _DesignColors.primary,
                     ),
                   ),
                 ],
@@ -311,7 +329,7 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       side: BorderSide(color: Colors.grey.shade300),
                     ),
@@ -319,7 +337,7 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
                       'Annuler',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF2D3436),
+                        color: _DesignColors.textDark,
                       ),
                     ),
                   ),
@@ -329,19 +347,17 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
                   child: ElevatedButton(
                     onPressed: () => Navigator.pop(context, true),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFFB74D),
+                      backgroundColor: _DesignColors.primary,
+                      foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       elevation: 0,
                     ),
                     child: const Text(
                       'Confirmer',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -406,7 +422,7 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
             Expanded(child: Text(message)),
           ],
         ),
-        backgroundColor: isError ? Colors.red : const Color(0xFF4CAF50),
+        backgroundColor: isError ? Colors.red : _DesignColors.green,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.all(16),
@@ -432,8 +448,15 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
           SafeArea(
             child: Column(
               children: [
-                // Custom Header
+                // Custom Header (style profile_screen)
                 _buildHeader(userState),
+                
+                const SizedBox(height: 16),
+                
+                // Solde Card (style stat card profile_screen)
+                _buildBalanceCard(userState),
+                
+                const SizedBox(height: 16),
                 
                 // Category Tabs
                 _buildCategoryTabs(),
@@ -442,7 +465,7 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
                 Expanded(
                   child: _isLoading
                       ? const Center(
-                          child: CircularProgressIndicator(color: Color(0xFFFFB74D)),
+                          child: CircularProgressIndicator(color: _DesignColors.primary),
                         )
                       : _isPurchasing
                           ? _buildPurchasingState()
@@ -464,29 +487,26 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
 
   Widget _buildHeader(UserStateProvider userState) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: Row(
         children: [
-          // Back button
+          // Back button (style profile_screen)
           GestureDetector(
             onTap: () => Navigator.pop(context),
             child: Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.grey.shade100,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              child: const Icon(Icons.arrow_back_ios_new, size: 20, color: Color(0xFF2D3436)),
+              child: const Icon(Icons.arrow_back_ios_new, size: 20, color: _DesignColors.textDark),
             ),
           ),
           const SizedBox(width: 16),
@@ -499,51 +519,39 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
                 Text(
                   'Boutique',
                   style: TextStyle(
-                    fontSize: 22,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF2D3436),
+                    color: _DesignColors.textDark,
                   ),
                 ),
                 Text(
                   'Boostez votre progression !',
                   style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
+                    fontSize: 13,
+                    color: _DesignColors.textMuted,
                   ),
                 ),
               ],
             ),
           ),
           
-          // Coins balance
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFFFB74D), Color(0xFFFF9800)],
-              ),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFFFFB74D).withOpacity(0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.monetization_on, color: Colors.white, size: 20),
-                const SizedBox(width: 6),
-                Text(
-                  '${userState.coins}',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Colors.white,
+          // Refresh button
+          GestureDetector(
+            onTap: _loadArticles,
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
                   ),
-                ),
-              ],
+                ],
+              ),
+              child: const Icon(Icons.refresh, size: 20, color: _DesignColors.textDark),
             ),
           ),
         ],
@@ -551,50 +559,143 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
     );
   }
 
-  Widget _buildCategoryTabs() {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: TabBar(
-        controller: _tabController,
-        indicator: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFFFFB74D), Color(0xFFFF9800)],
-          ),
-          borderRadius: BorderRadius.circular(12),
+  Widget _buildBalanceCard(UserStateProvider userState) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
-        indicatorSize: TabBarIndicatorSize.tab,
-        indicatorPadding: const EdgeInsets.all(4),
-        labelColor: Colors.white,
-        unselectedLabelColor: Colors.grey.shade600,
-        labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
-        dividerColor: Colors.transparent,
-        tabs: _categories.map((cat) => Tab(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(cat['icon'] as IconData, size: 16),
-              const SizedBox(width: 4),
-              Flexible(
-                child: Text(
-                  cat['label'] as String,
-                  overflow: TextOverflow.ellipsis,
-                ),
+        child: Row(
+          children: [
+            // Coins stat (style stat card profile_screen)
+            Expanded(
+              child: _buildMiniStatCard(
+                'Coins',
+                '${userState.coins}',
+                Icons.monetization_on,
+                _DesignColors.primary,
               ),
-            ],
+            ),
+            Container(
+              width: 1,
+              height: 50,
+              color: Colors.grey.shade200,
+            ),
+            // Vies stat
+            Expanded(
+              child: _buildMiniStatCard(
+                'Vies',
+                '${userState.lives}/${userState.maxLives}',
+                Icons.favorite,
+                Colors.red,
+              ),
+            ),
+            Container(
+              width: 1,
+              height: 50,
+              color: Colors.grey.shade200,
+            ),
+            // XP stat
+            Expanded(
+              child: _buildMiniStatCard(
+                'XP',
+                '${userState.pointsXP}',
+                Icons.bolt,
+                _DesignColors.secondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMiniStatCard(String label, String value, IconData icon, Color color) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            shape: BoxShape.circle,
           ),
-        )).toList(),
+          child: Icon(icon, color: color, size: 22),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            color: _DesignColors.textDark,
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey.shade600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCategoryTabs() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: TabBar(
+          controller: _tabController,
+          indicator: BoxDecoration(
+            color: _DesignColors.primary,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          indicatorSize: TabBarIndicatorSize.tab,
+          indicatorPadding: const EdgeInsets.all(4),
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.grey.shade600,
+          labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+          dividerColor: Colors.transparent,
+          tabs: _categories.map((cat) => Tab(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(cat['icon'] as IconData, size: 16),
+                const SizedBox(width: 4),
+                Flexible(
+                  child: Text(
+                    cat['label'] as String,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          )).toList(),
+        ),
       ),
     );
   }
@@ -618,14 +719,14 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const CircularProgressIndicator(color: Color(0xFFFFB74D)),
+            const CircularProgressIndicator(color: _DesignColors.primary),
             const SizedBox(height: 20),
             const Text(
               'Achat en cours...',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF2D3436),
+                color: _DesignColors.textDark,
               ),
             ),
             const SizedBox(height: 8),
@@ -649,9 +750,9 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
 
     return RefreshIndicator(
       onRefresh: _loadArticles,
-      color: const Color(0xFFFFB74D),
+      color: _DesignColors.primary,
       child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.all(20),
         itemCount: articles.length,
         itemBuilder: (context, index) {
           return _buildArticleCard(articles[index], userState);
@@ -697,7 +798,7 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF2D3436),
+                color: _DesignColors.textDark,
               ),
             ),
             const SizedBox(height: 4),
@@ -726,7 +827,7 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: article.popular
-              ? Border.all(color: const Color(0xFFFFB74D), width: 2)
+              ? Border.all(color: _DesignColors.pink, width: 2)
               : null,
           boxShadow: [
             BoxShadow(
@@ -740,15 +841,14 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
           children: [
             Row(
               children: [
-                // Icon container
+                // Icon container (style profile_screen)
                 Container(
-                  width: 60,
-                  height: 60,
+                  padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: article.iconColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Icon(article.icon, color: article.iconColor, size: 32),
+                  child: Icon(article.icon, color: article.iconColor, size: 28),
                 ),
                 const SizedBox(width: 14),
                 
@@ -757,43 +857,50 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              article.nom,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: Color(0xFF2D3436),
-                              ),
-                            ),
-                          ),
-                        ],
+                      Text(
+                        article.nom,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: _DesignColors.textDark,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         article.description,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 13,
-                          color: Colors.grey.shade600,
+                          color: _DesignColors.textMuted,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                       if (article.duree != null) ...[
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 6),
                         Row(
                           children: [
-                            Icon(Icons.timer_outlined, size: 14, color: Colors.grey.shade500),
-                            const SizedBox(width: 4),
-                            Text(
-                              article.duree! >= 60 
-                                  ? '${(article.duree! / 60).toInt()}h'
-                                  : '${article.duree}min',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey.shade500,
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: _DesignColors.cyan.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.timer_outlined, size: 12, color: _DesignColors.cyan),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    article.duree! >= 60 
+                                        ? '${(article.duree! / 60).toInt()}h'
+                                        : '${article.duree}min',
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                      color: _DesignColors.cyan,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
@@ -804,41 +911,48 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
                 ),
                 const SizedBox(width: 12),
                 
-                // Price button
+                // Price button (style badge profile_screen)
                 Column(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                       decoration: BoxDecoration(
                         gradient: canAfford
-                            ? const LinearGradient(
-                                colors: [Color(0xFFFFB74D), Color(0xFFFF9800)],
+                            ? LinearGradient(
+                                colors: [
+                                  _DesignColors.primary.withOpacity(0.2),
+                                  _DesignColors.primary.withOpacity(0.1),
+                                ],
                               )
                             : LinearGradient(
-                                colors: [Colors.grey.shade400, Colors.grey.shade500],
+                                colors: [
+                                  Colors.grey.shade200,
+                                  Colors.grey.shade100,
+                                ],
                               ),
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: canAfford
-                            ? [
-                                BoxShadow(
-                                  color: const Color(0xFFFFB74D).withOpacity(0.3),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ]
-                            : null,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: canAfford 
+                              ? _DesignColors.primary.withOpacity(0.5) 
+                              : Colors.grey.shade300,
+                          width: 1,
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.monetization_on, color: Colors.white, size: 16),
+                          Icon(
+                            Icons.monetization_on, 
+                            color: canAfford ? _DesignColors.primary : Colors.grey, 
+                            size: 18,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             '${article.prix}',
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: canAfford ? _DesignColors.primary : Colors.grey,
                               fontWeight: FontWeight.bold,
-                              fontSize: 14,
+                              fontSize: 15,
                             ),
                           ),
                         ],
@@ -859,16 +973,16 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
               ],
             ),
             
-            // Popular badge
+            // Popular badge (style profile_screen)
             if (article.popular)
               Positioned(
                 top: -4,
                 right: -4,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE91E63),
-                    borderRadius: BorderRadius.circular(8),
+                    color: _DesignColors.pink,
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Text(
                     'POPULAIRE',
