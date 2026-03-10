@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
+import '../../../../shared/widgets/app_header.dart';
 import '../../../../shared/widgets/bottom_nav_bar.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -171,8 +172,17 @@ class _ChatScreenState extends State<ChatScreen> {
           SafeArea(
             child: Column(
               children: [
-                // Custom Header
-                _buildHeader(),
+                // App Header
+                AppHeader(
+                  title: widget.friendName,
+                  centerTitle: true,
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.more_horiz, color: Colors.black87),
+                      onPressed: _showOptionsMenu,
+                    ),
+                  ],
+                ),
                 
                 // Messages List
                 Expanded(
@@ -205,40 +215,6 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
       bottomNavigationBar: const AppBottomNavBar(currentIndex: 3),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-      child: Row(
-        children: [
-          // Back button
-          IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black87),
-            onPressed: () => Navigator.pop(context),
-          ),
-          
-          // Friend name centered
-          Expanded(
-            child: Text(
-              widget.friendName,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-          ),
-          
-          // Options menu
-          IconButton(
-            icon: const Icon(Icons.more_horiz, color: Colors.black87),
-            onPressed: _showOptionsMenu,
-          ),
-        ],
-      ),
     );
   }
 
