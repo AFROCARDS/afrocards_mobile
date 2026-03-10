@@ -310,125 +310,127 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 // Contenu du profil
-                Column(
-                  children: [
-                    // Avatar avec bouton modifier
-                    GestureDetector(
-                      onTap: _navigateToEditProfile,
-                      child: Stack(
-                    alignment: Alignment.bottomRight,
+                Center(
+                  child: Column(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: LinearGradient(
-                            colors: [
-                              _getBadgeColor(totalXP).withOpacity(0.5),
-                              _getBadgeColor(totalXP),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                        ),
-                        child: CircleAvatar(
-                          radius: 55,
-                          backgroundColor: Colors.white,
-                          child: CircleAvatar(
-                            radius: 52,
-                            backgroundColor: Colors.grey.shade200,
-                            backgroundImage: userState.avatarUrl != null
-                                ? NetworkImage(userState.avatarUrl!)
-                                : null,
-                            child: userState.avatarUrl == null
-                                ? Icon(Icons.person, color: Colors.grey.shade400, size: 50)
-                                : null,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFB74D),
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 3),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
+                      // Avatar avec bouton modifier
+                      GestureDetector(
+                        onTap: _navigateToEditProfile,
+                        child: Stack(
+                          alignment: Alignment.bottomRight,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: LinearGradient(
+                                  colors: [
+                                    _getBadgeColor(totalXP).withOpacity(0.5),
+                                    _getBadgeColor(totalXP),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                              ),
+                              child: CircleAvatar(
+                                radius: 55,
+                                backgroundColor: Colors.white,
+                                child: CircleAvatar(
+                                  radius: 52,
+                                  backgroundColor: Colors.grey.shade200,
+                                  backgroundImage: userState.avatarUrl != null
+                                      ? NetworkImage(userState.avatarUrl!)
+                                      : null,
+                                  child: userState.avatarUrl == null
+                                      ? Icon(Icons.person, color: Colors.grey.shade400, size: 50)
+                                      : null,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFFB74D),
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.white, width: 3),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(Icons.edit, color: Colors.white, size: 16),
                             ),
                           ],
                         ),
-                        child: const Icon(Icons.edit, color: Colors.white, size: 16),
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                
-                // Pseudo
-                Text(
-                  profil['pseudo'] ?? userState.userName,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2D3436),
-                  ),
-                ),
-                
-                // Nationalité
-                if (nationalite != null && nationalite.isNotEmpty) ...[
-                  const SizedBox(height: 4),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.location_on, size: 14, color: Colors.grey),
-                      const SizedBox(width: 4),
+                      const SizedBox(height: 16),
+                      
+                      // Pseudo
                       Text(
-                        nationalite,
-                        style: const TextStyle(color: Colors.grey, fontSize: 14),
+                        profil['pseudo'] ?? userState.userName,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF2D3436),
+                        ),
                       ),
-                    ],
-                  ),
-                ],
-                
-                const SizedBox(height: 12),
-                
-                // Badge
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        _getBadgeColor(totalXP).withOpacity(0.2),
-                        _getBadgeColor(totalXP).withOpacity(0.1),
+                      
+                      // Nationalité
+                      if (nationalite != null && nationalite.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.location_on, size: 14, color: Colors.grey),
+                            const SizedBox(width: 4),
+                            Text(
+                              nationalite,
+                              style: const TextStyle(color: Colors.grey, fontSize: 14),
+                            ),
+                          ],
+                        ),
                       ],
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: _getBadgeColor(totalXP).withOpacity(0.5),
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.stars, size: 16, color: _getBadgeColor(totalXP)),
-                      const SizedBox(width: 6),
-                      Text(
-                        _getBadgeName(totalXP),
-                        style: TextStyle(
-                          color: _getBadgeColor(totalXP),
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
+                      
+                      const SizedBox(height: 12),
+                      
+                      // Badge
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              _getBadgeColor(totalXP).withOpacity(0.2),
+                              _getBadgeColor(totalXP).withOpacity(0.1),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: _getBadgeColor(totalXP).withOpacity(0.5),
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.stars, size: 16, color: _getBadgeColor(totalXP)),
+                            const SizedBox(width: 6),
+                            Text(
+                              _getBadgeName(totalXP),
+                              style: TextStyle(
+                                color: _getBadgeColor(totalXP),
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
                 ),
-                ],
-              ),
               ],
             ),
           ),
