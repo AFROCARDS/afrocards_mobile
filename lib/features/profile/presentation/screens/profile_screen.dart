@@ -188,7 +188,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildProfileContent(UserStateProvider userState) {
     final profil = _profileData?['profil'] ?? {};
     final utilisateur = _profileData?['utilisateur'] ?? {};
-    final totalXP = profil['pointsXP'] ?? userState.pointsXP;
+    // Priorité à userState.pointsXP (même source que app_header)
+    final totalXP = userState.pointsXP > 0 ? userState.pointsXP : (profil['pointsXP'] ?? 0);
     
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
