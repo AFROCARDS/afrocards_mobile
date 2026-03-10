@@ -112,10 +112,10 @@ class _ClassementScreenState extends State<ClassementScreen> {
       setState(() {
         _error = e.toString();
         _isLoading = false;
-        // Données de test
-        _mondePlayers = _generateTestPlayers();
-        _mensuelPlayers = _generateTestPlayers();
-        _amisPlayers = _generateTestPlayers();
+        // Données de test différentes pour chaque onglet
+        _mondePlayers = _generateTestPlayers(tabIndex: 0);
+        _mensuelPlayers = _generateTestPlayers(tabIndex: 1);
+        _amisPlayers = _generateTestPlayers(tabIndex: 2);
       });
     }
   }
@@ -162,7 +162,7 @@ class _ClassementScreenState extends State<ClassementScreen> {
     } catch (e) {
       debugPrint('Erreur fetch $endpoint: $e');
       // Utiliser les données de test en cas d'erreur
-      final testPlayers = _generateTestPlayers();
+      final testPlayers = _generateTestPlayers(tabIndex: tabIndex);
       setState(() {
         switch (tabIndex) {
           case 0:
@@ -179,54 +179,52 @@ class _ClassementScreenState extends State<ClassementScreen> {
     }
   }
 
-  List<ClassementPlayer> _generateTestPlayers() {
+  List<ClassementPlayer> _generateTestPlayers({int tabIndex = 0}) {
     final userState = context.read<UserStateProvider>();
-    final testData = [
-      {
-        'nom': 'Tunde Gabriel',
-        'niveau': 'Stage 5',
-        'badge': 'Emeraude',
-        'xp': 120
-      },
-      {
-        'nom': 'Tunde Gabriel',
-        'niveau': 'Stage 5',
-        'badge': 'Emeraude',
-        'xp': 120
-      },
-      {
-        'nom': 'Tunde Gabriel',
-        'niveau': 'Stage 5',
-        'badge': 'Emeraude',
-        'xp': 120
-      },
-      {
-        'nom': 'Thibaut Hounton',
-        'niveau': 'Stage 15',
-        'badge': 'Emeraude',
-        'xp': 98
-      },
-      {
-        'nom': userState.userName,
-        'niveau': 'Stage ${userState.currentStageLevel}',
-        'badge': 'Emeraude',
-        'xp': userState.pointsXP,
-        'avatar': userState.avatarUrl,
-        'isCurrentUser': true
-      },
-      {
-        'nom': 'Tunde Gabriel',
-        'niveau': 'Stage 5',
-        'badge': 'Emeraude',
-        'xp': 90
-      },
-      {
-        'nom': 'Tunde Gabriel',
-        'niveau': 'Stage 5',
-        'badge': 'Emeraude',
-        'xp': 80
-      },
-    ];
+    
+    // Données de test différentes selon l'onglet
+    List<Map<String, dynamic>> testData;
+    
+    switch (tabIndex) {
+      case 0: // Monde - Classement global par XP total
+        testData = [
+          {'nom': 'Kwame Asante', 'niveau': 'Stage 25', 'badge': 'Diamant', 'xp': 5000},
+          {'nom': 'Amara Diallo', 'niveau': 'Stage 22', 'badge': 'Platine', 'xp': 4200},
+          {'nom': 'Zuri Okonkwo', 'niveau': 'Stage 20', 'badge': 'Or', 'xp': 3800},
+          {'nom': 'Kofi Mensah', 'niveau': 'Stage 18', 'badge': 'Or', 'xp': 3200},
+          {'nom': 'Fatou Ndiaye', 'niveau': 'Stage 15', 'badge': 'Argent', 'xp': 2500},
+          {'nom': userState.userName, 'niveau': 'Stage ${userState.currentStageLevel}', 'badge': 'Emeraude', 'xp': userState.pointsXP, 'avatar': userState.avatarUrl, 'isCurrentUser': true},
+          {'nom': 'Yemi Adeyemi', 'niveau': 'Stage 12', 'badge': 'Emeraude', 'xp': 1800},
+          {'nom': 'Oumar Bah', 'niveau': 'Stage 10', 'badge': 'Bronze', 'xp': 1200},
+        ];
+        break;
+        
+      case 1: // Mensuel - Classement du mois en cours
+        testData = [
+          {'nom': 'Amara Diallo', 'niveau': 'Stage 22', 'badge': 'Platine', 'xp': 850},
+          {'nom': 'Zuri Okonkwo', 'niveau': 'Stage 20', 'badge': 'Or', 'xp': 720},
+          {'nom': userState.userName, 'niveau': 'Stage ${userState.currentStageLevel}', 'badge': 'Emeraude', 'xp': userState.pointsXP > 0 ? (userState.pointsXP ~/ 3) : 0, 'avatar': userState.avatarUrl, 'isCurrentUser': true},
+          {'nom': 'Kwame Asante', 'niveau': 'Stage 25', 'badge': 'Diamant', 'xp': 580},
+          {'nom': 'Kofi Mensah', 'niveau': 'Stage 18', 'badge': 'Or', 'xp': 450},
+          {'nom': 'Fatou Ndiaye', 'niveau': 'Stage 15', 'badge': 'Argent', 'xp': 320},
+        ];
+        break;
+        
+      case 2: // Ami(e)s - Classement des amis
+        testData = [
+          {'nom': 'Thibaut Hounton', 'niveau': 'Stage 15', 'badge': 'Argent', 'xp': 2500},
+          {'nom': userState.userName, 'niveau': 'Stage ${userState.currentStageLevel}', 'badge': 'Emeraude', 'xp': userState.pointsXP, 'avatar': userState.avatarUrl, 'isCurrentUser': true},
+          {'nom': 'Adama Traoré', 'niveau': 'Stage 8', 'badge': 'Bronze', 'xp': 800},
+          {'nom': 'Mariama Sow', 'niveau': 'Stage 5', 'badge': 'Bronze', 'xp': 450},
+        ];
+        break;
+        
+      default:
+        testData = [];
+    }
+    
+    // Trier par XP décroissant
+    testData.sort((a, b) => (b['xp'] as int).compareTo(a['xp'] as int));
 
     return testData.asMap().entries.map((entry) {
       return ClassementPlayer(
