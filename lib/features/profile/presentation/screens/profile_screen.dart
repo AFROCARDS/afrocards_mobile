@@ -67,7 +67,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (token == null) return;
     
     try {
-      // Fetch nombre d'amis
       final amisResponse = await http.get(
         Uri.parse(ApiEndpoints.buildUrl(ApiEndpoints.amisCount)),
         headers: {
@@ -82,7 +81,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
       }
       
-      // Fetch badges et trophées du joueur
       final inventaireResponse = await http.get(
         Uri.parse(ApiEndpoints.buildUrl(ApiEndpoints.inventaire)),
         headers: {
@@ -105,14 +103,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Déconnexion'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.red.shade50,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.logout, color: Colors.red, size: 24),
+            ),
+            const SizedBox(width: 12),
+            const Text('Déconnexion'),
+          ],
+        ),
         content: const Text('Voulez-vous vraiment vous déconnecter ?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Annuler'),
+            child: const Text('Annuler', style: TextStyle(color: Colors.grey)),
           ),
-          TextButton(
+          ElevatedButton(
             onPressed: () {
               Navigator.of(ctx).pop();
               final userState = context.read<UserStateProvider>();
@@ -122,12 +134,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 (route) => false,
               );
             },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
             child: const Text('Déconnecter'),
           ),
         ],
       ),
     );
+  }
+
+  void _navigateToEditProfile() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+    );
+    if (result == true) {
+      _fetchProfile();
+      _fetchStats();
+    }
   }
 
   String _getBadgeName(int xp) {
@@ -140,6 +167,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (xp >= 500) return 'Bronze';
     if (xp >= 100) return 'Débutant';
     return 'Novice';
+  }
+
+  Color _getBadgeColor(int xp) {
+    if (xp >= 10000) return const Color(0xFFFFD700);
+    if (xp >= 7500) return const Color(0xFFE040FB);
+    if (xp >= 5000) return const Color(0xFF00BCD4);
+    if (xp >= 3000) return const Color(0xFF9C27B0);
+    if (xp >= 2000) return const Color(0xFFFFB74D);
+    if (xp >= 1000) return const Color(0xFFBDBDBD);
+    if (xp >= 500) return const Color(0xFFCD7F32);
+    return const Color(0xFF78909C);
   }
 
   @override
@@ -160,11 +198,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               children: [
                 AppHeader(
-                  title: 'Profil',
+                  title: 'Mon Profil',
                   centerTitle: true,
                   actions: [
                     IconButton(
-                      icon: const Icon(Icons.logout, color: Colors.red),
+                      icon: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.red.shade50,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.logout, color: Colors.red, size: 20),
+                      ),
                       onPressed: _logout,
                       tooltip: 'Déconnexion',
                     ),
@@ -172,9 +217,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 Expanded(
                   child: _loading
-                      ? const Center(child: CircularProgressIndicator())
+                      ? const Center(child: CircularProgressIndicator(color: Color(0xFFFFB74D)))
                       : _profileData == null
-                          ? const Center(child: Text('Erreur de chargement du profil'))
+                          ? _buildErrorState()
                           : _buildProfileContent(userState),
                 ),
               ],
@@ -186,208 +231,457 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget _buildErrorState() {
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.error_outline, size: 64, color: Colors.grey.shade400),
+            const SizedBox(height: 16),
+            const Text(
+              'Erreur de chargement',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Impossible de charger le profil',
+              style: TextStyle(color: Colors.grey),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: () {
+                setState(() => _loading = true);
+                _fetchProfile();
+                _fetchStats();
+              },
+              icon: const Icon(Icons.refresh),
+              label: const Text('Réessayer'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFFFB74D),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildProfileContent(UserStateProvider userState) {
     final profil = _profileData?['profil'] ?? {};
-    final utilisateur = _profileData?['utilisateur'] ?? {};
-    // Priorité à userState.pointsXP (même source que app_header)
     final totalXP = userState.pointsXP > 0 ? userState.pointsXP : (profil['pointsXP'] ?? 0);
+    final bio = profil['bio'] as String?;
+    final nationalite = profil['nationalite'] as String?;
     
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Column(
         children: [
-          const SizedBox(height: 10),
-          Stack(
-            alignment: Alignment.bottomRight,
-            children: [
-              CircleAvatar(
-                radius: 55,
-                backgroundColor: Colors.grey.shade300,
-                backgroundImage: userState.avatarUrl != null
-                    ? NetworkImage(userState.avatarUrl!)
-                    : null,
-                child: userState.avatarUrl == null
-                    ? const Icon(Icons.person, color: Colors.white, size: 50)
-                    : null,
-              ),
-              Positioned(
-                bottom: 4,
-                right: 4,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 4,
+          // Profile Card
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 20,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                // Avatar avec bouton modifier
+                GestureDetector(
+                  onTap: _navigateToEditProfile,
+                  child: Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            colors: [
+                              _getBadgeColor(totalXP).withOpacity(0.5),
+                              _getBadgeColor(totalXP),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                        ),
+                        child: CircleAvatar(
+                          radius: 55,
+                          backgroundColor: Colors.white,
+                          child: CircleAvatar(
+                            radius: 52,
+                            backgroundColor: Colors.grey.shade200,
+                            backgroundImage: userState.avatarUrl != null
+                                ? NetworkImage(userState.avatarUrl!)
+                                : null,
+                            child: userState.avatarUrl == null
+                                ? Icon(Icons.person, color: Colors.grey.shade400, size: 50)
+                                : null,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFB74D),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 3),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(Icons.edit, color: Colors.white, size: 16),
                       ),
                     ],
                   ),
-                  child: IconButton(
-                    icon: const Icon(Icons.camera_alt, size: 20),
-                    onPressed: () async {
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const EditProfileScreen()),
-                      );
-                      if (result == true) _fetchProfile();
-                    },
+                ),
+                const SizedBox(height: 16),
+                
+                // Pseudo
+                Text(
+                  profil['pseudo'] ?? userState.userName,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2D3436),
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            profil['pseudo'] ?? userState.userName,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            decoration: BoxDecoration(
-              color: const Color(0xFFEDE7F6),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              _getBadgeName(totalXP),
-              style: const TextStyle(color: Color(0xFF9C27B0), fontWeight: FontWeight.w600),
-            ),
-          ),
-          const SizedBox(height: 18),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _StatCard(label: 'XP', value: totalXP.toString()),
-              const SizedBox(width: 16),
-              _StatCard(label: 'Trophées', value: _nombreTrophees.toString()),
-              const SizedBox(width: 16),
-              _StatCard(label: 'Ami(e)s', value: _nombreAmis.toString()),
-            ],
-          ),
-          const SizedBox(height: 24),
-          _ProfileMenuSection(
-            items: [
-              _ProfileMenuItem(
-                title: 'Ajouter des amis',
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const FriendsScreen()),
-                  );
-                },
-              ),
-              _ProfileMenuItem(
-                title: 'Historique Quizz',
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const HistoryScreen()),
-                  );
-                },
-              ),
-              _ProfileMenuItem(
-                title: 'Portefeuille',
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const WalletScreen()),
-                  );
-                },
-              ),
-              _ProfileMenuItem(
-                title: 'Mon Inventaire',
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const InventoryScreen()),
-                  );
-                },
-              ),
-              _ProfileMenuItem(
-                title: 'Notifications',
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const NotificationsScreen()),
-                  );
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          _ProfileMenuSection(
-            title: 'Général',
-            items: [
-              _ProfileMenuItem(
-                title: 'Chat',
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const FriendsScreen(),
+                
+                // Nationalité
+                if (nationalite != null && nationalite.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.location_on, size: 14, color: Colors.grey),
+                      const SizedBox(width: 4),
+                      Text(
+                        nationalite,
+                        style: const TextStyle(color: Colors.grey, fontSize: 14),
+                      ),
+                    ],
+                  ),
+                ],
+                
+                const SizedBox(height: 12),
+                
+                // Badge
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        _getBadgeColor(totalXP).withOpacity(0.2),
+                        _getBadgeColor(totalXP).withOpacity(0.1),
+                      ],
                     ),
-                  );
-                },
-              ),
-              const _ProfileMenuItem(title: 'Préférences'),
-              const _ProfileMenuItem(title: 'Réglages'),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: _getBadgeColor(totalXP).withOpacity(0.5),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.stars, size: 16, color: _getBadgeColor(totalXP)),
+                      const SizedBox(width: 6),
+                      Text(
+                        _getBadgeName(totalXP),
+                        style: TextStyle(
+                          color: _getBadgeColor(totalXP),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Bio Card
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFB74D).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(Icons.edit_note, color: Color(0xFFFFB74D), size: 20),
+                    ),
+                    const SizedBox(width: 12),
+                    const Text(
+                      'Bio',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF2D3436),
+                      ),
+                    ),
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: _navigateToEditProfile,
+                      child: const Icon(Icons.edit, size: 18, color: Colors.grey),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  bio != null && bio.isNotEmpty
+                      ? bio
+                      : 'Aucune bio renseignée. Appuyez pour ajouter une description.',
+                  style: TextStyle(
+                    color: bio != null && bio.isNotEmpty
+                        ? const Color(0xFF636E72)
+                        : Colors.grey,
+                    fontSize: 14,
+                    fontStyle: bio != null && bio.isNotEmpty
+                        ? FontStyle.normal
+                        : FontStyle.italic,
+                    height: 1.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Stats Row
+          Row(
+            children: [
+              Expanded(child: _buildStatCard('XP', totalXP.toString(), Icons.bolt, const Color(0xFFFFB74D))),
+              const SizedBox(width: 12),
+              Expanded(child: _buildStatCard('Trophées', _nombreTrophees.toString(), Icons.emoji_events, const Color(0xFF9C27B0))),
+              const SizedBox(width: 12),
+              Expanded(child: _buildStatCard('Amis', _nombreAmis.toString(), Icons.people, const Color(0xFF00BCD4))),
             ],
           ),
+          
+          const SizedBox(height: 24),
+          
+          // Menu Section
+          _buildMenuSection(
+            'Activité',
+            [
+              _MenuItemData(
+                icon: Icons.people_alt,
+                title: 'Mes Amis',
+                color: const Color(0xFF00BCD4),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FriendsScreen())),
+              ),
+              _MenuItemData(
+                icon: Icons.history,
+                title: 'Historique Quiz',
+                color: const Color(0xFF9C27B0),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryScreen())),
+              ),
+              _MenuItemData(
+                icon: Icons.account_balance_wallet,
+                title: 'Portefeuille',
+                color: const Color(0xFF4CAF50),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const WalletScreen())),
+              ),
+              _MenuItemData(
+                icon: Icons.inventory_2,
+                title: 'Mon Inventaire',
+                color: const Color(0xFFFF9800),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const InventoryScreen())),
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Settings Section
+          _buildMenuSection(
+            'Paramètres',
+            [
+              _MenuItemData(
+                icon: Icons.notifications,
+                title: 'Notifications',
+                color: const Color(0xFFE91E63),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen())),
+              ),
+              _MenuItemData(
+                icon: Icons.settings,
+                title: 'Préférences',
+                color: const Color(0xFF607D8B),
+                onTap: () {},
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 30),
         ],
       ),
     );
   }
-}
 
-class _StatCard extends StatelessWidget {
-  final String label;
-  final String value;
-  const _StatCard({required this.label, required this.value});
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildStatCard(String label, String value, IconData icon, Color color) {
     return Container(
-      width: 80,
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
+            blurRadius: 10,
             offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         children: [
-          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 22),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            value,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              color: Color(0xFF2D3436),
+            ),
+          ),
           const SizedBox(height: 4),
-          Text(label, style: const TextStyle(fontSize: 13, color: Colors.black54)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey.shade600,
+            ),
+          ),
         ],
       ),
     );
   }
-}
 
-class _ProfileMenuSection extends StatelessWidget {
-  final String? title;
-  final List<_ProfileMenuItem> items;
-  const _ProfileMenuSection({this.title, required this.items});
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildMenuSection(String title, List<_MenuItemData> items) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (title != null) ...[
-          Padding(
-            padding: const EdgeInsets.only(left: 8, bottom: 6),
-            child: Text(title!, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 12),
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: Color(0xFF2D3436),
+            ),
           ),
-        ],
+        ),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.7),
-            borderRadius: BorderRadius.circular(16),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Column(
-            children: items,
+            children: items.asMap().entries.map((entry) {
+              final index = entry.key;
+              final item = entry.value;
+              final isLast = index == items.length - 1;
+              
+              return Column(
+                children: [
+                  ListTile(
+                    leading: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: item.color.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(item.icon, color: item.color, size: 20),
+                    ),
+                    title: Text(
+                      item.title,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF2D3436),
+                      ),
+                    ),
+                    trailing: Icon(
+                      Icons.chevron_right,
+                      color: Colors.grey.shade400,
+                    ),
+                    onTap: item.onTap,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  ),
+                  if (!isLast)
+                    Divider(
+                      height: 1,
+                      indent: 60,
+                      endIndent: 16,
+                      color: Colors.grey.shade200,
+                    ),
+                ],
+              );
+            }).toList(),
           ),
         ),
       ],
@@ -395,18 +689,16 @@ class _ProfileMenuSection extends StatelessWidget {
   }
 }
 
-class _ProfileMenuItem extends StatelessWidget {
+class _MenuItemData {
+  final IconData icon;
   final String title;
+  final Color color;
   final VoidCallback? onTap;
-  const _ProfileMenuItem({required this.title, this.onTap});
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(title, style: const TextStyle(fontSize: 15)),
-      trailing: const Icon(Icons.chevron_right, color: Colors.black38),
-      onTap: onTap,
-      dense: true,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-    );
-  }
+
+  _MenuItemData({
+    required this.icon,
+    required this.title,
+    required this.color,
+    this.onTap,
+  });
 }
