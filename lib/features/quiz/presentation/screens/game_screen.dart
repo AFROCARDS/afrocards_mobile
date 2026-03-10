@@ -115,6 +115,7 @@ class GameScreen extends StatefulWidget {
   final String? challengeId;
   final String? opponentName;
   final int? opponentId;
+  final int coinsBet; // Mise en coins pour le défi
 
   const GameScreen({
     super.key,
@@ -132,6 +133,7 @@ class GameScreen extends StatefulWidget {
     this.challengeId,
     this.opponentName,
     this.opponentId,
+    this.coinsBet = 0,
   });
 
   @override
@@ -566,6 +568,11 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       final isWinner = _score > opponentScore;
       final userState = context.read<UserStateProvider>();
       
+      // Calcul des coins gagnés/perdus basé sur la mise
+      final int coinsResult = isWinner 
+          ? widget.coinsBet * 2  // Gagne: récupère sa mise + celle de l'adversaire
+          : -widget.coinsBet;     // Perd: perd sa mise
+      
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -578,7 +585,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
             playerAvatarUrl: userState.avatarUrl,
             totalQuestions: _questions.length,
             xpGained: _totalPoints,
-            coinsGained: _score * 5,
+            coinsBet: widget.coinsBet,
+            coinsResult: coinsResult,
             isWinner: isWinner,
           ),
         ),

@@ -18,7 +18,8 @@ class FriendChallengeResultScreen extends StatefulWidget {
   final String? opponentAvatarUrl;
   final String? playerAvatarUrl;
   final int xpGained;
-  final int coinsGained;
+  final int coinsBet;      // Mise initiale
+  final int coinsResult;   // Résultat: positif si gagné, négatif si perdu
   final bool isWinner;
 
   const FriendChallengeResultScreen({
@@ -32,7 +33,8 @@ class FriendChallengeResultScreen extends StatefulWidget {
     this.opponentAvatarUrl,
     this.playerAvatarUrl,
     this.xpGained = 0,
-    this.coinsGained = 0,
+    this.coinsBet = 0,
+    this.coinsResult = 0,
     required this.isWinner,
   });
 
@@ -69,7 +71,8 @@ class _FriendChallengeResultScreenState
   void _updateUserStats() {
     final userState = context.read<UserStateProvider>();
     userState.addXP(widget.xpGained);
-    userState.addCoins(widget.coinsGained);
+    // coinsResult est positif si gagné, négatif si perdu
+    userState.addCoins(widget.coinsResult);
   }
 
   @override
@@ -225,6 +228,53 @@ class _FriendChallengeResultScreenState
               color: Colors.grey[600],
             ),
           ),
+          
+          // Afficher le résultat des coins si pari
+          if (widget.coinsBet > 0) ...[
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              decoration: BoxDecoration(
+                color: widget.isWinner 
+                    ? const Color(0xFF4CAF50).withOpacity(0.1)
+                    : const Color(0xFFE91E63).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: widget.isWinner 
+                      ? const Color(0xFF4CAF50).withOpacity(0.3)
+                      : const Color(0xFFE91E63).withOpacity(0.3),
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    widget.isWinner ? Icons.arrow_upward : Icons.arrow_downward,
+                    color: widget.isWinner 
+                        ? const Color(0xFF4CAF50)
+                        : const Color(0xFFE91E63),
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    widget.isWinner 
+                        ? '+${widget.coinsResult} coins gagnés!'
+                        : '${widget.coinsResult} coins perdus',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: widget.isWinner 
+                          ? const Color(0xFF4CAF50)
+                          : const Color(0xFFE91E63),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  const Icon(Icons.monetization_on, color: Color(0xFFFFB74D), size: 20),
+                ],
+              ),
+            ),
+          ],
+          
           const SizedBox(height: 32),
 
           // Scores des joueurs

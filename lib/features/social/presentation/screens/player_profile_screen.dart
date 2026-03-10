@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
 import '../../../../shared/widgets/app_header.dart';
+import '../../../quiz/presentation/screens/game_screen.dart';
 
 /// Couleurs du design (identiques à profile_screen)
 class _DesignColors {
@@ -267,6 +268,198 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.all(16),
       ),
+    );
+  }
+
+  Future<int?> _showBetDialog(int userCoins) async {
+    final List<int> betOptions = [10, 25, 50, 100];
+    int? selectedBet;
+
+    return showDialog<int>(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: _DesignColors.cardBackground,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              title: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: _DesignColors.primary.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.monetization_on, color: _DesignColors.primary, size: 24),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    'Miser des coins',
+                    style: TextStyle(color: _DesignColors.textPrimary, fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: _DesignColors.background,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: _DesignColors.divider),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Vos coins:', style: TextStyle(color: _DesignColors.textSecondary)),
+                        Row(
+                          children: [
+                            const Icon(Icons.monetization_on, color: _DesignColors.primary, size: 20),
+                            const SizedBox(width: 4),
+                            Text(
+                              '$userCoins',
+                              style: const TextStyle(
+                                color: _DesignColors.primary,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Choisissez votre mise:',
+                    style: TextStyle(color: _DesignColors.textSecondary, fontSize: 14),
+                  ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: betOptions.map((bet) {
+                      final isAvailable = userCoins >= bet;
+                      final isSelected = selectedBet == bet;
+                      return GestureDetector(
+                        onTap: isAvailable ? () => setState(() => selectedBet = bet) : null,
+                        child: Container(
+                          width: 80,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? _DesignColors.primary
+                                : isAvailable
+                                    ? _DesignColors.background
+                                    : _DesignColors.background.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isSelected
+                                  ? _DesignColors.primary
+                                  : isAvailable
+                                      ? _DesignColors.divider
+                                      : _DesignColors.divider.withOpacity(0.3),
+                              width: isSelected ? 2 : 1,
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.monetization_on,
+                                color: isSelected
+                                    ? Colors.white
+                                    : isAvailable
+                                        ? _DesignColors.primary
+                                        : _DesignColors.textMuted,
+                                size: 20,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '$bet',
+                                style: TextStyle(
+                                  color: isSelected
+                                      ? Colors.white
+                                      : isAvailable
+                                          ? _DesignColors.textPrimary
+                                          : _DesignColors.textMuted,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  if (userCoins < 10) ...[
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: _DesignColors.pink.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: _DesignColors.pink.withOpacity(0.3)),
+                      ),
+                      child: const Row(
+                        children: [
+                          Icon(Icons.warning_amber_rounded, color: _DesignColors.pink, size: 20),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Vous n\'avez pas assez de coins pour défier.',
+                              style: TextStyle(color: _DesignColors.pink, fontSize: 13),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: _DesignColors.cyan.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.info_outline, color: _DesignColors.cyan, size: 20),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Si vous gagnez, vous récupérez le double de votre mise!',
+                            style: TextStyle(color: _DesignColors.cyan, fontSize: 13),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Annuler', style: TextStyle(color: _DesignColors.textSecondary)),
+                ),
+                ElevatedButton(
+                  onPressed: selectedBet != null ? () => Navigator.pop(context, selectedBet) : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _DesignColors.secondary,
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: _DesignColors.secondary.withOpacity(0.3),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  child: const Text('Défier !'),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 
@@ -576,9 +769,34 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: Naviguer vers la messagerie ou défier
-                    _showSnackBar('Fonctionnalité à venir !', isSuccess: true);
+                  onPressed: () async {
+                    final userState = context.read<UserStateProvider>();
+                    final userCoins = userState.coins;
+                    
+                    // Afficher le dialogue de mise
+                    final betAmount = await _showBetDialog(userCoins);
+                    
+                    if (betAmount != null && mounted) {
+                      // Naviguer vers le jeu avec la mise
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => GameScreen(
+                            userName: userState.name ?? 'Joueur',
+                            userLevel: userState.niveau ?? 1,
+                            userLives: userState.vies ?? 5,
+                            userCoins: userState.coins,
+                            avatarUrl: userState.avatarUrl,
+                            token: userState.token ?? '',
+                            mode: 'friend_challenge',
+                            nombreQuestions: 7,
+                            opponentName: profil['pseudo'] ?? 'Ami',
+                            opponentId: widget.idJoueur,
+                            coinsBet: betAmount,
+                          ),
+                        ),
+                      );
+                    }
                   },
                   icon: const Icon(Icons.sports_esports),
                   label: const Text('Défier'),

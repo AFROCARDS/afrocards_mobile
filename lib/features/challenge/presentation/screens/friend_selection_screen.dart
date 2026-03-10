@@ -135,7 +135,7 @@ class _FriendSelectionScreenState extends State<FriendSelectionScreen> {
     );
   }
 
-  void _onValidate() {
+  void _onValidate() async {
     if (_selectedFriendId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -148,6 +148,11 @@ class _FriendSelectionScreenState extends State<FriendSelectionScreen> {
 
     final selectedFriend = _friends.firstWhere((f) => f.id == _selectedFriendId);
     final userState = context.read<UserStateProvider>();
+
+    // Afficher le dialogue de mise
+    final betAmount = await _showBetDialog(userState.coins);
+    
+    if (betAmount == null || !mounted) return;
 
     // Naviguer vers le jeu avec l'ami sélectionné
     Navigator.push(
@@ -164,8 +169,201 @@ class _FriendSelectionScreenState extends State<FriendSelectionScreen> {
           nombreQuestions: _questionCount,
           opponentName: selectedFriend.nom,
           opponentId: selectedFriend.id,
+          coinsBet: betAmount,
         ),
       ),
+    );
+  }
+
+  Future<int?> _showBetDialog(int userCoins) async {
+    final List<int> betOptions = [10, 25, 50, 100];
+    int? selectedBet;
+
+    return showDialog<int>(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              title: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFB74D).withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.monetization_on, color: Color(0xFFFFB74D), size: 24),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    'Miser des coins',
+                    style: TextStyle(color: Colors.black87, fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey[300]!),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Vos coins:', style: TextStyle(color: Colors.black54)),
+                        Row(
+                          children: [
+                            const Icon(Icons.monetization_on, color: Color(0xFFFFB74D), size: 20),
+                            const SizedBox(width: 4),
+                            Text(
+                              '$userCoins',
+                              style: const TextStyle(
+                                color: Color(0xFFFFB74D),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Choisissez votre mise:',
+                    style: TextStyle(color: Colors.black54, fontSize: 14),
+                  ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: betOptions.map((bet) {
+                      final isAvailable = userCoins >= bet;
+                      final isSelected = selectedBet == bet;
+                      return GestureDetector(
+                        onTap: isAvailable ? () => setState(() => selectedBet = bet) : null,
+                        child: Container(
+                          width: 80,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? const Color(0xFFFFB74D)
+                                : isAvailable
+                                    ? Colors.grey[100]
+                                    : Colors.grey[100]!.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isSelected
+                                  ? const Color(0xFFFFB74D)
+                                  : isAvailable
+                                      ? Colors.grey[300]!
+                                      : Colors.grey[200]!.withOpacity(0.3),
+                              width: isSelected ? 2 : 1,
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.monetization_on,
+                                color: isSelected
+                                    ? Colors.white
+                                    : isAvailable
+                                        ? const Color(0xFFFFB74D)
+                                        : Colors.grey[400],
+                                size: 20,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '$bet',
+                                style: TextStyle(
+                                  color: isSelected
+                                      ? Colors.white
+                                      : isAvailable
+                                          ? Colors.black87
+                                          : Colors.grey[400],
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  if (userCoins < 10) ...[
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE91E63).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFFE91E63).withOpacity(0.3)),
+                      ),
+                      child: const Row(
+                        children: [
+                          Icon(Icons.warning_amber_rounded, color: Color(0xFFE91E63), size: 20),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Vous n\'avez pas assez de coins pour défier.',
+                              style: TextStyle(color: Color(0xFFE91E63), fontSize: 13),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF00BCD4).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.info_outline, color: Color(0xFF00BCD4), size: 20),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Si vous gagnez, vous récupérez le double de votre mise!',
+                            style: TextStyle(color: Color(0xFF00BCD4), fontSize: 13),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Annuler', style: TextStyle(color: Colors.black54)),
+                ),
+                ElevatedButton(
+                  onPressed: selectedBet != null ? () => Navigator.pop(context, selectedBet) : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6B4EAA),
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: const Color(0xFF6B4EAA).withOpacity(0.3),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  child: const Text('Défier !'),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 
