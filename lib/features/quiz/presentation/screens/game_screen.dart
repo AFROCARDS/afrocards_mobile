@@ -685,9 +685,9 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
             child: const Text('Quitter'),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               final userState = context.read<UserStateProvider>();
-              if (userState.buyLives(1, 50)) {
+              if (await userState.buyLives(1, 50)) {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(

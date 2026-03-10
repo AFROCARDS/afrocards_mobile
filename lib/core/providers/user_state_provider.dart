@@ -45,7 +45,7 @@ class UserStateProvider extends ChangeNotifier {
   int get maxLives => _maxLives;
   int get currentStageLevel => _currentStageLevel;
   int get maxUnlockedStage => _maxUnlockedStage;
-  String get userLevel => 'Stage $_currentStageLevel';
+  String get userLevel => 'Stage $_currentStageLevel-${_pointsXP}XP';
   
   // Calculer le temps restant jusqu'à la prochaine vie
   int get secondsUntilNextLife {
@@ -222,24 +222,27 @@ class UserStateProvider extends ChangeNotifier {
   bool get hasLives => _lives > 0;
   
   /// Ajouter des XP
-  void addXP(int amount) {
+  Future<void> addXP(int amount) async {
     _pointsXP += amount;
     _saveLocalData();
+    await _syncProgressToServer();
     notifyListeners();
   }
   
   /// Ajouter des pièces
-  void addCoins(int amount) {
+  Future<void> addCoins(int amount) async {
     _coins += amount;
     _saveLocalData();
+    await _syncProgressToServer();
     notifyListeners();
   }
   
   /// Dépenser des pièces
-  bool spendCoins(int amount) {
+  Future<bool> spendCoins(int amount) async {
     if (_coins >= amount) {
       _coins -= amount;
       _saveLocalData();
+      await _syncProgressToServer();
       notifyListeners();
       return true;
     }
@@ -247,10 +250,11 @@ class UserStateProvider extends ChangeNotifier {
   }
   
   /// Acheter des vies avec des pièces
-  bool buyLives(int livesToBuy, int cost) {
-    if (spendCoins(cost)) {
+  Future<bool> buyLives(int livesToBuy, int cost) async {
+    if (await spendCoins(cost)) {
       _lives = (_lives + livesToBuy).clamp(0, _maxLives);
       _saveLocalData();
+      await _syncProgressToServer();
       notifyListeners();
       return true;
     }

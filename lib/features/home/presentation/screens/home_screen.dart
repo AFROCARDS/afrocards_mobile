@@ -277,9 +277,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _buyLives() {
+  Future<void> _buyLives() async {
     final userState = context.read<UserStateProvider>();
-    if (userState.buyLives(1, 50)) {
+    if (await userState.buyLives(1, 50)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('+1 vie achetée !'),
