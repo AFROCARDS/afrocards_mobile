@@ -8,6 +8,13 @@ class ApiEndpoints {
 
     /// GET - Liste des articles de la boutique
     static const String boutiqueArticles = '/boutique/articles';
+    
+    /// POST - Acheter un article
+    static const String boutiqueAcheter = '/boutique/acheter';
+    
+    /// GET - Mes achats
+    static const String boutiqueMesAchats = '/boutique/mes-achats';
+    
   // ========================================
   // 🔧 CONFIGURATION DE BASE
   // ========================================

@@ -218,6 +218,14 @@ class UserStateProvider extends ChangeNotifier {
     }
   }
   
+  /// Ajouter des vies (achat boutique)
+  void addLives(int amount) {
+    _lives = (_lives + amount).clamp(0, _maxLives);
+    _saveLocalData();
+    _syncLivesToServer();
+    notifyListeners();
+  }
+  
   /// Vérifier si l'utilisateur a des vies
   bool get hasLives => _lives > 0;
   
