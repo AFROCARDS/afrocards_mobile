@@ -463,7 +463,7 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
         child: ElevatedButton(
           onPressed: _onSuivantPressed,
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFE8DFA0), // Jaune/doré comme la maquette
+            backgroundColor: const Color(0xFFFFB74D), // Orange primaire
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(

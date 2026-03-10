@@ -1190,7 +1190,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                   ? _nextQuestion
                   : (_selectedAnswerId != null ? _confirmAnswer : null),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFE8DFA0),
+                backgroundColor: const Color(0xFFFFB74D),
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
@@ -1409,7 +1409,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                     _nextQuestion();
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFE8DFA0),
+                    backgroundColor: const Color(0xFFFFB74D),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
