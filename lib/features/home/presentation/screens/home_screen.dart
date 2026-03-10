@@ -15,6 +15,17 @@ import '../../../quiz/presentation/screens/game_screen.dart';
 import '../../../classement/presentation/screens/classement_screen.dart';
 import 'card_screen.dart';
 
+/// Couleurs du design (identiques à profile_screen)
+class _DesignColors {
+  static const Color primary = Color(0xFFFFB74D);      // Orange principal
+  static const Color secondary = Color(0xFF9C27B0);    // Violet
+  static const Color cyan = Color(0xFF00BCD4);         // Cyan
+  static const Color green = Color(0xFF4CAF50);        // Vert
+  static const Color pink = Color(0xFFE91E63);         // Rose
+  static const Color textDark = Color(0xFF2D3436);     // Texte foncé
+  static const Color textMuted = Color(0xFF636E72);    // Texte atténué
+}
+
 /// Écran principal Home avec le bouton JOUER UN QUIZZ
 /// Affiche les modes de jeu et les sections Explorez et Gagnez
 class HomeScreen extends StatefulWidget {
@@ -185,12 +196,18 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(mode['nom'] ?? 'Mode'),
-        content: Text(mode['description'] ?? 'Aucune description disponible'),
+        title: Text(
+          mode['nom'] ?? 'Mode',
+          style: const TextStyle(color: _DesignColors.textDark, fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          mode['description'] ?? 'Aucune description disponible',
+          style: const TextStyle(color: _DesignColors.textMuted),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Fermer', style: TextStyle(color: Colors.black)),
+            child: const Text('Fermer', style: TextStyle(color: _DesignColors.primary, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -232,9 +249,16 @@ class _HomeScreenState extends State<HomeScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            Icon(Icons.heart_broken, color: Colors.red[400]),
-            const SizedBox(width: 8),
-            const Text('Plus de vies !'),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: _DesignColors.pink.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.heart_broken, color: _DesignColors.pink, size: 24),
+            ),
+            const SizedBox(width: 12),
+            const Text('Plus de vies !', style: TextStyle(color: _DesignColors.textDark)),
           ],
         ),
         content: Consumer<UserStateProvider>(
@@ -242,11 +266,14 @@ class _HomeScreenState extends State<HomeScreen> {
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Tu n\'as plus de vies pour jouer.'),
+                const Text(
+                  'Tu n\'as plus de vies pour jouer.',
+                  style: TextStyle(color: _DesignColors.textMuted),
+                ),
                 const SizedBox(height: 12),
                 Text(
                   'Prochaine vie dans ${userState.secondsUntilNextLife}s',
-                  style: TextStyle(color: Colors.grey[600]),
+                  style: const TextStyle(color: _DesignColors.textMuted),
                 ),
                 const SizedBox(height: 16),
                 const Text(
@@ -260,7 +287,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Attendre'),
+            child: const Text('Attendre', style: TextStyle(color: _DesignColors.textMuted)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -268,9 +295,12 @@ class _HomeScreenState extends State<HomeScreen> {
               _buyLives();
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF6B4EAA),
+              backgroundColor: _DesignColors.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 0,
             ),
-            child: const Text('Acheter (50 🪙)', style: TextStyle(color: Colors.white)),
+            child: const Text('Acheter (50 \ud83e\ude99)', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -281,16 +311,34 @@ class _HomeScreenState extends State<HomeScreen> {
     final userState = context.read<UserStateProvider>();
     if (await userState.buyLives(1, 50)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('+1 vie achetée !'),
-          backgroundColor: Colors.green,
+        SnackBar(
+          content: const Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.white),
+              SizedBox(width: 12),
+              Text('+1 vie achetée !'),
+            ],
+          ),
+          backgroundColor: _DesignColors.green,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          margin: const EdgeInsets.all(16),
         ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Pas assez de pièces'),
-          backgroundColor: Colors.red,
+        SnackBar(
+          content: const Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.white),
+              SizedBox(width: 12),
+              Text('Pas assez de pièces'),
+            ],
+          ),
+          backgroundColor: _DesignColors.pink,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          margin: const EdgeInsets.all(16),
         ),
       );
     }
@@ -407,7 +455,7 @@ class _HomeScreenState extends State<HomeScreen> {
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 15,
-            color: Colors.black87,
+            color: _DesignColors.textMuted,
             height: 1.4,
           ),
         ),
@@ -416,7 +464,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ? const Center(
           child: Padding(
             padding: EdgeInsets.all(20),
-            child: CircularProgressIndicator(color: Colors.black),
+            child: CircularProgressIndicator(color: _DesignColors.primary),
           ),
         )
             : Row(
@@ -438,21 +486,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Définir l'icône et les couleurs selon le mode
     IconData modeIcon;
-    List<Color> gradientColors;
-    Color iconBgColor;
+    Color modeColor;
 
     if (modeName == 'stages' || modeName == 'stage') {
       modeIcon = Icons.stairs_rounded;
-      gradientColors = [const Color(0xFFFFD700), const Color(0xFFFFA500)];
-      iconBgColor = const Color(0xFFFFF3CD);
+      modeColor = _DesignColors.primary;
     } else if (modeName == 'fiesta') {
       modeIcon = Icons.celebration_rounded;
-      gradientColors = [const Color(0xFFE91E63), const Color(0xFF9C27B0)];
-      iconBgColor = const Color(0xFFFCE4EC);
+      modeColor = _DesignColors.pink;
     } else {
       modeIcon = Icons.gamepad_rounded;
-      gradientColors = [const Color(0xFF6B4EAA), const Color(0xFF9C27B0)];
-      iconBgColor = const Color(0xFFF3E5F5);
+      modeColor = _DesignColors.secondary;
     }
 
     return GestureDetector(
@@ -461,12 +505,12 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: gradientColors[0].withOpacity(0.15),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -488,26 +532,15 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 4),
-            // Icône avec gradient
+            // Icône avec fond coloré (style profile_screen)
             Container(
-              width: 80,
-              height: 80,
+              width: 70,
+              height: 70,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: gradientColors,
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: modeColor.withOpacity(0.1),
                 shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: gradientColors[0].withOpacity(0.4),
-                    blurRadius: 15,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
               ),
-              child: Icon(modeIcon, size: 40, color: Colors.white),
+              child: Icon(modeIcon, size: 36, color: modeColor),
             ),
             const SizedBox(height: 16),
             Text(
@@ -515,7 +548,40 @@ class _HomeScreenState extends State<HomeScreen> {
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: _DesignColors.textDark,
+              ),
+            ),
+            const SizedBox(height: 8),
+            // Bouton Jouer
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    modeColor.withOpacity(0.2),
+                    modeColor.withOpacity(0.1),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: modeColor.withOpacity(0.3),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.play_arrow, size: 16, color: modeColor),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Jouer',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: modeColor,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -534,6 +600,7 @@ class _HomeScreenState extends State<HomeScreen> {
             fontSize: 18,
             fontWeight: FontWeight.bold,
             letterSpacing: 1,
+            color: _DesignColors.textDark,
           ),
         ),
         const SizedBox(height: 20),
@@ -543,7 +610,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: _buildExploreCard(
                 title: 'Mon Classement',
                 icon: Icons.emoji_events,
-                iconColor: Colors.orange,
+                color: _DesignColors.primary,
                 subtitle: 'N°${_userRank ?? 420} sur ${_totalPlayers ?? 10000}',
                 onTap: _navigateToClassement,
               ),
@@ -553,7 +620,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: _buildExploreCard(
                 title: 'Challenge',
                 icon: Icons.card_giftcard,
-                iconColor: Colors.purple,
+                color: _DesignColors.secondary,
                 onTap: _navigateToChallenge,
               ),
             ),
@@ -566,30 +633,22 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildExploreCard({
     required String title,
     required IconData icon,
-    required Color iconColor,
+    required Color color,
     String? subtitle,
     required VoidCallback onTap,
   }) {
-    // Définir les couleurs de gradient selon le titre
-    List<Color> gradientColors;
-    if (title.toLowerCase().contains('classement')) {
-      gradientColors = [const Color(0xFFFF9800), const Color(0xFFFF5722)];
-    } else {
-      gradientColors = [const Color(0xFF7C4DFF), const Color(0xFF651FFF)];
-    }
-
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: gradientColors[0].withOpacity(0.15),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -608,26 +667,15 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 4),
-            // Icône avec gradient
+            // Icône avec fond coloré (style profile_screen)
             Container(
-              width: 70,
-              height: 70,
+              width: 60,
+              height: 60,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: gradientColors,
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: color.withOpacity(0.1),
                 shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: gradientColors[0].withOpacity(0.4),
-                    blurRadius: 15,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
               ),
-              child: Icon(icon, size: 35, color: Colors.white),
+              child: Icon(icon, size: 30, color: color),
             ),
             const SizedBox(height: 14),
             Text(
@@ -636,7 +684,7 @@ class _HomeScreenState extends State<HomeScreen> {
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: _DesignColors.textDark,
               ),
             ),
             if (subtitle != null) ...[
@@ -644,17 +692,19 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [gradientColors[0].withOpacity(0.1), gradientColors[1].withOpacity(0.1)],
-                  ),
+                  color: color.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: color.withOpacity(0.3),
+                    width: 1,
+                  ),
                 ),
                 child: Text(
                   subtitle,
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: gradientColors[0],
+                    color: color,
                   ),
                 ),
               ),
@@ -683,6 +733,10 @@ class _QuizBuzzerButtonState extends State<_QuizBuzzerButton>
   late Animation<double> _scaleAnimation;
   late Animation<double> _shadowAnimation;
   bool _isPressed = false;
+
+  // Couleurs du buzzer (style profile_screen)
+  static const Color _primaryColor = Color(0xFFFFB74D);
+  static const Color _secondaryColor = Color(0xFF9C27B0);
 
   @override
   void initState() {
@@ -738,14 +792,14 @@ class _QuizBuzzerButtonState extends State<_QuizBuzzerButton>
               boxShadow: [
                 // Ombre extérieure principale
                 BoxShadow(
-                  color: const Color(0xFF6B4EAA).withOpacity(0.4 * _shadowAnimation.value),
+                  color: _primaryColor.withOpacity(0.4 * _shadowAnimation.value),
                   blurRadius: 25 * _shadowAnimation.value,
                   spreadRadius: 5 * _shadowAnimation.value,
                   offset: Offset(0, 12 * _shadowAnimation.value),
                 ),
-                // Lueur violet
+                // Lueur orange
                 BoxShadow(
-                  color: const Color(0xFF9B7ED9).withOpacity(0.3 * _shadowAnimation.value),
+                  color: _primaryColor.withOpacity(0.3 * _shadowAnimation.value),
                   blurRadius: 40 * _shadowAnimation.value,
                   spreadRadius: 10 * _shadowAnimation.value,
                 ),
@@ -788,9 +842,9 @@ class _QuizBuzzerButtonState extends State<_QuizBuzzerButton>
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          const Color(0xFF8B5CF6),
-                          const Color(0xFF6B4EAA),
-                          const Color(0xFF5B3E9A),
+                          _primaryColor,
+                          _primaryColor.withRed(220),
+                          _secondaryColor.withOpacity(0.8),
                         ],
                       ),
                       boxShadow: [
@@ -820,14 +874,14 @@ class _QuizBuzzerButtonState extends State<_QuizBuzzerButton>
                         radius: 0.8,
                         colors: _isPressed
                             ? [
-                          const Color(0xFF7C3AED),
-                          const Color(0xFF6B4EAA),
-                          const Color(0xFF5B3E9A),
+                          _primaryColor.withRed(200),
+                          _primaryColor,
+                          _secondaryColor,
                         ]
                             : [
-                          const Color(0xFFA78BFA),
-                          const Color(0xFF8B5CF6),
-                          const Color(0xFF7C3AED),
+                          _primaryColor.withOpacity(0.9),
+                          _primaryColor,
+                          _primaryColor.withRed(220),
                         ],
                       ),
                       boxShadow: _isPressed
@@ -842,7 +896,7 @@ class _QuizBuzzerButtonState extends State<_QuizBuzzerButton>
                         ),
                         // Effet 3D - ombre basse
                         BoxShadow(
-                          color: const Color(0xFF4C1D95).withOpacity(0.8),
+                          color: _secondaryColor.withOpacity(0.8),
                           blurRadius: 0,
                           spreadRadius: 0,
                           offset: const Offset(0, 6),
@@ -918,7 +972,7 @@ class _QuizBuzzerButtonState extends State<_QuizBuzzerButton>
                             ],
                           ),
                         ),
-                        const Text(
+                        Text(
                           'QUIZZ',
                           style: TextStyle(
                             fontSize: 28,
@@ -927,14 +981,14 @@ class _QuizBuzzerButtonState extends State<_QuizBuzzerButton>
                             letterSpacing: 3,
                             shadows: [
                               Shadow(
-                                color: Color(0xFF4C1D95),
+                                color: _secondaryColor,
                                 blurRadius: 0,
-                                offset: Offset(0, 2),
+                                offset: const Offset(0, 2),
                               ),
                               Shadow(
                                 color: Colors.black38,
                                 blurRadius: 4,
-                                offset: Offset(0, 2),
+                                offset: const Offset(0, 2),
                               ),
                             ],
                           ),
