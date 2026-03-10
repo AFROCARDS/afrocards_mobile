@@ -666,7 +666,7 @@ class _ChatScreenState extends State<ChatScreen> {
           // Avatar pour messages envoyés (à droite)
           if (isMe) ...[
             const SizedBox(width: 8),
-            _buildAvatar(userState.avatar, 18, withBorder: true),
+            _buildAvatar(userState.avatarUrl, 18, withBorder: true),
           ],
         ],
       ),
