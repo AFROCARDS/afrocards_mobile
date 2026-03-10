@@ -734,10 +734,6 @@ class _QuizBuzzerButtonState extends State<_QuizBuzzerButton>
   late Animation<double> _shadowAnimation;
   bool _isPressed = false;
 
-  // Couleurs du buzzer (style profile_screen)
-  static const Color _primaryColor = Color(0xFFFFB74D);
-  static const Color _secondaryColor = Color(0xFF9C27B0);
-
   @override
   void initState() {
     super.initState();
@@ -792,14 +788,14 @@ class _QuizBuzzerButtonState extends State<_QuizBuzzerButton>
               boxShadow: [
                 // Ombre extérieure principale
                 BoxShadow(
-                  color: _primaryColor.withOpacity(0.4 * _shadowAnimation.value),
+                  color: const Color(0xFF6B4EAA).withOpacity(0.4 * _shadowAnimation.value),
                   blurRadius: 25 * _shadowAnimation.value,
                   spreadRadius: 5 * _shadowAnimation.value,
                   offset: Offset(0, 12 * _shadowAnimation.value),
                 ),
-                // Lueur orange
+                // Lueur violet
                 BoxShadow(
-                  color: _primaryColor.withOpacity(0.3 * _shadowAnimation.value),
+                  color: const Color(0xFF9B7ED9).withOpacity(0.3 * _shadowAnimation.value),
                   blurRadius: 40 * _shadowAnimation.value,
                   spreadRadius: 10 * _shadowAnimation.value,
                 ),
@@ -842,9 +838,9 @@ class _QuizBuzzerButtonState extends State<_QuizBuzzerButton>
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          _primaryColor,
-                          _primaryColor.withRed(220),
-                          _secondaryColor.withOpacity(0.8),
+                          const Color(0xFF8B5CF6),
+                          const Color(0xFF6B4EAA),
+                          const Color(0xFF5B3E9A),
                         ],
                       ),
                       boxShadow: [
@@ -874,14 +870,14 @@ class _QuizBuzzerButtonState extends State<_QuizBuzzerButton>
                         radius: 0.8,
                         colors: _isPressed
                             ? [
-                          _primaryColor.withRed(200),
-                          _primaryColor,
-                          _secondaryColor,
+                          const Color(0xFF7C3AED),
+                          const Color(0xFF6B4EAA),
+                          const Color(0xFF5B3E9A),
                         ]
                             : [
-                          _primaryColor.withOpacity(0.9),
-                          _primaryColor,
-                          _primaryColor.withRed(220),
+                          const Color(0xFFA78BFA),
+                          const Color(0xFF8B5CF6),
+                          const Color(0xFF7C3AED),
                         ],
                       ),
                       boxShadow: _isPressed
@@ -896,7 +892,7 @@ class _QuizBuzzerButtonState extends State<_QuizBuzzerButton>
                         ),
                         // Effet 3D - ombre basse
                         BoxShadow(
-                          color: _secondaryColor.withOpacity(0.8),
+                          color: const Color(0xFF4C1D95).withOpacity(0.8),
                           blurRadius: 0,
                           spreadRadius: 0,
                           offset: const Offset(0, 6),
@@ -981,7 +977,7 @@ class _QuizBuzzerButtonState extends State<_QuizBuzzerButton>
                             letterSpacing: 3,
                             shadows: [
                               Shadow(
-                                color: _secondaryColor,
+                                color: const Color(0xFF4C1D95),
                                 blurRadius: 0,
                                 offset: const Offset(0, 2),
                               ),
