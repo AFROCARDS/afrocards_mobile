@@ -188,7 +188,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildProfileContent(UserStateProvider userState) {
     final profil = _profileData?['profil'] ?? {};
     final utilisateur = _profileData?['utilisateur'] ?? {};
-    final totalXP = profil['totalXP'] ?? userState.pointsXP;
+    final totalXP = profil['pointsXP'] ?? userState.pointsXP;
     
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -232,7 +232,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const SizedBox(height: 10),
           Text(
-            utilisateur['nom'] ?? userState.userName,
+            profil['pseudo'] ?? userState.userName,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
