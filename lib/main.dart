@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'core/providers/user_state_provider.dart';
+import 'core/providers/theme_provider.dart';
 import 'features/auth/presentation/screens/splash_screen.dart';
 
 /// 🚀 MAIN.DART - AFROCARDS
@@ -35,14 +36,26 @@ class AfroCardsApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => UserStateProvider(),
-      child: MaterialApp(
-        title: 'AFROCARDS',
-        debugShowCheckedModeBanner: false,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserStateProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+      ],
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            title: 'AFROCARDS',
+            debugShowCheckedModeBanner: false,
+            
+            // 🎨 Thèmes
+            theme: ThemeProvider.lightTheme,
+            darkTheme: ThemeProvider.darkTheme,
+            themeMode: themeProvider.themeMode,
 
-        // 🏠 Route de démarrage
-        home: const SplashScreen(),
+            // 🏠 Route de démarrage
+            home: const SplashScreen(),
+          );
+        },
       ),
     );
   }

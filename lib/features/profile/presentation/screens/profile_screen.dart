@@ -14,6 +14,7 @@ import '../../../wallet/presentation/screens/wallet_screen.dart';
 import '../../../social/presentation/screens/friends_screen.dart';
 import '../../../auth/presentation/screens/login_screen.dart';
 import 'edit_profile_screen.dart';
+import 'preferences_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -524,7 +525,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: Icons.settings,
                 title: 'Préférences',
                 color: const Color(0xFF607D8B),
-                onTap: () {},
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PreferencesScreen())),
               ),
             ],
           ),
