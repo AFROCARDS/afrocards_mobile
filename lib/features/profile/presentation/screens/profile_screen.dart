@@ -38,25 +38,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _fetchProfile() async {
     final userState = context.read<UserStateProvider>();
     final token = userState.token;
-    if (token == null) return;
+    if (token == null) {
+      debugPrint('❌ [Profile] Token is null');
+      return;
+    }
     try {
+      final url = ApiEndpoints.buildUrl(ApiEndpoints.profile);
+      debugPrint('🔍 [Profile] Fetching: $url');
+      
       final response = await http.get(
-        Uri.parse(ApiEndpoints.buildUrl(ApiEndpoints.profile)),
+        Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
       );
+      
+      debugPrint('🔍 [Profile] Status: ${response.statusCode}');
+      debugPrint('🔍 [Profile] Body: ${response.body}');
+      
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+        debugPrint('🔍 [Profile] Data keys: ${data.keys}');
+        debugPrint('🔍 [Profile] data[data] keys: ${data['data']?.keys}');
+        debugPrint('🔍 [Profile] badgePrincipal: ${data['data']?['badgePrincipal']}');
         setState(() {
           _profileData = data['data'];
           _loading = false;
         });
       } else {
+        debugPrint('❌ [Profile] Error status: ${response.statusCode}');
         setState(() => _loading = false);
       }
-    } catch (e) {
+    } catch (e, stack) {
+      debugPrint('❌ [Profile] Exception: $e');
+      debugPrint('❌ [Profile] Stack: $stack');
       setState(() => _loading = false);
     }
   }
