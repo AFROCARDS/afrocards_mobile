@@ -10,6 +10,7 @@ import '../../../../shared/widgets/app_header.dart';
 import '../../../../shared/widgets/bottom_nav_bar.dart';
 import '../../../quiz/presentation/screens/game_screen.dart';
 import '../../../social/presentation/screens/friends_screen.dart';
+import 'friend_challenge_category_screen.dart';
 
 
 /// Modèle pour un ami
@@ -155,22 +156,16 @@ class _FriendSelectionScreenState extends State<FriendSelectionScreen> {
     
     if (betAmount == null || !mounted) return;
 
-    // Naviguer vers le jeu avec l'ami sélectionné
+    // Naviguer vers la sélection de catégorie
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => GameScreen(
-          userName: userState.userName,
-          userLevel: userState.userLevel,
-          userLives: userState.lives,
-          userCoins: userState.coins,
-          avatarUrl: userState.avatarUrl,
+        builder: (context) => FriendChallengeCategoryScreen(
           token: widget.token,
-          mode: 'friend_challenge',
-          nombreQuestions: _questionCount,
-          opponentName: selectedFriend.nom,
-          opponentId: selectedFriend.id,
+          friendId: selectedFriend.id,
+          friendName: selectedFriend.nom,
           coinsBet: betAmount,
+          questionCount: _questionCount,
         ),
       ),
     );
