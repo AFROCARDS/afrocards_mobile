@@ -35,6 +35,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     final token = userState.token;
     if (token == null) return;
     try {
+      debugPrint('📋 [History] Fetching game activity from server...');
       final response = await http.get(
         Uri.parse(ApiEndpoints.buildUrl(ApiEndpoints.resultsHistory)),
         headers: {
@@ -45,6 +46,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final history = data['data'] ?? [];
+        
+        debugPrint('✅ [History] Loaded ${history.length} real activities from server');
         
         // Calculer les stats
         int xp = 0;
@@ -61,10 +64,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
           _totalCoins = coins;
           _loading = false;
         });
+        
+        debugPrint('📊 [History] Stats - Activities: $history.length, XP: $xp, Coins: $coins');
       } else {
+        debugPrint('❌ [History] Error status: ${response.statusCode}');
         setState(() => _loading = false);
       }
     } catch (e) {
+      debugPrint('❌ [History] Error: $e');
       setState(() => _loading = false);
     }
   }
@@ -566,7 +573,14 @@ class _HistoryCard extends StatelessWidget {
   _ModeInfo _getModeInfo(String mode, String adversaire, int? niveauStage) {
     final modeLower = mode.toLowerCase();
     
-    if (modeLower.contains('défi') || modeLower.contains('duel')) {
+    if (modeLower.contains('challenge sponsorisé')) {
+      return _ModeInfo(
+        title: adversaire.isNotEmpty ? 'Challenge ${adversaire}' : 'Challenge Sponsorisé',
+        badge: 'SPONSOR',
+        icon: Icons.star,
+        color: const Color(0xFFFFD700),
+      );
+    } else if (modeLower.contains('défi') || modeLower.contains('duel')) {
       return _ModeInfo(
         title: 'Duel vs ${adversaire.isNotEmpty ? adversaire : 'Joueur'}',
         badge: 'DUEL',
