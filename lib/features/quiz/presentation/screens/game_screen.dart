@@ -127,6 +127,7 @@ class GameScreen extends StatefulWidget {
     this.avatarUrl,
     this.token,
     this.idCategorie,
+    this.categorieNom,
     this.levelNumber,
     this.difficute,
     this.nombreQuestions = 10,
