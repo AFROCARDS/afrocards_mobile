@@ -420,6 +420,40 @@ class UserStateProvider extends ChangeNotifier {
     notifyListeners();
   }
   
+  /// Rafraîchir l'inventaire du serveur (après avoir gagné un trophée)
+  Future<int> refreshInventory() async {
+    if (_token == null) {
+      debugPrint('❌ [UserState] Token is null for inventory refresh');
+      return 0;
+    }
+
+    try {
+      debugPrint('🔄 [UserState] Refreshing inventory from server...');
+      final url = ApiEndpoints.buildUrl(ApiEndpoints.inventaire);
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final tropheeCount = (data['data']?['trophees'] as List?)?.length ?? 0;
+        debugPrint('✅ [UserState] Inventory refreshed - Trophies: $tropheeCount');
+        notifyListeners();
+        return tropheeCount;
+      } else {
+        debugPrint('❌ [UserState] Failed to refresh inventory: ${response.statusCode}');
+        return 0;
+      }
+    } catch (e) {
+      debugPrint('❌ [UserState] Error refreshing inventory: $e');
+      return 0;
+    }
+  }
+
   /// Mettre à jour les infos utilisateur (pseudo, avatar) après édition du profil
   Future<void> updateUserInfo({String? userName, String? avatarUrl}) async {
     bool updated = false;

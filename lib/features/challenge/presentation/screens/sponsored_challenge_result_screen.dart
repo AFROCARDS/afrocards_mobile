@@ -5,7 +5,7 @@ import '../../../../core/providers/user_state_provider.dart';
 import '../../../../core/theme/theme_colors.dart';
 import '../../../../shared/widgets/app_header.dart';
 import '../../../../shared/widgets/bottom_nav_bar.dart';
-import 'sponsored_challenge_list_screen.dart';
+import 'sponsored_challenge_list_screen.dart'; // ignore: unused_import
 
 /// Couleurs du design
 class _DesignColors {
@@ -17,7 +17,7 @@ class _DesignColors {
 }
 
 /// Écran de résultat du challenge sponsorisé
-class SponsoredChallengeResultScreen extends StatelessWidget {
+class SponsoredChallengeResultScreen extends StatefulWidget {
   final SponsoredChallenge challenge;
   final int score;
   final int totalQuestions;
@@ -36,10 +36,39 @@ class SponsoredChallengeResultScreen extends StatelessWidget {
   double get percentage => (score / totalQuestions) * 100;
 
   @override
+  State<SponsoredChallengeResultScreen> createState() => _SponsoredChallengeResultScreenState();
+}
+
+class _SponsoredChallengeResultScreenState extends State<SponsoredChallengeResultScreen> {
+  bool get isWon => (widget.score / widget.totalQuestions) >= 0.7;
+
+  double get percentage => (widget.score / widget.totalQuestions) * 100;
+
+  @override
+  void initState() {
+    super.initState();
+    // Si victoire, rafraîchir l'inventaire immédiatement
+    if (isWon) {
+      _refreshInventoryAfterWin();
+    }
+  }
+
+  Future<void> _refreshInventoryAfterWin() async {
+    try {
+      final userState = context.read<UserStateProvider>();
+      debugPrint('🏆 [ResultScreen] Victory detected - Refreshing inventory...');
+      await userState.refreshInventory();
+      debugPrint('🏆 [ResultScreen] Inventory refreshed after win');
+    } catch (e) {
+      debugPrint('❌ [ResultScreen] Error refreshing inventory: $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     final userState = context.watch<UserStateProvider>();
-    final trophee = result?['tropheeGranted'];
+    final trophee = widget.result?['tropheeGranted'];
 
     return WillPopScope(
       onWillPop: () async {
@@ -250,7 +279,7 @@ class SponsoredChallengeResultScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '$score',
+                  '${widget.score}',
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -296,7 +325,7 @@ class SponsoredChallengeResultScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${totalQuestions - score}',
+                  '${widget.totalQuestions - widget.score}',
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -387,7 +416,7 @@ class SponsoredChallengeResultScreen extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            challenge.titre,
+            widget.challenge.titre,
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
@@ -408,7 +437,7 @@ class SponsoredChallengeResultScreen extends StatelessWidget {
                 ),
               ),
               Text(
-                challenge.recompense,
+                widget.challenge.recompense,
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
