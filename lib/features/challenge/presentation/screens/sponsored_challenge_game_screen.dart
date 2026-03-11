@@ -1,17 +1,17 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:provider/provider.dart';
 
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
 import '../../../../core/theme/theme_colors.dart';
 import '../../../../shared/widgets/app_header.dart';
-import '../../../../shared/widgets/bottom_nav_bar.dart';
 import 'sponsored_challenge_list_screen.dart';
 import 'sponsored_challenge_result_screen.dart';
 
-/// Modèles pour les questions
+/// Modèle pour une question
 class Question {
   final int id;
   final String question;
@@ -62,28 +62,53 @@ class SponsoredChallengeGameScreen extends StatefulWidget {
 }
 
 class _SponsoredChallengeGameScreenState
-    extends State<SponsoredChallengeGameScreen> {
-  late List<Question> _questions;
+    extends State<SponsoredChallengeGameScreen> with TickerProviderStateMixin {
+  List<Question> _questions = [];
   int _currentQuestionIndex = 0;
   int _score = 0;
-  bool _isAnswered = false;
-  int? _selectedAnswerIndex;
   bool _isLoading = true;
+  String? _error;
+
+  // Réponse sélectionnée
+  int? _selectedAnswerIndex;
+  bool _hasAnswered = false;
+  bool? _isCorrect;
+
+  // Timer
+  late int _timeRemaining;
+  Timer? _timer;
+  late AnimationController _timerAnimationController;
 
   @override
   void initState() {
     super.initState();
+    _timerAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 30),
+    );
     _loadQuestions();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _timerAnimationController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadQuestions() async {
     try {
-      // Pour ce prototype, on génère des questions de test
-      // En prod, vous récupéreriez les questions du backend
+      debugPrint('🚀 === CHARGEMENT QUESTIONS CHALLENGE ===');
+      debugPrint('🎯 Challenge ID: ${widget.challenge.idChallenge}');
+
       _questions = _generateTestQuestions();
       setState(() => _isLoading = false);
+
+      if (_questions.isNotEmpty) {
+        _startTimer();
+      }
     } catch (e) {
-      debugPrint('Erreur: $e');
+      debugPrint('❌ Erreur chargement questions: $e');
       setState(() => _isLoading = false);
     }
   }
@@ -118,7 +143,7 @@ class _SponsoredChallengeGameScreenState
         id: 5,
         question: 'Quel est le pays le plus peuplé?',
         options: ['Inde', 'Chine', 'États-Unis', 'Indonésie'],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 1,
       ),
       Question(
         id: 6,
@@ -153,56 +178,93 @@ class _SponsoredChallengeGameScreenState
     ];
   }
 
+  void _startTimer() {
+    _timeRemaining = 30;
+
+    _timerAnimationController.duration = Duration(seconds: _timeRemaining);
+    _timerAnimationController.reset();
+    _timerAnimationController.forward();
+
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_timeRemaining > 0 && !_hasAnswered) {
+        setState(() {
+          _timeRemaining--;
+        });
+      } else if (_timeRemaining == 0 && !_hasAnswered) {
+        _onTimeUp();
+      }
+    });
+  }
+
+  void _onTimeUp() {
+    _timer?.cancel();
+    setState(() {
+      _hasAnswered = true;
+      _isCorrect = false;
+    });
+  }
+
   void _selectAnswer(int index) {
-    if (_isAnswered) return;
+    if (_hasAnswered) return;
 
     setState(() {
       _selectedAnswerIndex = index;
-      _isAnswered = true;
+    });
+  }
 
-      if (index == _questions[_currentQuestionIndex].correctAnswerIndex) {
+  void _confirmAnswer() {
+    if (_selectedAnswerIndex == null || _hasAnswered) return;
+
+    _timer?.cancel();
+    _timerAnimationController.stop();
+
+    final question = _questions[_currentQuestionIndex];
+    final isCorrect = _selectedAnswerIndex == question.correctAnswerIndex;
+
+    setState(() {
+      _hasAnswered = true;
+      _isCorrect = isCorrect;
+      if (isCorrect) {
         _score++;
       }
     });
 
-    // Auto-advance après 1.5 secondes
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      if (mounted) {
-        if (_currentQuestionIndex < _questions.length - 1) {
-          _nextQuestion();
-        } else {
-          _finishChallenge();
-        }
-      }
-    });
+    debugPrint(
+        '💡 Réponse: ${question.options[_selectedAnswerIndex!]} - ${isCorrect ? '✅ Correct' : '❌ Incorrect'}');
+  }
+
+  void _skipQuestion() {
+    _timer?.cancel();
+    _nextQuestion();
   }
 
   void _nextQuestion() {
-    setState(() {
-      _currentQuestionIndex++;
-      _isAnswered = false;
-      _selectedAnswerIndex = null;
-    });
-    _scrollToTop();
-  }
-
-  void _scrollToTop() {
-    // Auto-scroll au top de la page
+    if (_currentQuestionIndex < _questions.length - 1) {
+      setState(() {
+        _currentQuestionIndex++;
+        _selectedAnswerIndex = null;
+        _hasAnswered = false;
+        _isCorrect = null;
+      });
+      _startTimer();
+    } else {
+      _finishChallenge();
+    }
   }
 
   void _finishChallenge() async {
-    // Soumettre le résultat au backend
     final userState = context.read<UserStateProvider>();
     final token = widget.token ?? userState.token;
 
     try {
-      // 🔍 DEBUG: Logs soumission
       debugPrint('🚀 === SOUMISSION RÉSULTAT CHALLENGE ===');
       debugPrint('🎯 Challenge ID: ${widget.challenge.idChallenge}');
       debugPrint('📊 Score: $_score / ${_questions.length}');
       debugPrint('📱 Token: ${token ?? "NULL"}');
 
-      final fullUrl = ApiEndpoints.buildUrl(ApiEndpoints.sponsoredChallengeSubmitResult);
+      final fullUrl =
+          ApiEndpoints.buildUrl(ApiEndpoints.sponsoredChallengeSubmitResult);
       debugPrint('🌐 URL: $fullUrl');
 
       final response = await http.post(
@@ -247,8 +309,7 @@ class _SponsoredChallengeGameScreenState
       debugPrint('❌ === ERREUR SOUMISSION CHALLENGE ===');
       debugPrint('❌ Exception: $e');
       debugPrint('❌ Type: ${e.runtimeType}');
-      
-      // Continuer même si erreur
+
       if (mounted) {
         Navigator.pushReplacement(
           context,
@@ -287,13 +348,33 @@ class _SponsoredChallengeGameScreenState
       );
     }
 
-    final question = _questions[_currentQuestionIndex];
-    final progress = (_currentQuestionIndex + 1) / _questions.length;
+    if (_questions.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: colors.textPrimary),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
+        body: Center(
+          child: Text('Aucune question disponible',
+              style: TextStyle(color: colors.textPrimary)),
+        ),
+      );
+    }
+
+    return _buildQuizScreen();
+  }
+
+  Widget _buildQuizScreen() {
+    final currentQuestion = _questions[_currentQuestionIndex];
+    final colors = context.colors;
 
     return Scaffold(
       body: Stack(
         children: [
-          // Background
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -305,222 +386,262 @@ class _SponsoredChallengeGameScreenState
           SafeArea(
             child: Column(
               children: [
-                // Header personnalisé
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: colors.cardBackground,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 8,
-                              ),
-                            ],
-                          ),
-                          child: Icon(Icons.arrow_back,
-                              color: colors.textPrimary),
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          widget.challenge.titre,
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: colors.textPrimary,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: _DesignColors.primary.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          '${_currentQuestionIndex + 1}/${_questions.length}',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: _DesignColors.primary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // Progress bar
-                Container(
-                  height: 4,
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  decoration: BoxDecoration(
-                    color: colors.divider,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(2),
-                    child: LinearProgressIndicator(
-                      value: progress,
-                      backgroundColor: colors.divider,
-                      valueColor: const AlwaysStoppedAnimation(
-                          _DesignColors.primary),
-                    ),
-                  ),
-                ),
-                // Content
+                const AppHeader(centerTitle: true),
+
+                _buildQuestionHeader(currentQuestion),
+
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 20),
-                        // Question
-                        Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: colors.cardBackground,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 10,
-                              ),
-                            ],
-                          ),
-                          child: Text(
-                            question.question,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: colors.textPrimary,
-                              height: 1.6,
-                            ),
-                          ),
-                        ),
+                        _buildQuestionText(currentQuestion),
                         const SizedBox(height: 24),
-                        // Options
-                        Column(
-                          children: List.generate(question.options.length, (index) {
-                            final isCorrect =
-                                index == question.correctAnswerIndex;
-                            final isSelected = index == _selectedAnswerIndex;
-                            final isAnsweredWrong =
-                                _isAnswered && isSelected && !isCorrect;
-
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: GestureDetector(
-                                onTap: () => _selectAnswer(index),
-                                child: Container(
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: _isAnswered
-                                        ? (isCorrect && isSelected
-                                            ? _DesignColors.green
-                                                .withOpacity(0.15)
-                                            : (isAnsweredWrong
-                                                ? _DesignColors.pink
-                                                    .withOpacity(0.15)
-                                                : colors.cardBackground))
-                                        : (isSelected
-                                            ? _DesignColors.primary
-                                                .withOpacity(0.15)
-                                            : colors.cardBackground),
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(
-                                      color: _isAnswered
-                                          ? (isCorrect && isSelected
-                                              ? _DesignColors.green
-                                              : (isAnsweredWrong
-                                                  ? _DesignColors.pink
-                                                  : colors.divider))
-                                          : (isSelected
-                                              ? _DesignColors.primary
-                                              : colors.divider),
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      // Numéro/Icône
-                                      Container(
-                                        width: 40,
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          color: _isAnswered
-                                              ? (isCorrect && isSelected
-                                                  ? _DesignColors.green
-                                                  : (isAnsweredWrong
-                                                      ? _DesignColors.pink
-                                                      : colors.divider))
-                                              : (isSelected
-                                                  ? _DesignColors.primary
-                                                  : colors.divider),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Center(
-                                          child: _isAnswered
-                                              ? Icon(
-                                                  isCorrect && isSelected
-                                                      ? Icons.check
-                                                      : (isAnsweredWrong
-                                                          ? Icons.close
-                                                          : null),
-                                                  color: Colors.white,
-                                                )
-                                              : Text(
-                                                  String.fromCharCode(65 + index),
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 14),
-                                      // Texte
-                                      Expanded(
-                                        child: Text(
-                                          question.options[index],
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w600,
-                                            color: colors.textPrimary,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          }),
-                        ),
+                        _buildAnswerOptions(currentQuestion),
                         const SizedBox(height: 20),
                       ],
                     ),
                   ),
                 ),
+
+                _buildActionButtons(),
               ],
             ),
           ),
         ],
       ),
-      bottomNavigationBar: const AppBottomNavBar(currentIndex: 0),
+    );
+  }
+
+  Widget _buildQuestionHeader(Question question) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Icon(Icons.arrow_back, color: context.colors.textPrimary),
+              ),
+              const SizedBox(width: 16),
+
+              Expanded(
+                child: Text(
+                  'Question ${_currentQuestionIndex + 1}/${_questions.length}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: context.colors.textPrimary,
+                  ),
+                ),
+              ),
+
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.amber.shade50,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '$_score/${_questions.length}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.amber.shade700,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Icon(Icons.star, color: Colors.amber.shade700, size: 16),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 12),
+
+          if (!_hasAnswered) _buildTimerBar(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimerBar() {
+    final progress = _timeRemaining / 30;
+
+    return Container(
+      height: 36,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        color: Colors.grey.shade200,
+      ),
+      child: Stack(
+        children: [
+          ScaleTransition(
+            alignment: Alignment.centerLeft,
+            scale: Tween<double>(begin: 0, end: 1).animate(
+              CurvedAnimation(
+                parent: _timerAnimationController,
+                curve: Curves.linear,
+              ),
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                color: progress > 0.3 ? Colors.green : Colors.red,
+                borderRadius: BorderRadius.circular(18),
+              ),
+            ),
+          ),
+
+          Center(
+            child: Text(
+              '$_timeRemaining"',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuestionText(Question question) {
+    return Column(
+      children: [
+        Text(
+          question.question,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: context.colors.textPrimary,
+            height: 1.4,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAnswerOptions(Question question) {
+    return Column(
+      children: question.options.asMap().entries.map((entry) {
+        final index = entry.key;
+        final option = entry.value;
+        final isSelected = _selectedAnswerIndex == index;
+        final isCorrectAnswer = index == question.correctAnswerIndex;
+
+        Color backgroundColor = Colors.white;
+        Color borderColor = Colors.grey.shade200;
+        Color textColor = Colors.black87;
+
+        if (_hasAnswered) {
+          if (isCorrectAnswer) {
+            backgroundColor = Colors.green.shade50;
+            borderColor = Colors.green;
+            textColor = Colors.green.shade700;
+          } else if (isSelected && !isCorrectAnswer) {
+            backgroundColor = Colors.red.shade50;
+            borderColor = Colors.red;
+            textColor = Colors.red.shade700;
+          }
+        } else if (isSelected) {
+          backgroundColor = _DesignColors.primary.withOpacity(0.1);
+          borderColor = _DesignColors.primary;
+          textColor = _DesignColors.primary;
+        }
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: GestureDetector(
+            onTap: _hasAnswered ? null : () => _selectAnswer(index),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                color: backgroundColor,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: borderColor, width: 1.5),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      option,
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: textColor,
+                        fontWeight: isSelected || (_hasAnswered && isCorrectAnswer)
+                            ? FontWeight.w600
+                            : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                  if (_hasAnswered && isCorrectAnswer)
+                    Icon(Icons.check_circle, color: Colors.green, size: 20),
+                  if (_hasAnswered && isSelected && !isCorrectAnswer)
+                    Icon(Icons.cancel, color: Colors.red, size: 20),
+                ],
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildActionButtons() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextButton(
+              onPressed: _hasAnswered ? null : _skipQuestion,
+              child: Text(
+                'Passer',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: _hasAnswered ? Colors.grey : Colors.black54,
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(width: 16),
+
+          Expanded(
+            flex: 2,
+            child: ElevatedButton(
+              onPressed: _hasAnswered
+                  ? _nextQuestion
+                  : (_selectedAnswerIndex != null ? _confirmAnswer : null),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _DesignColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                elevation: 0,
+              ),
+              child: Text(
+                _hasAnswered ? 'Continuer' : 'Confirmer',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
