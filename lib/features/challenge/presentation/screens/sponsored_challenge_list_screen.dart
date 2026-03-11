@@ -571,6 +571,6 @@ class _SponsoredChallengeListScreenState
           ],
         ),
       ),
-    );
+    ));
   }
 }
