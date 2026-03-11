@@ -186,7 +186,7 @@ class _FriendSelectionScreenState extends State<FriendSelectionScreen> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              backgroundColor: Colors.white,
+              backgroundColor: context.colors.cardBackground,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               title: Row(
                 children: [

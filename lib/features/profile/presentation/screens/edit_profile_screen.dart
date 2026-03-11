@@ -467,7 +467,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.colors.cardBackground,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
@@ -492,7 +492,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             borderSide: BorderSide.none,
           ),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: context.colors.cardBackground,
         ),
       ),
     );
@@ -501,7 +501,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget _buildDropdownField() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.colors.cardBackground,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
@@ -521,7 +521,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             borderSide: BorderSide.none,
           ),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: context.colors.cardBackground,
         ),
         items: africanNationalities.map((nationality) {
           return DropdownMenuItem<String>(
@@ -539,7 +539,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget _buildPasswordSection() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.colors.cardBackground,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(

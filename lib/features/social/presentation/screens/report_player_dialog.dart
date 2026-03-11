@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
+import '../../../../core/theme/theme_colors.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -39,7 +40,7 @@ Future<void> showReportPlayerDialog({
         builder: (context, setState) {
           return AlertDialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-            backgroundColor: Colors.white,
+            backgroundColor: context.colors.cardBackground,
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

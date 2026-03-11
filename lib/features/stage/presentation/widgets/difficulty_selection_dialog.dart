@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/theme_colors.dart';
 
 /// Enum pour les niveaux de difficulté
 enum Difficulty { facile, moyen, difficile }
@@ -84,7 +85,7 @@ class _DifficultySelectionDialogState extends State<DifficultySelectionDialog> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.colors.cardBackground,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(

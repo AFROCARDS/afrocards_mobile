@@ -232,9 +232,9 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
       isScrollControlled: true,
       builder: (context) => Container(
         padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        decoration: BoxDecoration(
+          color: context.colors.cardBackground,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -497,7 +497,7 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
         width: double.infinity,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: colors.cardBackground,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -588,7 +588,7 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.colors.cardBackground,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -637,7 +637,7 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
         margin: const EdgeInsets.all(32),
         padding: const EdgeInsets.all(32),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.colors.cardBackground,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -698,7 +698,7 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
         margin: const EdgeInsets.all(32),
         padding: const EdgeInsets.all(32),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.colors.cardBackground,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -755,7 +755,7 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.colors.cardBackground,
           borderRadius: BorderRadius.circular(20),
           border: article.popular
               ? Border.all(color: _DesignColors.pink, width: 2)

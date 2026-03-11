@@ -161,7 +161,7 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        backgroundColor: Colors.white,
+        backgroundColor: context.colors.cardBackground,
         title: Row(
           children: [
             Container(
@@ -324,7 +324,7 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
         margin: const EdgeInsets.all(20),
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.colors.cardBackground,
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
@@ -401,7 +401,7 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.colors.cardBackground,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
@@ -457,7 +457,7 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
       return Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.colors.cardBackground,
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
@@ -511,7 +511,7 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.colors.cardBackground,
           borderRadius: BorderRadius.circular(20),
           border: isSelected
               ? Border.all(color: accentColor, width: 2.5)
@@ -601,7 +601,7 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.colors.cardBackground,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),

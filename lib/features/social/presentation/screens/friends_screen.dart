@@ -238,7 +238,7 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: colors.cardBackground,
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
@@ -254,7 +254,7 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
                         hintText: 'Rechercher un joueur...',
                         hintStyle: TextStyle(color: Colors.grey.shade400),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: colors.cardBackground,
                         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
@@ -299,7 +299,7 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: context.colors.cardBackground,
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
@@ -413,7 +413,7 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.colors.cardBackground,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -606,7 +606,7 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.colors.cardBackground,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -746,7 +746,7 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.colors.cardBackground,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -930,7 +930,7 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
         margin: const EdgeInsets.all(32),
         padding: const EdgeInsets.all(32),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.colors.cardBackground,
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
