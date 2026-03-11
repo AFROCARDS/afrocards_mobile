@@ -83,11 +83,18 @@ class _FriendChallengeResultScreenState
   }
 
   Future<void> _saveResults() async {
-    if (widget.token == null) return;
+    if (widget.token == null) {
+      debugPrint('❌ [FriendChallengeResult] No token available');
+      return;
+    }
 
     try {
-      await http.post(
-        Uri.parse(ApiEndpoints.buildUrl('/results/save')),
+      final url = ApiEndpoints.buildUrl('/results/save');
+      debugPrint('📤 [FriendChallengeResult] Saving - URL: $url');
+      debugPrint('📤 [FriendChallengeResult] Data: score=${widget.playerScore}, mode=défi, xp=${widget.xpGained}');
+
+      final response = await http.post(
+        Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${widget.token}',
@@ -102,9 +109,17 @@ class _FriendChallengeResultScreenState
           'levelNumber': null,
         }),
       );
-      debugPrint('✅ [FriendChallenge] Results saved to backend');
+      
+      debugPrint('📥 [FriendChallengeResult] Response Status: ${response.statusCode}');
+      debugPrint('📥 [FriendChallengeResult] Response Body: ${response.body}');
+      
+      if (response.statusCode == 200) {
+        debugPrint('✅ [FriendChallengeResult] Results saved successfully');
+      } else {
+        debugPrint('❌ [FriendChallengeResult] Error: Status ${response.statusCode}');
+      }
     } catch (e) {
-      debugPrint('❌ [FriendChallenge] Error saving results: $e');
+      debugPrint('❌ [FriendChallengeResult] Exception: $e');
     }
   }
 

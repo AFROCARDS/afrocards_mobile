@@ -146,11 +146,19 @@ class _ResultScreenState extends State<ResultScreen>
   }
 
   Future<void> _saveResults() async {
-    if (widget.token == null) return;
+    if (widget.token == null) {
+      debugPrint('❌ [ResultScreen] No token available');
+      return;
+    }
 
     try {
+      final url = ApiEndpoints.buildUrl('/results/save');
+      debugPrint('📤 [ResultScreen] Saving - URL: $url');
+      debugPrint('📤 [ResultScreen] Token: ${widget.token!.substring(0, 20)}...');
+      debugPrint('📤 [ResultScreen] Data: score=${{widget.score}}, mode=${{widget.mode}}, xp=$_xpGained, coins=$_coinsGained');
+
       final response = await http.post(
-        Uri.parse(ApiEndpoints.buildUrl('/results/save')),
+        Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${widget.token}',
@@ -166,17 +174,23 @@ class _ResultScreenState extends State<ResultScreen>
         }),
       );
 
+      debugPrint('📥 [ResultScreen] Response Status: ${response.statusCode}');
+      debugPrint('📥 [ResultScreen] Response Body: ${response.body}');
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+        debugPrint('✅ [ResultScreen] Results saved successfully');
         if (data['levelUp'] == true) {
           setState(() {
             _isLevelUp = true;
             _newLevel = data['newLevel'];
           });
         }
+      } else {
+        debugPrint('❌ [ResultScreen] Error: Status ${response.statusCode}');
       }
     } catch (e) {
-      debugPrint('Erreur sauvegarde résultats: $e');
+      debugPrint('❌ [ResultScreen] Exception: $e');
     }
   }
 

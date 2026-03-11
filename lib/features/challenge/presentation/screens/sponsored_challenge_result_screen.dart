@@ -74,13 +74,20 @@ class _SponsoredChallengeResultScreenState extends State<SponsoredChallengeResul
     try {
       final userState = context.read<UserStateProvider>();
       final token = userState.token;
-      if (token == null) return;
+      if (token == null) {
+        debugPrint('❌ [SponsoredChallengeResult] No token available');
+        return;
+      }
 
       final xpGained = isWon ? 100 : 50;
       final coinsGained = isWon ? 500 : 200;
+      final url = ApiEndpoints.buildUrl('/results/save');
 
-      await http.post(
-        Uri.parse(ApiEndpoints.buildUrl('/results/save')),
+      debugPrint('📤 [SponsoredChallengeResult] Saving - URL: $url');
+      debugPrint('📤 [SponsoredChallengeResult] Data: score=${widget.score}, mode=challenge sponsorisé, xp=$xpGained');
+
+      final response = await http.post(
+        Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -95,9 +102,17 @@ class _SponsoredChallengeResultScreenState extends State<SponsoredChallengeResul
           'levelNumber': null,
         }),
       );
-      debugPrint('✅ [SponsoredChallenge] Results saved to backend');
+      
+      debugPrint('📥 [SponsoredChallengeResult] Response Status: ${response.statusCode}');
+      debugPrint('📥 [SponsoredChallengeResult] Response Body: ${response.body}');
+      
+      if (response.statusCode == 200) {
+        debugPrint('✅ [SponsoredChallengeResult] Results saved successfully');
+      } else {
+        debugPrint('❌ [SponsoredChallengeResult] Error: Status ${response.statusCode}');
+      }
     } catch (e) {
-      debugPrint('❌ [SponsoredChallenge] Error saving results: $e');
+      debugPrint('❌ [SponsoredChallengeResult] Exception: $e');
     }
   }
 

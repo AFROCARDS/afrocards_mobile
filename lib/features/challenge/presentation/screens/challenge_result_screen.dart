@@ -75,11 +75,18 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen>
   }
 
   Future<void> _saveResults() async {
-    if (widget.token == null) return;
+    if (widget.token == null) {
+      debugPrint('❌ [ChallengeResult] No token available');
+      return;
+    }
 
     try {
-      await http.post(
-        Uri.parse(ApiEndpoints.buildUrl('/results/save')),
+      final url = ApiEndpoints.buildUrl('/results/save');
+      debugPrint('📤 [ChallengeResult] Saving - URL: $url');
+      debugPrint('📤 [ChallengeResult] Data: score=${widget.playerScore}, mode=duel, xp=${widget.xpGained}');
+
+      final response = await http.post(
+        Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${widget.token}',
@@ -94,9 +101,17 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen>
           'levelNumber': null,
         }),
       );
-      debugPrint('✅ [Challenge] Results saved to backend');
+      
+      debugPrint('📥 [ChallengeResult] Response Status: ${response.statusCode}');
+      debugPrint('📥 [ChallengeResult] Response Body: ${response.body}');
+      
+      if (response.statusCode == 200) {
+        debugPrint('✅ [ChallengeResult] Results saved successfully');
+      } else {
+        debugPrint('❌ [ChallengeResult] Error: Status ${response.statusCode}');
+      }
     } catch (e) {
-      debugPrint('❌ [Challenge] Error saving results: $e');
+      debugPrint('❌ [ChallengeResult] Exception: $e');
     }
   }
 
