@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/providers/user_state_provider.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/home/presentation/screens/boutique_screen.dart';
+import '../../features/social/presentation/screens/notifications_screen.dart';
 
 /// Couleurs du design (identiques à profile_screen)
 class _DesignColors {
@@ -332,59 +333,50 @@ class AppHeader extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 6),
-                Row(
-                  children: [
-                    // Badge niveau
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: _DesignColors.secondary.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: _DesignColors.secondary.withOpacity(0.3),
-                          width: 1,
-                        ),
-                      ),
-                      child: Text(
-                        userState.userLevel,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: _DesignColors.secondary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                // Badge niveau (Stage-XP)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: _DesignColors.secondary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: _DesignColors.secondary.withOpacity(0.3),
+                      width: 1,
                     ),
-                    const SizedBox(width: 8),
-                    // Badge XP
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: _DesignColors.primary.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: _DesignColors.primary.withOpacity(0.3),
-                          width: 1,
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.bolt, color: _DesignColors.primary, size: 14),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${userState.pointsXP} XP',
-                            style: const TextStyle(
-                              fontSize: 11,
-                              color: _DesignColors.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
+                  ),
+                  child: Text(
+                    userState.userLevel,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: _DesignColors.secondary,
+                      fontWeight: FontWeight.bold,
                     ),
-                  ],
+                  ),
                 ),
               ],
+            ),
+          ),
+          
+          // Icône notifications
+          GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const NotificationsScreen()),
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              margin: const EdgeInsets.only(right: 8),
+              decoration: BoxDecoration(
+                color: _DesignColors.cyan.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: _DesignColors.cyan.withOpacity(0.2), width: 1),
+              ),
+              child: const Icon(
+                Icons.notifications_outlined,
+                color: _DesignColors.cyan,
+                size: 20,
+              ),
             ),
           ),
           
