@@ -11,7 +11,6 @@ import '../../../../shared/widgets/bottom_nav_bar.dart';
 import '../../../profile/presentation/screens/profile_screen.dart';
 import '../../../stage/presentation/screens/stage_mode_screen.dart';
 import '../../../fiesta/presentation/screens/fiesta_mode_screen.dart';
-import '../../../challenge/presentation/screens/challenge_question_count_screen.dart';
 import '../../../challenge/presentation/screens/sponsored_challenge_list_screen.dart';
 import '../../../quiz/presentation/screens/game_screen.dart';
 import '../../../classement/presentation/screens/classement_screen.dart';
@@ -363,25 +362,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _navigateToChallenge() {
-    final userState = context.read<UserStateProvider>();
-
-    if (!userState.hasLives) {
-      _showNoLivesDialog();
-      return;
-    }
-
-    // Naviguer vers le mode Challenge (PvP)
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ChallengeQuestionCountScreen(
-          token: userState.token,
-        ),
-      ),
-    );
-  }
-
   void _navigateToSponsoredChallenges() {
     final userState = context.read<UserStateProvider>();
     Navigator.push(
@@ -622,7 +602,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         const SizedBox(height: 20),
-        // Première rangée
+        // Rangée unique
         Row(
           children: [
             Expanded(
@@ -637,30 +617,12 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(width: 15),
             Expanded(
               child: _buildExploreCard(
-                title: 'Challenge',
-                icon: Icons.card_giftcard,
-                color: _DesignColors.secondary,
-                onTap: _navigateToChallenge,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 15),
-        // Deuxième rangée
-        Row(
-          children: [
-            Expanded(
-              child: _buildExploreCard(
                 title: 'Défis Partenaires',
                 icon: Icons.card_travel,
                 color: _DesignColors.cyan,
                 subtitle: 'Gagnez des trophées',
                 onTap: _navigateToSponsoredChallenges,
               ),
-            ),
-            const SizedBox(width: 15),
-            Expanded(
-              child: Container(), // Placeholder optionnel
             ),
           ],
         ),
