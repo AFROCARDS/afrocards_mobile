@@ -174,12 +174,13 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
     } else if (modeName == 'challenge' || modeName == 'challenges') {
-      // Naviguer vers le mode Challenge (PvP)
+      // Naviguer vers les défis sponsorisés
+      final userState = context.read<UserStateProvider>();
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ChallengeQuestionCountScreen(
-            token: widget.token,
+          builder: (context) => SponsoredChallengeListScreen(
+            token: userState.token,
           ),
         ),
       );
