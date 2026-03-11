@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/user_state_provider.dart';
 import '../../../../core/constants/api_endpoints.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../shared/widgets/app_header.dart';
 import '../../../../shared/widgets/bottom_nav_bar.dart';
 import 'dart:convert';
@@ -197,14 +198,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final userState = context.watch<UserStateProvider>();
+    final isDark = context.isDarkMode;
+    
     return Scaffold(
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/backgrounds/img.png'),
+                image: const AssetImage('assets/images/backgrounds/img.png'),
                 fit: BoxFit.cover,
+                colorFilter: isDark 
+                  ? ColorFilter.mode(Colors.black.withOpacity(0.6), BlendMode.darken)
+                  : null,
               ),
             ),
           ),

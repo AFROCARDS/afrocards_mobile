@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/providers/user_state_provider.dart';
+import '../../core/theme/theme_colors.dart';
 import '../../features/home/presentation/screens/card_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/home/presentation/screens/boutique_screen.dart';
@@ -23,12 +24,14 @@ class AppBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+    
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.cardBackground,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withOpacity(colors.shadowOpacity),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),
@@ -36,9 +39,9 @@ class AppBottomNavBar extends StatelessWidget {
       ),
       child: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
+        backgroundColor: colors.cardBackground,
+        selectedItemColor: colors.primary,
+        unselectedItemColor: colors.textSecondary,
         currentIndex: currentIndex,
         onTap: (index) {
           if (onTap != null) {

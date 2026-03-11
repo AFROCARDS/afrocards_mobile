@@ -12,47 +12,53 @@ class PreferencesScreen extends StatelessWidget {
     final isDark = themeProvider.isDarkMode;
     
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: isDark 
-              ? [const Color(0xFF1E1E1E), const Color(0xFF121212)]
-              : [const Color(0xFFF8F9FA), const Color(0xFFE8E8E8)],
+      body: Stack(
+        children: [
+          // Background image
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: const AssetImage('assets/images/backgrounds/img.png'),
+                fit: BoxFit.cover,
+                colorFilter: isDark 
+                  ? ColorFilter.mode(Colors.black.withOpacity(0.7), BlendMode.darken)
+                  : null,
+              ),
+            ),
           ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Header
-              _buildHeader(context, isDark),
-              
-              // Content
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Section Apparence
-                      _buildSectionTitle('Apparence', isDark),
-                      const SizedBox(height: 12),
-                      _buildThemeSelector(context, themeProvider, isDark),
-                      
-                      const SizedBox(height: 32),
-                      
-                      // Section Notifications (placeholder pour futures fonctionnalités)
-                      _buildSectionTitle('Autres préférences', isDark),
-                      const SizedBox(height: 12),
-                      _buildComingSoonCard(isDark),
-                    ],
+          // Content
+          SafeArea(
+            child: Column(
+              children: [
+                // Header
+                _buildHeader(context, isDark),
+                
+                // Content
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Section Apparence
+                        _buildSectionTitle('Apparence', isDark),
+                        const SizedBox(height: 12),
+                        _buildThemeSelector(context, themeProvider, isDark),
+                        
+                        const SizedBox(height: 32),
+                        
+                        // Section Notifications (placeholder pour futures fonctionnalités)
+                        _buildSectionTitle('Autres préférences', isDark),
+                        const SizedBox(height: 12),
+                        _buildComingSoonCard(isDark),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

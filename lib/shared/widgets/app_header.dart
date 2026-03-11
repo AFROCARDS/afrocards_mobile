@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/providers/user_state_provider.dart';
+import '../../core/theme/theme_colors.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/home/presentation/screens/boutique_screen.dart';
 import '../../features/social/presentation/screens/notifications_screen.dart';
@@ -75,13 +76,15 @@ class AppHeader extends StatelessWidget {
   }
 
   Widget _buildCompactHeader(BuildContext context, UserStateProvider userState) {
+    final colors = context.colors;
+    
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.cardBackground,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(colors.shadowOpacity),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -95,17 +98,17 @@ class AppHeader extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: colors.cardBackground,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withOpacity(colors.shadowOpacity),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
                 ],
               ),
-              child: const Icon(Icons.arrow_back_ios_new, size: 20, color: _DesignColors.textDark),
+              child: Icon(Icons.arrow_back_ios_new, size: 20, color: colors.textPrimary),
             ),
           ),
           
@@ -117,20 +120,20 @@ class AppHeader extends StatelessWidget {
           if (centerTitle)
             Text(
               title!,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: _DesignColors.textDark,
+                color: colors.textPrimary,
               ),
             )
           else
             Expanded(
               child: Text(
                 title!,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: _DesignColors.textDark,
+                  color: colors.textPrimary,
                 ),
               ),
             ),
@@ -149,13 +152,15 @@ class AppHeader extends StatelessWidget {
   }
 
   Widget _buildTitleHeader(BuildContext context, UserStateProvider userState, bool displayStats) {
+    final colors = context.colors;
+    
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.cardBackground,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(colors.shadowOpacity),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -179,10 +184,10 @@ class AppHeader extends StatelessWidget {
                     children: [
                       Text(
                         userState.userName.isNotEmpty ? userState.userName : 'Joueur',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: _DesignColors.textDark,
+                          color: colors.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -239,19 +244,19 @@ class AppHeader extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: colors.cardBackground,
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withOpacity(colors.shadowOpacity),
                         blurRadius: 10,
                         offset: const Offset(0, 2),
                       ),
                     ],
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.arrow_back_ios_new,
-                    color: _DesignColors.textDark,
+                    color: colors.textPrimary,
                     size: 20,
                   ),
                 ),
@@ -265,20 +270,20 @@ class AppHeader extends StatelessWidget {
               if (centerTitle)
                 Text(
                   title!,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: _DesignColors.textDark,
+                    color: colors.textPrimary,
                   ),
                 )
               else
                 Expanded(
                   child: Text(
                     title!,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: _DesignColors.textDark,
+                      color: colors.textPrimary,
                     ),
                   ),
                 ),
@@ -299,15 +304,17 @@ class AppHeader extends StatelessWidget {
   }
 
   Widget _buildFullHeader(BuildContext context, UserStateProvider userState) {
+    final colors = context.colors;
+    
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.cardBackground,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withOpacity(colors.shadowOpacity),
             blurRadius: 15,
             offset: const Offset(0, 4),
           ),
@@ -326,10 +333,10 @@ class AppHeader extends StatelessWidget {
               children: [
                 Text(
                   userState.userName.isNotEmpty ? userState.userName : 'Joueur',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.bold,
-                    color: _DesignColors.textDark,
+                    color: colors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 6),
