@@ -171,6 +171,22 @@ class ApiEndpoints {
   static const String challengeHistory = '/challenges/history';
 
   // ========================================
+  // 🤝 CHALLENGES SPONSORISÉS
+  // ========================================
+
+  /// GET - Liste des challenges sponsorisés actifs
+  static const String sponsoredChallengesActive = '/challenges-sponsorises/active';
+
+  /// GET - Détails d'un challenge sponsorisé
+  static String sponsoredChallengeById(int id) => '/challenges-sponsorises/$id';
+
+  /// POST - Soumettre le résultat d'un challenge sponsorisé
+  static const String sponsoredChallengeSubmitResult = '/challenges-sponsorises/submit-result';
+
+  /// GET - Mes trophées gagnés
+  static const String sponsoredChallengesMyTrophies = '/challenges-sponsorises/my-trophies';
+
+  // ========================================
   // 💬 SOCIAL
   // ========================================
 

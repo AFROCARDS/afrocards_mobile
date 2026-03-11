@@ -196,8 +196,17 @@ class _SponsoredChallengeGameScreenState
     final token = widget.token ?? userState.token;
 
     try {
+      // 🔍 DEBUG: Logs soumission
+      debugPrint('🚀 === SOUMISSION RÉSULTAT CHALLENGE ===');
+      debugPrint('🎯 Challenge ID: ${widget.challenge.idChallenge}');
+      debugPrint('📊 Score: $_score / ${_questions.length}');
+      debugPrint('📱 Token: ${token ?? "NULL"}');
+
+      final fullUrl = ApiEndpoints.buildUrl(ApiEndpoints.sponsoredChallengeSubmitResult);
+      debugPrint('🌐 URL: $fullUrl');
+
       final response = await http.post(
-        Uri.parse(ApiEndpoints.buildUrl('/api/challenges-sponsorises/submit-result')),
+        Uri.parse(fullUrl),
         headers: {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
@@ -209,8 +218,13 @@ class _SponsoredChallengeGameScreenState
         }),
       );
 
+      debugPrint('📊 Response Status: ${response.statusCode}');
+      debugPrint('📦 Response Body: ${response.body}');
+
       if (response.statusCode == 200) {
         final result = jsonDecode(response.body);
+        debugPrint('✅ Résultat reçu: ${result['data']}');
+        debugPrint('🏆 Trophy? ${result['data']?['trophy']}');
         if (mounted) {
           Navigator.pushReplacement(
             context,
@@ -224,9 +238,16 @@ class _SponsoredChallengeGameScreenState
             ),
           );
         }
+      } else {
+        debugPrint('❌ ERREUR HTTP ${response.statusCode}');
+        debugPrint('📄 Response: ${response.body}');
+        throw Exception('Erreur HTTP: ${response.statusCode}');
       }
     } catch (e) {
-      debugPrint('Erreur soumission: $e');
+      debugPrint('❌ === ERREUR SOUMISSION CHALLENGE ===');
+      debugPrint('❌ Exception: $e');
+      debugPrint('❌ Type: ${e.runtimeType}');
+      
       // Continuer même si erreur
       if (mounted) {
         Navigator.pushReplacement(

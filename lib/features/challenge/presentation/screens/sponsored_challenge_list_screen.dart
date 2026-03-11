@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -96,29 +97,55 @@ class _SponsoredChallengeListScreenState
       final userState = context.read<UserStateProvider>();
       final token = widget.token ?? userState.token;
 
+      // 🔍 DEBUG: Logs de démarrage
+      debugPrint('🚀 === CHARGEMENT CHALLENGES SPONSORISÉS ===');
+      debugPrint('📱 Token: ${token ?? "NULL"}');
+      debugPrint('🔗 BaseURL: ${ApiEndpoints.baseUrl}');
+
+      final fullUrl = ApiEndpoints.buildUrl(ApiEndpoints.sponsoredChallengesActive);
+      debugPrint('🌐 URL complète: $fullUrl');
+
       final response = await http.get(
-        Uri.parse(ApiEndpoints.buildUrl('/api/challenges-sponsorises/active')),
+        Uri.parse(fullUrl),
         headers: {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
         },
       );
 
+      // 🔍 DEBUG: Réponse reçue
+      debugPrint('📊 Status Code: ${response.statusCode}');
+      debugPrint('📦 Body (${response.body.length} chars): ${response.body}');
+      debugPrint('🏷️ Headers: ${response.headers}');
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+        debugPrint('✅ Data reçue: ${data['data']?.length ?? 0} challenges');
+        
         final challengesList = (data['data'] as List? ?? [])
             .map((c) => SponsoredChallenge.fromJson(c))
             .toList();
+
+        debugPrint('✅ Challenges parsées: ${challengesList.length}');
 
         setState(() {
           _challenges = challengesList;
           _isLoading = false;
         });
       } else {
-        throw Exception('Erreur: ${response.statusCode}');
+        // 🔍 DEBUG: Erreur HTTP
+        debugPrint('❌ ERREUR HTTP ${response.statusCode}');
+        debugPrint('📄 Body d\'erreur: ${response.body}');
+        throw Exception('Erreur HTTP: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
-      debugPrint('Erreur chargement challenges: $e');
+      debugPrint('❌ === ERREUR CHARGEMENT CHALLENGES ===');
+      debugPrint('❌ Exception: $e');
+      debugPrint('❌ Type: ${e.runtimeType}');
+      if (e is SocketException) {
+        debugPrint('🔌 SocketException: Pas de connexion réseau ou serveur injoignable');
+      }
+      
       setState(() {
         _error = e.toString();
         _isLoading = false;
@@ -232,48 +259,86 @@ class _SponsoredChallengeListScreenState
   Widget _buildErrorState() {
     final colors = context.colors;
     return Center(
-      child: Container(
-        margin: const EdgeInsets.all(20),
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: colors.cardBackground,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: _DesignColors.pink.withOpacity(0.1),
-                shape: BoxShape.circle,
+      child: SingleChildScrollView(
+        child: Container(
+          margin: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: colors.cardBackground,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: _DesignColors.pink.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.error_outline,
+                    size: 48, color: _DesignColors.pink),
               ),
-              child: const Icon(Icons.error_outline,
-                  size: 48, color: _DesignColors.pink),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Erreur de chargement',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: colors.textPrimary,
+              const SizedBox(height: 16),
+              Text(
+                'Erreur de chargement',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: colors.textPrimary,
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton.icon(
-              onPressed: _loadChallenges,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Réessayer'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _DesignColors.primary,
-                foregroundColor: Colors.white,
+              const SizedBox(height: 12),
+              // 🔍 DEBUG: Affiche le message d'erreur détaillé
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: colors.divider.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  _error ?? 'Erreur inconnue',
+                  maxLines: 5,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: colors.textMuted,
+                    fontFamily: 'monospace',
+                  ),
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+              Text(
+                'Vérifiez:',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: colors.textMuted,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '• Connexion internet active\n• Serveur backend accessible\n• Endpoint /api/challenges-sponsorises/active',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: colors.textMuted,
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton.icon(
+                onPressed: _loadChallenges,
+                icon: const Icon(Icons.refresh),
+                label: const Text('Réessayer'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _DesignColors.primary,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
