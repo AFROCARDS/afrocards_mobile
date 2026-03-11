@@ -6,6 +6,7 @@ import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
 import '../../../../core/theme/theme_colors.dart';
 import '../../../../shared/widgets/app_header.dart';
+import '../../../../shared/widgets/bottom_nav_bar.dart';
 import '../../../quiz/presentation/screens/game_screen.dart';
 
 /// Couleurs du design (identiques à profile_screen)
@@ -512,6 +513,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
           ),
         ],
       ),
+      bottomNavigationBar: const AppBottomNavBar(currentIndex: 2),
     );
   }
 
