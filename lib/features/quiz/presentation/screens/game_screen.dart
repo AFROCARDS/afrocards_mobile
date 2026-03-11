@@ -107,6 +107,7 @@ class GameScreen extends StatefulWidget {
 
   // Paramètres de quiz
   final int? idCategorie;
+  final String? categorieNom;
   final int? levelNumber;
   final String? difficute;
   final int nombreQuestions;
