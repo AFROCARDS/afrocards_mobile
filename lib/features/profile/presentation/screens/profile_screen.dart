@@ -157,26 +157,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  String _getBadgeName(int xp) {
-    if (xp >= 10000) return 'Légende';
-    if (xp >= 7500) return 'Maître';
-    if (xp >= 5000) return 'Diamant';
-    if (xp >= 3000) return 'Platine';
-    if (xp >= 2000) return 'Or';
-    if (xp >= 1000) return 'Argent';
-    if (xp >= 500) return 'Bronze';
-    if (xp >= 100) return 'Débutant';
+  String _getBadgeName() {
+    final badge = _profileData?['badgePrincipal'];
+    if (badge != null && badge['nom'] != null) {
+      return badge['nom'];
+    }
     return 'Novice';
   }
 
-  Color _getBadgeColor(int xp) {
-    if (xp >= 10000) return const Color(0xFFFFD700);
-    if (xp >= 7500) return const Color(0xFFE040FB);
-    if (xp >= 5000) return const Color(0xFF00BCD4);
-    if (xp >= 3000) return const Color(0xFF9C27B0);
-    if (xp >= 2000) return const Color(0xFFFFB74D);
-    if (xp >= 1000) return const Color(0xFFBDBDBD);
-    if (xp >= 500) return const Color(0xFFCD7F32);
+  Color _getBadgeColor() {
+    final badge = _profileData?['badgePrincipal'];
+    if (badge != null && badge['couleur'] != null) {
+      String colorStr = badge['couleur'].toString();
+      if (colorStr.startsWith('#')) {
+        colorStr = colorStr.substring(1);
+      }
+      return Color(int.parse('FF$colorStr', radix: 16));
+    }
     return const Color(0xFF78909C);
   }
 
@@ -325,8 +322,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 shape: BoxShape.circle,
                                 gradient: LinearGradient(
                                   colors: [
-                                    _getBadgeColor(totalXP).withOpacity(0.5),
-                                    _getBadgeColor(totalXP),
+                                    _getBadgeColor().withOpacity(0.5),
+                                    _getBadgeColor(),
                                   ],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
@@ -416,25 +413,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              _getBadgeColor(totalXP).withOpacity(0.2),
-                              _getBadgeColor(totalXP).withOpacity(0.1),
+                              _getBadgeColor().withOpacity(0.2),
+                              _getBadgeColor().withOpacity(0.1),
                             ],
                           ),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: _getBadgeColor(totalXP).withOpacity(0.5),
+                            color: _getBadgeColor().withOpacity(0.5),
                             width: 1,
                           ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.stars, size: 16, color: _getBadgeColor(totalXP)),
+                            Icon(Icons.stars, size: 16, color: _getBadgeColor()),
                             const SizedBox(width: 6),
                             Text(
-                              _getBadgeName(totalXP),
+                              _getBadgeName(),
                               style: TextStyle(
-                                color: _getBadgeColor(totalXP),
+                                color: _getBadgeColor(),
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
                               ),
