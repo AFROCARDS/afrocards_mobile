@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../shared/widgets/app_header.dart';
 import '../../../../shared/widgets/bottom_nav_bar.dart';
 import '../../../challenge/presentation/screens/challenge_question_count_screen.dart';
@@ -283,14 +284,15 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     return Scaffold(
       bottomNavigationBar: const AppBottomNavBar(currentIndex: 0),
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/backgrounds/img.png'),
+                image: AssetImage(colors.backgroundImage),
                 fit: BoxFit.cover,
               ),
             ),

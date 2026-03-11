@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../shared/widgets/app_header.dart';
 import '../../../../shared/widgets/bottom_nav_bar.dart';
 import '../../../profile/presentation/screens/profile_screen.dart';
@@ -265,13 +266,14 @@ class _ClassementScreenState extends State<ClassementScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/backgrounds/img.png'),
+            image: AssetImage(colors.backgroundImage),
             fit: BoxFit.cover,
           ),
         ),

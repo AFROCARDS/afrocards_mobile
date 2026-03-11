@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/providers/user_state_provider.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../shared/widgets/bottom_nav_bar.dart';
 import '../../../quiz/presentation/screens/game_screen.dart';
 import 'challenge_matching_screen.dart';
@@ -58,13 +59,14 @@ class ChallengeMatchedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/backgrounds/img.png'),
+            image: AssetImage(colors.backgroundImage),
             fit: BoxFit.cover,
           ),
         ),

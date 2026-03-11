@@ -388,7 +388,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = context.isDarkMode;
+    final colors = context.colors;
     
     return Scaffold(
       body: Stack(
@@ -397,11 +397,8 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: const AssetImage('assets/images/backgrounds/img.png'),
+                image: AssetImage(colors.backgroundImage),
                 fit: BoxFit.cover,
-                colorFilter: isDark 
-                  ? ColorFilter.mode(Colors.black.withOpacity(0.6), BlendMode.darken)
-                  : null,
               ),
             ),
           ),

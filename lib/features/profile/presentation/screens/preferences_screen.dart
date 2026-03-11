@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/theme_provider.dart';
+import '../../../../core/theme/theme_colors.dart';
 
 /// Écran des préférences de l'application
 class PreferencesScreen extends StatelessWidget {
@@ -10,6 +11,7 @@ class PreferencesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
     final isDark = themeProvider.isDarkMode;
+    final colors = context.colors;
     
     return Scaffold(
       body: Stack(
@@ -18,11 +20,8 @@ class PreferencesScreen extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: const AssetImage('assets/images/backgrounds/img.png'),
+                image: AssetImage(colors.backgroundImage),
                 fit: BoxFit.cover,
-                colorFilter: isDark 
-                  ? ColorFilter.mode(Colors.black.withOpacity(0.7), BlendMode.darken)
-                  : null,
               ),
             ),
           ),

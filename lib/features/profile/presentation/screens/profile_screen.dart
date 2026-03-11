@@ -198,7 +198,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final userState = context.watch<UserStateProvider>();
-    final isDark = context.isDarkMode;
+    final colors = context.colors;
     
     return Scaffold(
       body: Stack(
@@ -206,11 +206,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: const AssetImage('assets/images/backgrounds/img.png'),
+                image: AssetImage(colors.backgroundImage),
                 fit: BoxFit.cover,
-                colorFilter: isDark 
-                  ? ColorFilter.mode(Colors.black.withOpacity(0.6), BlendMode.darken)
-                  : null,
               ),
             ),
           ),

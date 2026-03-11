@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'dart:convert';
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
+import '../../../../core/theme/theme_colors.dart';
 import '../../../../shared/widgets/app_header.dart';
 import '../../../../shared/widgets/bottom_nav_bar.dart';
 
@@ -435,14 +436,15 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
   @override
   Widget build(BuildContext context) {
     final userState = context.watch<UserStateProvider>();
+    final colors = context.colors;
 
     return Scaffold(
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/backgrounds/img.png'),
+                image: AssetImage(colors.backgroundImage),
                 fit: BoxFit.cover,
               ),
             ),

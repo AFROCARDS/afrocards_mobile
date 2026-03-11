@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/services/session_service.dart';
+import '../../../../core/theme/theme_colors.dart';
 import 'home_screen.dart';
 
 /// Écran de sélection des centres d'intérêt (catégories)
@@ -125,14 +126,15 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     return Scaffold(
       body: Stack(
         children: [
           // Background
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/backgrounds/img.png'),
+                image: AssetImage(colors.backgroundImage),
                 fit: BoxFit.cover,
               ),
             ),

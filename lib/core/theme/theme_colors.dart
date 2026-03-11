@@ -43,6 +43,11 @@ class ThemeColors {
   ColorFilter? get backgroundOverlay => isDark 
     ? ColorFilter.mode(Colors.black.withOpacity(0.6), BlendMode.darken)
     : null;
+  
+  // Image de fond selon le thème (imgd.png pour dark, img.png pour light)
+  String get backgroundImage => isDark 
+    ? 'assets/images/backgrounds/imgd.png' 
+    : 'assets/images/backgrounds/img.png';
     
   // Box decoration pour les cartes
   BoxDecoration cardDecoration({double radius = 16}) => BoxDecoration(
