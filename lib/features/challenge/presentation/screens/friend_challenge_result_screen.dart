@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
 import '../../../../core/theme/theme_colors.dart';
 import '../../../../shared/widgets/bottom_nav_bar.dart';
@@ -67,6 +70,9 @@ class _FriendChallengeResultScreenState
 
     // Mettre à jour les stats utilisateur
     _updateUserStats();
+    
+    // Sauvegarder les résultats au backend
+    _saveResults();
   }
 
   void _updateUserStats() {
@@ -74,6 +80,32 @@ class _FriendChallengeResultScreenState
     userState.addXP(widget.xpGained);
     // coinsResult est positif si gagné, négatif si perdu
     userState.addCoins(widget.coinsResult);
+  }
+
+  Future<void> _saveResults() async {
+    if (widget.token == null) return;
+
+    try {
+      await http.post(
+        Uri.parse(ApiEndpoints.buildUrl('/results/save')),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${widget.token}',
+        },
+        body: jsonEncode({
+          'score': widget.playerScore,
+          'totalQuestions': widget.totalQuestions,
+          'totalPoints': 0,
+          'xpGained': widget.xpGained,
+          'coinsGained': widget.coinsResult,
+          'mode': 'défi',
+          'levelNumber': null,
+        }),
+      );
+      debugPrint('✅ [FriendChallenge] Results saved to backend');
+    } catch (e) {
+      debugPrint('❌ [FriendChallenge] Error saving results: $e');
+    }
   }
 
   @override

@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
 import '../../../../core/theme/theme_colors.dart';
 import '../../../../shared/widgets/app_header.dart';
@@ -60,12 +63,41 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen>
 
     // Mettre à jour les stats utilisateur
     _updateUserStats();
+    
+    // Sauvegarder les résultats au backend
+    _saveResults();
   }
 
   void _updateUserStats() {
     final userState = context.read<UserStateProvider>();
     userState.addXP(widget.xpGained);
     userState.addCoins(widget.coinsGained);
+  }
+
+  Future<void> _saveResults() async {
+    if (widget.token == null) return;
+
+    try {
+      await http.post(
+        Uri.parse(ApiEndpoints.buildUrl('/results/save')),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${widget.token}',
+        },
+        body: jsonEncode({
+          'score': widget.playerScore,
+          'totalQuestions': widget.totalQuestions,
+          'totalPoints': 0,
+          'xpGained': widget.xpGained,
+          'coinsGained': widget.coinsGained,
+          'mode': 'duel',
+          'levelNumber': null,
+        }),
+      );
+      debugPrint('✅ [Challenge] Results saved to backend');
+    } catch (e) {
+      debugPrint('❌ [Challenge] Error saving results: $e');
+    }
   }
 
   @override

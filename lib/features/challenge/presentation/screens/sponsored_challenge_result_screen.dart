@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/providers/user_state_provider.dart';
 import '../../../../core/theme/theme_colors.dart';
 import '../../../../shared/widgets/app_header.dart';
@@ -47,6 +50,9 @@ class _SponsoredChallengeResultScreenState extends State<SponsoredChallengeResul
   @override
   void initState() {
     super.initState();
+    // Sauvegarder les résultats au backend
+    _saveResults();
+    
     // Si victoire, rafraîchir l'inventaire immédiatement
     if (isWon) {
       _refreshInventoryAfterWin();
@@ -61,6 +67,37 @@ class _SponsoredChallengeResultScreenState extends State<SponsoredChallengeResul
       debugPrint('🏆 [ResultScreen] Inventory refreshed after win');
     } catch (e) {
       debugPrint('❌ [ResultScreen] Error refreshing inventory: $e');
+    }
+  }
+
+  Future<void> _saveResults() async {
+    try {
+      final userState = context.read<UserStateProvider>();
+      final token = userState.token;
+      if (token == null) return;
+
+      final xpGained = isWon ? 100 : 50;
+      final coinsGained = isWon ? 500 : 200;
+
+      await http.post(
+        Uri.parse(ApiEndpoints.buildUrl('/results/save')),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'score': widget.score,
+          'totalQuestions': widget.totalQuestions,
+          'totalPoints': 0,
+          'xpGained': xpGained,
+          'coinsGained': coinsGained,
+          'mode': 'challenge sponsorisé',
+          'levelNumber': null,
+        }),
+      );
+      debugPrint('✅ [SponsoredChallenge] Results saved to backend');
+    } catch (e) {
+      debugPrint('❌ [SponsoredChallenge] Error saving results: $e');
     }
   }
 
