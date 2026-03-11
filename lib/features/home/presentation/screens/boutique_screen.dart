@@ -497,7 +497,7 @@ class _BoutiqueScreenState extends State<BoutiqueScreen> with SingleTickerProvid
         width: double.infinity,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: colors.cardBackground,
+          color: context.colors.cardBackground,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
