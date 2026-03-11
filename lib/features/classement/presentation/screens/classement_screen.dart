@@ -286,7 +286,7 @@ class _ClassementScreenState extends State<ClassementScreen> with SingleTickerPr
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => PlayerProfileScreen(playerId: idJoueur),
+          builder: (_) => PlayerProfileScreen(idJoueur: idJoueur),
         ),
       );
     }
