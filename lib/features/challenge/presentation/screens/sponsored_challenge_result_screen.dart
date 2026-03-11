@@ -171,7 +171,7 @@ class SponsoredChallengeResultScreen extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: Icon(
-              isWon ? Icons.check_circle : Icons.close_circle,
+              isWon ? Icons.check_circle : Icons.cancel,
               size: 56,
               color: isWon ? _DesignColors.green : _DesignColors.pink,
             ),
