@@ -363,9 +363,7 @@ class _FriendSelectionScreenState extends State<FriendSelectionScreen> {
     );
   }
 
-  void _returnToMainMenu() {
-    Navigator.pop(context);
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -386,70 +384,194 @@ class _FriendSelectionScreenState extends State<FriendSelectionScreen> {
             child: Column(
               children: [
                 AppHeader(
-                  title: 'Selectionnez un ami',
-                  onBackTap: () => Navigator.of(context).pop(), centerTitle: true,
+                  title: 'Sélectionnez un ami',
+                  onBackTap: () => Navigator.of(context).pop(),
+                  centerTitle: true,
                 ),
                 Expanded(
                   child: _isLoading
                       ? const Center(
-                    child: CircularProgressIndicator(
-                      color: Color(0xFF6B4EAA),
-                    ),
-                  )
-                      : SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 10),
-                        // Sous-titre
-                        const Text(
-                          'ou',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.black54,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-
-                        // Bouton Inviter un ami
-                        _buildInviteButton(),
-
-                        const SizedBox(height: 30),
-
-                        // Liste des amis
-                        ..._friends.map((friend) => _buildFriendCard(friend)),
-
-                        const SizedBox(height: 30),
-
-                        // Bouton Valider
-                        _buildValidateButton(),
-
-                        const SizedBox(height: 16),
-
-                        // Lien Retour au menu principal
-                        TextButton(
-                          onPressed: _returnToMainMenu,
-                          child: const Text(
-                            'Retour au menu principal',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.black54,
+                          child: CircularProgressIndicator(color: Color(0xFFFFB74D)),
+                        )
+                      : _friends.isEmpty
+                          ? _buildEmptyState()
+                          : SingleChildScrollView(
+                              padding: const EdgeInsets.all(20),
+                              child: Column(
+                                children: [
+                                  // Info card
+                                  Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: colors.cardBackground,
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                        color: const Color(0xFFFFB74D),
+                                        width: 2,
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: const Color(0xFFFFB74D).withOpacity(0.1),
+                                          blurRadius: 15,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFFFB74D).withOpacity(0.2),
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                          child: const Icon(
+                                            Icons.people,
+                                            color: Color(0xFFFFB74D),
+                                            size: 22,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              const Text(
+                                                'Vos compatriotes',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Color(0xFFFFB74D),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                '${_friends.length} amis disponibles',
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+                                  // Friends list
+                                  ..._friends.asMap().entries.map((entry) {
+                                    final index = entry.key;
+                                    final friend = entry.value;
+                                    return _buildFriendCard(friend, index);
+                                  }).toList(),
+                                  const SizedBox(height: 20),
+                                  // Invite button
+                                  _buildInviteButton(),
+                                  const SizedBox(height: 40),
+                                ],
+                              ),
                             ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 40),
-                      ],
-                    ),
-                  ),
                 ),
               ],
             ),
           ),
         ],
       ),
-      bottomNavigationBar: const AppBottomNavBar(
-        currentIndex: 0,
+      bottomNavigationBar: _selectedFriendId != null
+          ? Container(
+              color: colors.cardBackground,
+              padding: const EdgeInsets.all(16),
+              child: ElevatedButton(
+                onPressed: _onValidate,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFFB74D),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'Défier !',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            )
+          : null,
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: context.colors.cardBackground,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 15,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFB74D).withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.people_outline,
+                size: 48,
+                color: Color(0xFFFFB74D),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Aucun ami disponible',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Invitez des amis pour commencer à jouer !',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _inviteFriend,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFFFB74D),
+                foregroundColor: Colors.white,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text('Inviter un ami'),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -457,130 +579,158 @@ class _FriendSelectionScreenState extends State<FriendSelectionScreen> {
   Widget _buildInviteButton() {
     return SizedBox(
       width: double.infinity,
-      child: ElevatedButton(
+      child: ElevatedButton.icon(
         onPressed: _inviteFriend,
+        icon: const Icon(Icons.person_add),
+        label: const Text('Inviter un ami'),
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFFFB74D),
+          backgroundColor: const Color(0xFF9C27B0),
           foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(12),
           ),
           elevation: 0,
-        ),
-        child: const Text(
-          'Inviter un ami',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
         ),
       ),
     );
   }
 
-  Widget _buildFriendCard(Friend friend) {
+  Widget _buildFriendCard(Friend friend, int index) {
     final isSelected = _selectedFriendId == friend.id;
+    final selectionColor = const [
+      Color(0xFFFFB74D),
+      Color(0xFF9C27B0),
+      Color(0xFF00BCD4),
+      Color(0xFF4CAF50),
+      Color(0xFFE91E63),
+      Color(0xFF607D8B),
+    ][index % 6];
 
     return GestureDetector(
       onTap: () {
         setState(() {
-          _selectedFriendId = friend.id;
+          _selectedFriendId = isSelected ? null : friend.id;
         });
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFF5F0FF) : Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          color: isSelected ? selectionColor.withOpacity(0.1) : context.colors.cardBackground,
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? const Color(0xFF6B4EAA) : Colors.grey[200]!,
+            color: isSelected ? selectionColor : Colors.grey[200]!,
             width: isSelected ? 2 : 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 5,
+              color: isSelected ? selectionColor.withOpacity(0.15) : Colors.black.withOpacity(0.05),
+              blurRadius: isSelected ? 12 : 8,
               offset: const Offset(0, 2),
             ),
           ],
         ),
         child: Row(
           children: [
-            // Avatar
-            CircleAvatar(
-              radius: 25,
-              backgroundColor: Colors.grey[200],
-              backgroundImage:
-              friend.avatarUrl != null ? NetworkImage(friend.avatarUrl!) : null,
-              child: friend.avatarUrl == null
-                  ? const Icon(Icons.person, color: Colors.grey, size: 30)
-                  : null,
+            // Avatar avec bordure
+            Container(
+              padding: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: isSelected ? selectionColor : Colors.grey[300]!,
+                  width: 2,
+                ),
+              ),
+              child: CircleAvatar(
+                radius: 28,
+                backgroundColor: Colors.grey[200],
+                backgroundImage: friend.avatarUrl != null
+                    ? NetworkImage(friend.avatarUrl!)
+                    : null,
+                child: friend.avatarUrl == null
+                    ? Icon(
+                        Icons.person,
+                        color: Colors.grey[400],
+                        size: 32,
+                      )
+                    : null,
+              ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 14),
 
-            // Nom et niveau
+            // Infos
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     friend.nom,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    friend.niveau,
                     style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey[600],
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: isSelected ? selectionColor : Colors.black87,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: selectionColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          friend.niveau,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            color: selectionColor,
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      Icon(
+                        Icons.bolt,
+                        size: 14,
+                        color: Colors.amber,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${friend.xp} XP',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
 
-            // XP
-            Text(
-              '${friend.xp}XP',
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
+            // Check icon
+            if (isSelected)
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: selectionColor.withOpacity(0.2),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.check_circle,
+                  color: selectionColor,
+                  size: 22,
+                ),
+              )
+            else
+              const SizedBox(width: 38),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildValidateButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: _selectedFriendId != null ? _onValidate : null,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFE8D44D),
-          foregroundColor: Colors.black87,
-          disabledBackgroundColor: Colors.grey[300],
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-          elevation: 0,
-        ),
-        child: const Text(
-          'Valider',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
         ),
       ),
     );
