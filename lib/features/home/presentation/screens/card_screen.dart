@@ -10,6 +10,63 @@ import '../../../../shared/widgets/bottom_nav_bar.dart';
 import '../../../quiz/presentation/screens/game_screen.dart';
 import 'home_screen.dart';
 
+/// Modèle pour Catégorie
+class Category {
+  final int idCategorie;
+  final String nom;
+  final String? description;
+  final String? icone;
+  final List<SubCategory>? sousCategories;
+
+  Category({
+    required this.idCategorie,
+    required this.nom,
+    this.description,
+    this.icone,
+    this.sousCategories,
+  });
+
+  factory Category.fromJson(Map<String, dynamic> json) {
+    List<SubCategory>? subs;
+    if (json['sousCategories'] != null) {
+      subs = List<SubCategory>.from(
+        (json['sousCategories'] as List).map((x) => SubCategory.fromJson(x))
+      );
+    }
+    return Category(
+      idCategorie: json['idCategorie'] ?? json['id'] ?? 0,
+      nom: json['nom'] ?? '',
+      description: json['description'],
+      icone: json['icone'],
+      sousCategories: subs,
+    );
+  }
+}
+
+/// Modèle pour Sous-Catégorie
+class SubCategory {
+  final int idSousCategorie;
+  final String nom;
+  final String? description;
+  final String? icone;
+
+  SubCategory({
+    required this.idSousCategorie,
+    required this.nom,
+    this.description,
+    this.icone,
+  });
+
+  factory SubCategory.fromJson(Map<String, dynamic> json) {
+    return SubCategory(
+      idSousCategorie: json['idSousCategorie'] ?? json['id'] ?? 0,
+      nom: json['nom'] ?? '',
+      description: json['description'],
+      icone: json['icone'],
+    );
+  }
+}
+
 /// Couleurs du design (identiques à profile_screen)
 class _DesignColors {
   static const Color primary = Color(0xFFFFB74D);      // Orange principal
@@ -46,7 +103,7 @@ class CardScreen extends StatefulWidget {
 }
 
 class _CardScreenState extends State<CardScreen> {
-  List<dynamic> _categories = [];
+  List<Category> _categories = [];
   bool _isLoading = true;
   String? _error;
   final Set<int> _selectedCategories = {};
@@ -86,8 +143,12 @@ class _CardScreenState extends State<CardScreen> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+        final List<dynamic> categoriesList = data['data'] ?? [];
+        
         setState(() {
-          _categories = data['data'] ?? [];
+          _categories = categoriesList
+              .map((cat) => Category.fromJson(cat))
+              .toList();
           _isLoading = false;
         });
         debugPrint('Catégories chargées: ${_categories.length}');
@@ -101,24 +162,39 @@ class _CardScreenState extends State<CardScreen> {
         _isLoading = false;
         // Données de test en cas d'erreur réseau
         _categories = [
-          {'idCategorie': 1, 'nom': 'Géographie', 'icone': '🌍'},
-          {'idCategorie': 2, 'nom': 'Histoire', 'icone': '📚'},
-          {'idCategorie': 3, 'nom': 'Arts', 'icone': '🎨'},
-          {'idCategorie': 4, 'nom': 'Science', 'icone': '🔬'},
-          {'idCategorie': 5, 'nom': 'Biologie', 'icone': '🧬'},
-          {'idCategorie': 6, 'nom': 'Politique', 'icone': '⚖️'},
+          Category(
+            idCategorie: 1,
+            nom: 'Géographie',
+            icone: '🌍',
+            sousCategories: [
+              SubCategory(idSousCategorie: 1, nom: 'Capitales'),
+              SubCategory(idSousCategorie: 2, nom: 'Continents'),
+            ],
+          ),
+          Category(
+            idCategorie: 2,
+            nom: 'Histoire',
+            icone: '📚',
+            sousCategories: [
+              SubCategory(idSousCategorie: 3, nom: 'Préhistoire'),
+              SubCategory(idSousCategorie: 4, nom: 'Histoire africaine'),
+            ],
+          ),
+          Category(idCategorie: 3, nom: 'Arts', icone: '🎨'),
+          Category(idCategorie: 4, nom: 'Science', icone: '🔬'),
+          Category(idCategorie: 5, nom: 'Biologie', icone: '🧬'),
+          Category(idCategorie: 6, nom: 'Politique', icone: '⚖️'),
         ];
       });
     }
   }
 
-  void _onCategorySelected(dynamic category) {
-    final id = category['idCategorie'] ?? category['id'];
+  void _onCategorySelected(Category category) {
     setState(() {
-      if (_selectedCategories.contains(id)) {
-        _selectedCategories.remove(id);
+      if (_selectedCategories.contains(category.idCategorie)) {
+        _selectedCategories.remove(category.idCategorie);
       } else {
-        _selectedCategories.add(id);
+        _selectedCategories.add(category.idCategorie);
       }
     });
   }
@@ -367,30 +443,20 @@ class _CardScreenState extends State<CardScreen> {
     );
   }
 
-  Widget _buildCategoryCard(dynamic category, int index) {
-    final id = category['idCategorie'] ?? category['id'];
+  Widget _buildCategoryCard(Category category, int index) {
+    final id = category.idCategorie;
     final isSelected = _selectedCategories.contains(id);
     final color = _getCategoryColor(index);
 
     return GestureDetector(
       onTap: () {
-        // Démarrer un quiz pour cette catégorie
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => GameScreen(
-              userName: widget.userName,
-              userLevel: widget.userLevel,
-              userLives: widget.userLives,
-              userCoins: null,
-              avatarUrl: widget.avatarUrl,
-              token: widget.token,
-              idCategorie: id,
-              mode: 'category',
-              nombreQuestions: 10,
-            ),
-          ),
-        );
+        // Si la catégorie a des sous-catégories, afficher un dialog
+        if (category.sousCategories != null && category.sousCategories!.isNotEmpty) {
+          _showSubCategoryDialog(category, color);
+        } else {
+          // Sinon, lancer directement le jeu
+          _startGame(category.idCategorie, category.nom);
+        }
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
@@ -423,7 +489,7 @@ class _CardScreenState extends State<CardScreen> {
               ),
               child: Center(
                 child: Text(
-                  category['icone'] ?? '📚',
+                  category.icone ?? '📚',
                   style: const TextStyle(fontSize: 36),
                 ),
               ),
@@ -434,7 +500,7 @@ class _CardScreenState extends State<CardScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
-                category['nom'] ?? 'Catégorie',
+                category.nom,
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -490,8 +556,179 @@ class _CardScreenState extends State<CardScreen> {
                 size: 20,
               ),
             ],
+            
+            // Badge si sous-catégories
+            if (category.sousCategories != null && category.sousCategories!.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: _DesignColors.secondary.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  '${category.sousCategories!.length} catégories',
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: _DesignColors.secondary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
+      ),
+    );
+  }
+
+  void _startGame(int categoryId, String categoryName) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => GameScreen(
+          userName: widget.userName,
+          userLevel: widget.userLevel,
+          userLives: widget.userLives,
+          userCoins: null,
+          avatarUrl: widget.avatarUrl,
+          token: widget.token,
+          idCategorie: categoryId,
+          categorieNom: categoryName,
+          mode: 'category',
+          nombreQuestions: 10,
+        ),
+      ),
+    );
+  }
+
+  void _showSubCategoryDialog(Category category, Color color) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: context.colors.cardBackground,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                category.icone ?? '📚',
+                style: const TextStyle(fontSize: 20),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    category.nom,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: _DesignColors.textDark,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Sélectionnez une spécialité',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: _DesignColors.textMuted,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ...category.sousCategories!.map((subCat) => GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                  _startGame(subCat.idSousCategorie, subCat.nom);
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 12,
+                  ),
+                  margin: const EdgeInsets.only(bottom: 8),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.08),
+                    border: Border.all(
+                      color: color.withOpacity(0.3),
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: color,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              subCat.nom,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: _DesignColors.textDark,
+                              ),
+                            ),
+                            if (subCat.description != null && subCat.description!.isNotEmpty) ...[
+                              const SizedBox(height: 4),
+                              Text(
+                                subCat.description!,
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: _DesignColors.textMuted,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      Icon(
+                        Icons.arrow_forward,
+                        size: 18,
+                        color: color,
+                      ),
+                    ],
+                  ),
+                ),
+              )).toList(),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Fermer',
+              style: TextStyle(color: _DesignColors.textMuted),
+            ),
+          ),
+        ],
       ),
     );
   }

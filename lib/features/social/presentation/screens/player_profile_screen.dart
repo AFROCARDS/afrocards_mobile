@@ -8,6 +8,7 @@ import '../../../../core/theme/theme_colors.dart';
 import '../../../../shared/widgets/app_header.dart';
 import '../../../../shared/widgets/bottom_nav_bar.dart';
 import '../../../quiz/presentation/screens/game_screen.dart';
+import '../../../challenge/presentation/screens/friend_challenge_category_screen.dart';
 
 /// Couleurs du design (identiques à profile_screen)
 class _DesignColors {
@@ -786,22 +787,16 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                     final betAmount = await _showBetDialog(userCoins);
                     
                     if (betAmount != null && mounted) {
-                      // Naviguer vers le jeu avec la mise
+                      // Naviguer vers la sélection de catégorie
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => GameScreen(
-                            userName: userState.userName,
-                            userLevel: userState.userLevel,
-                            userLives: userState.lives,
-                            userCoins: userState.coins,
-                            avatarUrl: userState.avatarUrl,
-                            token: userState.token ?? '',
-                            mode: 'friend_challenge',
-                            nombreQuestions: 7,
-                            opponentName: _profilData?['pseudo'] ?? 'Ami',
-                            opponentId: widget.idJoueur,
+                          builder: (context) => FriendChallengeCategoryScreen(
+                            token: userState.token,
+                            friendId: widget.idJoueur,
+                            friendName: _profilData?['pseudo'] ?? 'Ami',
                             coinsBet: betAmount,
+                            questionCount: 7,
                           ),
                         ),
                       );
