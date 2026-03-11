@@ -297,16 +297,16 @@ class _ClassementScreenState extends State<ClassementScreen> {
                   children: [
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: const Icon(Icons.arrow_back, color: Colors.black),
+                      child: Icon(Icons.arrow_back, color: colors.textPrimary),
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Text(
                         'Classement',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: colors.textPrimary,
                         ),
                       ),
                     ),

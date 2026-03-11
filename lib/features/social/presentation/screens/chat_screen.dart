@@ -140,10 +140,10 @@ class _ChatScreenState extends State<ChatScreen> {
                       children: [
                         Text(
                           widget.friendName,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
-                            color: Color(0xFF2D3436),
+                            color: context.colors.textPrimary,
                           ),
                         ),
                         Text(
@@ -228,10 +228,10 @@ class _ChatScreenState extends State<ChatScreen> {
             const SizedBox(width: 14),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
-                color: Color(0xFF2D3436),
+                color: context.colors.textPrimary,
               ),
             ),
             const Spacer(),
@@ -434,10 +434,10 @@ class _ChatScreenState extends State<ChatScreen> {
               children: [
                 Text(
                   widget.friendName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
-                    color: Color(0xFF2D3436),
+                    color: context.colors.textPrimary,
                   ),
                 ),
                 const Text(
@@ -500,12 +500,12 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Commencez la conversation !',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF2D3436),
+                color: context.colors.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
@@ -636,9 +636,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   child: Text(
                     content,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
-                      color: Color(0xFF2D3436),
+                      color: context.colors.textPrimary,
                     ),
                   ),
                 ),

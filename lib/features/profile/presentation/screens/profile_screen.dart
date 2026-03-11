@@ -388,10 +388,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       // Pseudo
                       Text(
                         profil['pseudo'] ?? userState.userName,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF2D3436),
+                          color: context.colors.textPrimary,
                         ),
                       ),
                       
@@ -566,10 +566,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(height: 10),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
-              color: Color(0xFF2D3436),
+              color: context.colors.textPrimary,
             ),
           ),
           const SizedBox(height: 4),
@@ -593,20 +593,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
           padding: const EdgeInsets.only(left: 4, bottom: 12),
           child: Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
-              color: Color(0xFF2D3436),
+              color: context.colors.textPrimary,
             ),
           ),
         ),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.colors.cardBackground,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withOpacity(context.colors.shadowOpacity),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
@@ -631,10 +631,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     title: Text(
                       item.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
-                        color: Color(0xFF2D3436),
+                        color: context.colors.textPrimary,
                       ),
                     ),
                     trailing: Icon(

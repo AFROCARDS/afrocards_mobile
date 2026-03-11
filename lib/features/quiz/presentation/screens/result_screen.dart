@@ -257,10 +257,10 @@ class _ResultScreenState extends State<ResultScreen>
                         // Title
                         Text(
                           _getResultTitle(),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: context.colors.textPrimary,
                           ),
                         ),
 
@@ -343,11 +343,11 @@ class _ResultScreenState extends State<ResultScreen>
                         // Continuer button
                         TextButton(
                           onPressed: _continuer,
-                          child: const Text(
+                          child: Text(
                             'Continuer',
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.black54,
+                              color: context.colors.textSecondary,
                             ),
                           ),
                         ),

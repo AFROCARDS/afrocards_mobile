@@ -345,10 +345,10 @@ class _WalletScreenState extends State<WalletScreen> {
             children: [
               Text(
                 value,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
-                  color: Color(0xFF2D3436),
+                  color: context.colors.textPrimary,
                 ),
               ),
               Text(
@@ -372,12 +372,12 @@ class _WalletScreenState extends State<WalletScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Transactions récentes',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
-                color: Color(0xFF2D3436),
+                color: context.colors.textPrimary,
               ),
             ),
             if (_transactions.isNotEmpty)
@@ -438,12 +438,12 @@ class _WalletScreenState extends State<WalletScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Aucune transaction',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF2D3436),
+              color: context.colors.textPrimary,
             ),
           ),
           const SizedBox(height: 4),

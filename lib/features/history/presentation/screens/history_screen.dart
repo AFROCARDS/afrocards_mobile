@@ -186,10 +186,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
         const SizedBox(height: 8),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 18,
-            color: Color(0xFF2D3436),
+            color: context.colors.textPrimary,
           ),
         ),
         Text(
@@ -235,12 +235,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Aucune partie jouée',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF2D3436),
+                color: context.colors.textPrimary,
               ),
               textAlign: TextAlign.center,
             ),

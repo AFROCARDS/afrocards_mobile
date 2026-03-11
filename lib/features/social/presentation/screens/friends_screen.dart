@@ -466,10 +466,10 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
                 children: [
                   Text(
                     friend['pseudo'] ?? 'Joueur',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF2D3436),
+                      color: context.colors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -659,10 +659,10 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
               children: [
                 Text(
                   demandeur['pseudo'] ?? 'Joueur',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF2D3436),
+                    color: context.colors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -789,10 +789,10 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
               children: [
                 Text(
                   user['pseudo'] ?? 'Joueur',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF2D3436),
+                    color: context.colors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -954,10 +954,10 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
             const SizedBox(height: 20),
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF2D3436),
+                color: context.colors.textPrimary,
               ),
               textAlign: TextAlign.center,
             ),

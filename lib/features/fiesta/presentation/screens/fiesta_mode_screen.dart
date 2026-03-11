@@ -176,7 +176,7 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
             Expanded(
               child: Text(
                 subMode.nom,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: _DesignColors.textDark),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: context.colors.textPrimary),
               ),
             ),
           ],
@@ -346,9 +346,9 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
               child: const Icon(Icons.error_outline, size: 48, color: _DesignColors.pink),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Erreur de chargement',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _DesignColors.textDark),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: context.colors.textPrimary),
             ),
             const SizedBox(height: 8),
             const Text(
@@ -429,12 +429,12 @@ class _FiestaModeScreenState extends State<FiestaModeScreen> {
             child: const Icon(Icons.celebration_rounded, size: 40, color: _DesignColors.primary),
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Mode Fiesta',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: _DesignColors.textDark,
+              color: context.colors.textPrimary,
             ),
           ),
           const SizedBox(height: 8),

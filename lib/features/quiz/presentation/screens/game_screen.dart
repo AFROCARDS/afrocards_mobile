@@ -747,7 +747,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            icon: Icon(Icons.arrow_back, color: context.colors.textPrimary),
             onPressed: () => Navigator.pop(context),
           ),
         ),
@@ -850,7 +850,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
               // Bouton retour
               GestureDetector(
                 onTap: () => Navigator.pop(context),
-                child: const Icon(Icons.arrow_back, color: Colors.black87),
+                child: Icon(Icons.arrow_back, color: context.colors.textPrimary),
               ),
               const SizedBox(width: 16),
 
@@ -859,10 +859,10 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                 child: Text(
                   'Question ${_currentQuestionIndex + 1}/${_questions.length}',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+                    color: context.colors.textPrimary,
                   ),
                 ),
               ),
@@ -1075,10 +1075,10 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         Text(
           question.texte,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: context.colors.textPrimary,
             height: 1.4,
           ),
         ),

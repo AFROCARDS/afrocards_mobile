@@ -450,15 +450,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildGameModesSection() {
+    final colors = context.colors;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const Text(
+        Text(
           'Selectionnez le mode de jeu qui vous\nconvient',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 15,
-            color: _DesignColors.textMuted,
+            color: colors.textSecondary,
             height: 1.4,
           ),
         ),
@@ -548,10 +549,10 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 16),
             Text(
               mode['nom'] ?? 'Mode',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: _DesignColors.textDark,
+                color: context.colors.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
@@ -594,16 +595,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildExploreSection() {
+    final colors = context.colors;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const Text(
+        Text(
           'EXPLOREZ ET GAGNEZ',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
             letterSpacing: 1,
-            color: _DesignColors.textDark,
+            color: colors.textPrimary,
           ),
         ),
         const SizedBox(height: 20),
@@ -640,16 +642,17 @@ class _HomeScreenState extends State<HomeScreen> {
     String? subtitle,
     required VoidCallback onTap,
   }) {
+    final colors = context.colors;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: colors.cardBackground,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withOpacity(colors.shadowOpacity),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -684,10 +687,10 @@ class _HomeScreenState extends State<HomeScreen> {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: _DesignColors.textDark,
+                color: colors.textPrimary,
               ),
             ),
             if (subtitle != null) ...[

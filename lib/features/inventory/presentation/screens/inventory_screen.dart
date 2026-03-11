@@ -274,10 +274,10 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
         const SizedBox(height: 8),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 18,
-            color: Color(0xFF2D3436),
+            color: context.colors.textPrimary,
           ),
         ),
         Text(
@@ -378,10 +378,10 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
               children: [
                 Text(
                   badge['nom'] ?? 'Badge',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF2D3436),
+                    color: context.colors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -539,10 +539,10 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
                     Flexible(
                       child: Text(
                         trophee['nom'] ?? 'Trophée',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF2D3436),
+                          color: context.colors.textPrimary,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -739,10 +739,10 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
                     Flexible(
                       child: Text(
                         article['nom'] ?? 'Bonus',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF2D3436),
+                          color: context.colors.textPrimary,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -850,10 +850,10 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
             const SizedBox(height: 20),
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF2D3436),
+                color: context.colors.textPrimary,
               ),
               textAlign: TextAlign.center,
             ),
