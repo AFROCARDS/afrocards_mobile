@@ -9,6 +9,17 @@ import '../../../../core/theme/theme_colors.dart';
 import '../../../../shared/widgets/app_header.dart';
 import '../../../quiz/presentation/screens/game_screen.dart';
 
+/// Couleurs du design (identiques à CardScreen)
+class _DesignColors {
+  static const Color primary = Color(0xFFFFB74D);      // Orange principal
+  static const Color secondary = Color(0xFF9C27B0);    // Violet
+  static const Color cyan = Color(0xFF00BCD4);         // Cyan
+  static const Color green = Color(0xFF4CAF50);        // Vert
+  static const Color pink = Color(0xFFE91E63);         // Rose
+  static const Color textDark = Color(0xFF2D3436);     // Texte foncé
+  static const Color textMuted = Color(0xFF636E72);    // Texte atténué
+}
+
 /// Modèle pour Catégorie
 class Category {
   final int idCategorie;
@@ -94,6 +105,20 @@ class _FriendChallengeCategoryScreenState
   bool _isLoading = true;
   Category? _selectedCategory;
   SubCategory? _selectedSubCategory;
+
+  // Couleurs pour chaque catégorie
+  final List<Color> _categoryColors = [
+    _DesignColors.primary,
+    _DesignColors.secondary,
+    _DesignColors.cyan,
+    _DesignColors.green,
+    _DesignColors.pink,
+    const Color(0xFF607D8B),
+  ];
+
+  Color _getCategoryColor(int index) {
+    return _categoryColors[index % _categoryColors.length];
+  }
 
   @override
   void initState() {
@@ -187,12 +212,11 @@ class _FriendChallengeCategoryScreenState
                 ),
                 Expanded(
                   child: _isLoading
-                      ? const Center(child: CircularProgressIndicator())
+                      ? const Center(child: CircularProgressIndicator(color: _DesignColors.primary))
                       : _categories.isEmpty
-                          ? const Center(
-                              child: Text('Aucune catégorie disponible'))
+                          ? const Center(child: Text('Aucune catégorie disponible'))
                           : SingleChildScrollView(
-                              padding: const EdgeInsets.all(24),
+                              padding: const EdgeInsets.all(20),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -201,52 +225,125 @@ class _FriendChallengeCategoryScreenState
                                     padding: const EdgeInsets.all(16),
                                     decoration: BoxDecoration(
                                       color: colors.cardBackground,
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: BorderRadius.circular(16),
                                       border: Border.all(
-                                        color: const Color(0xFFFFB74D),
+                                        color: _DesignColors.primary,
                                         width: 2,
                                       ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: _DesignColors.primary.withOpacity(0.1),
+                                          blurRadius: 15,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
                                     ),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          'Défier: ${widget.friendName}',
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                            color: Color(0xFFFFB74D),
-                                          ),
+                                        Row(
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.all(8),
+                                              decoration: BoxDecoration(
+                                                color: _DesignColors.primary.withOpacity(0.2),
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                              child: const Icon(
+                                                Icons.sports_esports,
+                                                color: _DesignColors.primary,
+                                                size: 20,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Expanded(
+                                              child: Text(
+                                                'Défier ${widget.friendName}',
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: _DesignColors.primary,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        const SizedBox(height: 8),
+                                        const SizedBox(height: 12),
                                         Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
-                                              'Questions: ${widget.questionCount}',
-                                              style: const TextStyle(fontSize: 12),
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                              decoration: BoxDecoration(
+                                                color: _DesignColors.secondary.withOpacity(0.1),
+                                                borderRadius: BorderRadius.circular(8),
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  const Icon(Icons.help_outline, size: 14, color: _DesignColors.secondary),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    '${widget.questionCount} Q.',
+                                                    style: const TextStyle(
+                                                      fontSize: 12,
+                                                      fontWeight: FontWeight.w600,
+                                                      color: _DesignColors.secondary,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                            Text(
-                                              'Mise: ${widget.coinsBet} 🪙',
-                                              style: const TextStyle(fontSize: 12),
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                              decoration: BoxDecoration(
+                                                color: _DesignColors.green.withOpacity(0.1),
+                                                borderRadius: BorderRadius.circular(8),
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  const Text(
+                                                    '🪙 ',
+                                                    style: TextStyle(fontSize: 12),
+                                                  ),
+                                                  Text(
+                                                    '${widget.coinsBet}',
+                                                    style: const TextStyle(
+                                                      fontSize: 12,
+                                                      fontWeight: FontWeight.w600,
+                                                      color: _DesignColors.green,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ],
                                         ),
                                       ],
                                     ),
                                   ),
-                                  const SizedBox(height: 24),
-                                  const Text(
-                                    'Sélectionner une catégorie:',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
+                                  const SizedBox(height: 28),
+                                  // GridView de catégories
+                                  GridView.builder(
+                                    shrinkWrap: true,
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    padding: EdgeInsets.zero,
+                                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      crossAxisSpacing: 16,
+                                      mainAxisSpacing: 16,
+                                      childAspectRatio: 0.85,
                                     ),
+                                    itemCount: _categories.length,
+                                    itemBuilder: (context, index) {
+                                      return _buildCategoryCard(
+                                        context,
+                                        colors,
+                                        _categories[index],
+                                        index,
+                                      );
+                                    },
                                   ),
-                                  const SizedBox(height: 12),
-                                  ..._categories.map((category) => 
-                                    _buildCategoryTile(context, colors, category)
-                                  ).toList(),
                                 ],
                               ),
                             ),
@@ -263,7 +360,9 @@ class _FriendChallengeCategoryScreenState
               child: ElevatedButton(
                 onPressed: _startChallenge,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFFB74D),
+                  backgroundColor: _DesignColors.primary,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -274,7 +373,6 @@ class _FriendChallengeCategoryScreenState
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
                   ),
                 ),
               ),
@@ -283,153 +381,253 @@ class _FriendChallengeCategoryScreenState
     );
   }
 
-  Widget _buildCategoryTile(
+  Widget _buildCategoryCard(
     BuildContext context,
     ThemeColors colors,
     Category category,
+    int index,
   ) {
     final isSelected = _selectedCategory?.idCategorie == category.idCategorie;
-    
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              if (isSelected) {
-                _selectedCategory = null;
-                _selectedSubCategory = null;
-              } else {
-                _selectedCategory = category;
-                _selectedSubCategory = null;
-              }
-            });
-          },
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            margin: const EdgeInsets.only(bottom: 12),
-            decoration: BoxDecoration(
+    final color = _getCategoryColor(index);
+
+    return GestureDetector(
+      onTap: () {
+        // Si la catégorie a des sous-catégories, afficher un dialog
+        if (category.sousCategories != null && category.sousCategories!.isNotEmpty) {
+          _showSubCategoryDialog(category, color);
+        } else {
+          // Sinon, sélectionner directement
+          setState(() {
+            if (isSelected) {
+              _selectedCategory = null;
+              _selectedSubCategory = null;
+            } else {
+              _selectedCategory = category;
+              _selectedSubCategory = null;
+            }
+          });
+        }
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        decoration: BoxDecoration(
+          color: colors.cardBackground,
+          borderRadius: BorderRadius.circular(20),
+          border: isSelected
+              ? Border.all(color: color, width: 2)
+              : null,
+          boxShadow: [
+            BoxShadow(
               color: isSelected 
-                  ? const Color(0xFFFFB74D).withOpacity(0.2)
-                  : colors.cardBackground,
-              border: Border.all(
-                color: isSelected 
-                    ? const Color(0xFFFFB74D)
-                    : colors.cardBackground,
-                width: 2,
-              ),
-              borderRadius: BorderRadius.circular(12),
+                  ? color.withOpacity(0.2)
+                  : Colors.black.withOpacity(0.05),
+              blurRadius: isSelected ? 15 : 10,
+              offset: const Offset(0, 4),
             ),
-            child: Row(
-              children: [
-                if (category.icone != null)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: Image.asset(
-                      'assets/images/icons/${category.icone}',
-                      width: 32,
-                      height: 32,
-                      errorBuilder: (_, __, ___) => const Icon(Icons.category),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Icône circulaire
+            Container(
+              width: 65,
+              height: 65,
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  category.icone ?? '📚',
+                  style: const TextStyle(fontSize: 32),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            
+            // Nom catégorie
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                category.nom,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: isSelected ? color : _DesignColors.textDark,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            
+            const SizedBox(height: 6),
+            
+            // Badge si sous-catégories
+            if (category.sousCategories != null && category.sousCategories!.isNotEmpty)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: _DesignColors.secondary.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  '${category.sousCategories!.length} spécialités',
+                  style: const TextStyle(
+                    fontSize: 9,
+                    color: _DesignColors.secondary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            
+            const SizedBox(height: 8),
+            
+            // Check icon if selected
+            if (isSelected)
+              Icon(
+                Icons.check_circle,
+                color: color,
+                size: 20,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showSubCategoryDialog(Category category, Color color) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: context.colors.cardBackground,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                category.icone ?? '📚',
+                style: const TextStyle(fontSize: 20),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    category.nom,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: _DesignColors.textDark,
                     ),
                   ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  const SizedBox(height: 2),
+                  Text(
+                    'Sélectionnez une spécialité',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: _DesignColors.textMuted,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ...category.sousCategories!.map((subCat) => GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedCategory = category;
+                    _selectedSubCategory = subCat;
+                  });
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 12,
+                  ),
+                  margin: const EdgeInsets.only(bottom: 8),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.08),
+                    border: Border.all(
+                      color: color.withOpacity(0.3),
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
                     children: [
-                      Text(
-                        category.nom,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: isSelected 
-                              ? const Color(0xFFFFB74D)
-                              : Colors.black87,
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: color,
                         ),
                       ),
-                      if (category.description != null)
-                        Text(
-                          category.description!,
-                          style: const TextStyle(fontSize: 12, color: Colors.grey),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              subCat.nom,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: _DesignColors.textDark,
+                              ),
+                            ),
+                            if (subCat.description != null && subCat.description!.isNotEmpty) ...[
+                              const SizedBox(height: 4),
+                              Text(
+                                subCat.description!,
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: _DesignColors.textMuted,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ],
                         ),
+                      ),
+                      Icon(
+                        Icons.arrow_forward,
+                        size: 18,
+                        color: color,
+                      ),
                     ],
                   ),
                 ),
-                if (isSelected)
-                  const Icon(
-                    Icons.check_circle,
-                    color: Color(0xFFFFB74D),
-                  ),
-              ],
-            ),
+              )).toList(),
+            ],
           ),
         ),
-        // Sous-catégories si sélectionnées
-        if (isSelected && 
-            category.sousCategories != null && 
-            category.sousCategories!.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(left: 24, bottom: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Spécialité:',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-                ),
-                const SizedBox(height: 8),
-                ...category.sousCategories!.map((subCat) =>
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedSubCategory = subCat;
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
-                      ),
-                      margin: const EdgeInsets.only(bottom: 8),
-                      decoration: BoxDecoration(
-                        color: _selectedSubCategory?.idSousCategorie == subCat.idSousCategorie
-                            ? const Color(0xFF9C27B0).withOpacity(0.2)
-                            : Colors.grey[100],
-                        border: Border.all(
-                          color: _selectedSubCategory?.idSousCategorie == subCat.idSousCategorie
-                              ? const Color(0xFF9C27B0)
-                              : Colors.grey[300]!,
-                        ),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              subCat.nom,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: _selectedSubCategory?.idSousCategorie == subCat.idSousCategorie
-                                    ? const Color(0xFF9C27B0)
-                                    : Colors.black87,
-                              ),
-                            ),
-                          ),
-                          if (_selectedSubCategory?.idSousCategorie == subCat.idSousCategorie)
-                            const Icon(
-                              Icons.check,
-                              size: 16,
-                              color: Color(0xFF9C27B0),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ).toList(),
-              ],
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Fermer',
+              style: TextStyle(color: _DesignColors.textMuted),
             ),
           ),
-      ],
+        ],
+      ),
     );
   }
 }
